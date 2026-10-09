@@ -5,14 +5,14 @@ description: Regras non negociables que obedecen todas as fases SDD.
 tags: [sdd, constitution]
 timestamp: 2026-10-10T00:00:00Z
 topic: sdd
-version: v1.0.0
+version: v1.1.0
 ratified: 2026-10-10
 last_amended: 2026-10-10
 ---
 
 # lua_yang — Constitución
 
-> **v1.0.0 — ratificada o 2026-10-10.** Emendas: só engadir, coa versión e o porqué no rexistro.
+> **v1.1.0 — ratificada o 2026-10-10.** Emendas: só engadir, coa versión e o porqué no rexistro.
 > Cada regra é comprobable: `analyze`, `verify` e `review` cítana como «constitución vX.Y.Z, regra N».
 
 ## Feitos de partida
@@ -42,10 +42,7 @@ last_amended: 2026-10-10
 
 | Excepción coñecida | Desde | Saída prevista |
 |---|---|---|
-| `lua/lua`: os tests do paquete principal non compilan (`pathHelperDirsMacOS` non existe) | 2026-10-10 | primeira tarefa: sen isto non corre ningún dos ~35 tests de Lua |
-| `lua/lua`: `gofmt` sinala `biblioteca_formularios*.go` | 2026-10-10 | formatar na mesma tarefa |
-| `edicion/modulo`: `TestDirsModulos` falla porque le a instalación real de Yang | 2026-10-10 | illar o test do directorio do usuario |
-| Tests ODT / xelatex de Lua (rotos segundo a sesión do 2026-10-09; sen verificar ata que compilen) | 2026-10-09 | revisar cando compilen os tests de Lua |
+| ~~`lua/lua`: tests sen compilar, `gofmt`, xelatex, ODT; `edicion/modulo`: `TestDirsModulos`~~ | 2026-10-10 | arranxadas o 2026-10-10 (commit `0fb443e`) |
 
 ## 3. Convencións
 
@@ -57,7 +54,8 @@ last_amended: 2026-10-10
 
 ## 4. Ramas e entregas
 
-1. O traballo vai directo á rama `main` de cada repositorio (decidido na instalación). Hai dous: o da raíz (harness, `edicion/`, `buxo/`) e `lua/` (código de Lua). `yang/` e `markitdown/` teñen o seu propio repositorio e non se mesturan.
+1. ~~O traballo vai directo á rama `main` de cada repositorio (raíz e `lua/`).~~ Substituída en v1.1.0.
+1b. Un só repositorio, `github.com/piztusistemas/lua`: harness, `lua/`, `edicion/` e `buxo/` xuntos, e o traballo vai directo á súa rama `main`. `yang/` e `markitdown/` conservan o seu propio repositorio e non se rastrexan.
 2. A versión é CalVer `AA.MM.N`. En Lua escríbese igual en `VERSION`, `wails.json`, `modulo.json`, `build/config.yml` e `build/darwin/Info*.plist`; unha release cambia todos á vez.
 3. A autoría dos commits e PR é só de Martín Pardiñas Fondo: sen `Co-Authored-By` dunha IA nin pé «generated with». Compróbase na fase `ship`.
 
@@ -99,3 +97,4 @@ last_amended: 2026-10-10
 | 2026-10-09 | draft | Esqueleto xerado por `rsc onboard`. | O SDD necesita unha constitución. |
 | 2026-10-10 | draft | Borrador completo coas regras propostas. | Fase `constitution`. |
 | 2026-10-10 | v1.0.0 | Ratificada: obxectivo = Lua (absorbe Yang, usa `edicion` e `buxo`); autoría só humana; dous repositorios git; excepcións de tests medidas. | Ratificación explícita do usuario. |
+| 2026-10-10 | v1.1.0 | Regra 4.1 substituída pola 4.1b (un só repositorio en GitHub); excepcións de tests pechadas. | Decisión do usuario; os tests de Lua e `edicion` xa pasan. |

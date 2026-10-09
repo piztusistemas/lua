@@ -30,3 +30,9 @@ topic: sdd
 
 ## 2026-10-10 — Versión de Lua 26.10.3
 - Decisión: Lua pasa a 26.10.3 en todos os ficheiros de versión do código (non nos binarios xa construídos).
+
+## 2026-10-10 — Un só repositorio en GitHub
+- Opcións: repositorio só de Lua · un repositorio con Lua, `edicion` e `buxo`.
+- Decisión: un só repositorio, `github.com/piztusistemas/lua`, que une a historia local cos ficheiros que xa había publicados alí.
+- Porqué: `lua/lua/go.mod` usa `../../edicion`, e por separado Lua non compila.
+- A historia antiga de `lua/.git`, que apuntaba a `yang-src`, gárdase fóra do proxecto en `../lua-git-respaldo`.
