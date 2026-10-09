@@ -13,11 +13,12 @@ inglés e portugués.
 | Cartafol | Que é |
 |----------|-------|
 | [`lua/lua`](lua/lua) | A aplicación (Go + Wails v3, frontend en JavaScript sen framework). |
-| [`lua/lua_installer`](lua/lua_installer) | Instalador de Lua e das súas dependencias (Go + Wails v2). |
+| [`lua/lua_installer`](lua/lua_installer) | Instalador de Lua e das súas dependencias (Go + Wails v3). |
 | [`edicion`](edicion) | Motor común: plantillas, LaTeX, Word/ODT, IA, Maxima, actualizacións, bóveda. |
 | [`buxo`](buxo) | Módulo que converte PDF e documentos nunha bóveda de Obsidian coa IA. |
+| [`markitdown`](markitdown) | Copia de MarkItDown (Microsoft, MIT) coa que Buxo converte documentos. |
 | [`02-DOCS`](02-DOCS) | Documentación do proxecto: constitución, arquitectura, desenvolvemento. |
-| Raíz (`*.pdf`, `*.json`) | Exemplos de documentos xerados con Lua. |
+| [`exemplos`](exemplos) | Exemplos de documentos xerados con Lua. |
 
 Que fai Lua, ferramenta a ferramenta: [`lua/README.md`](lua/README.md).
 Como encaixan as pezas: [arquitectura](02-DOCS/wiki/arquitectura.md).
@@ -50,6 +51,8 @@ LibreOffice e ImageMagick son opcionais: se faltan, Lua avisa e di que instalar.
 (cd lua/lua/frontend && npm install && npm test)
 (cd buxo && go test ./...)
 ```
+
+Para compilar Buxo co seu conversor: `cd buxo && sidecar/build.sh` (precisa Python 3.12).
 
 Detalle de cada orde e dos tests que precisan LaTeX ou LibreOffice:
 [desenvolvemento](02-DOCS/wiki/desenvolvemento.md).

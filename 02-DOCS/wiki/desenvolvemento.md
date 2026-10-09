@@ -16,20 +16,15 @@ topic: desenvolvemento
 | Go 1.25+ | Todo o backend | `brew install go` |
 | Node 20+ e npm | Frontend (Vite, vitest) | `brew install node` |
 | Task | Tarefas de Wails v3 | `brew install go-task` |
-| `wails3` | Lua e Buxo | `go install github.com/wailsapp/wails/v3/cmd/wails3@latest` |
-| `wails` (v2) | Só o instalador | `go install github.com/wailsapp/wails/v2/cmd/wails@latest` |
+| `wails3` | Lua, Buxo e o instalador | `go install github.com/wailsapp/wails/v3/cmd/wails3@latest` |
+| Python 3.12 universal2 (python.org) | Sidecar de Buxo | instalador de python.org |
 | MacTeX / TeX Live | PDF e tests de LaTeX | `brew install --cask mactex` |
 | LibreOffice, Poppler, Maxima | Tests de integración | `brew install --cask libreoffice; brew install poppler maxima` |
 
 En Debian/Ubuntu, `make deps` en `lua/lua_installer` instala o mesmo con `apt`.
 En macOS hai `make deps-darwin`.
 
-**Buxo necesita ademais `markitdown/` ao carón.** `buxo/sidecar/build.sh` usa
-`../markitdown`, que non vai neste repositorio:
-
-```bash
-git clone https://github.com/microsoft/markitdown.git markitdown
-```
+`markitdown/` vai dentro do repositorio, así que Buxo compila sen clonar nada máis.
 
 ## Executar en modo desenvolvemento
 
@@ -59,7 +54,8 @@ cd lua/lua/frontend && npm test               # vitest
 ```bash
 cd lua/lua && task build                      # build/bin/ da plataforma actual
 cd lua/lua && task darwin:package:universal   # lua.app universal (arm64 + amd64)
-cd buxo && task build EXTRA_TAGS=gtk3 && ./package.sh
+cd buxo && sidecar/build.sh && task build EXTRA_TAGS=gtk3 && ./package.sh
+cd lua/lua_installer && make build            # Lua + instalador (en macOS, universais)
 ```
 
 En Linux, `EXTRA_TAGS=gtk3` forza GTK3/WebKit2GTK, porque o GTK4 de Wails v3
@@ -97,3 +93,4 @@ beta non compila en Debian 12.
 | LibreOffice: «source file could not be loaded» cun ODT de Lua | `mimetype` con descritor de datos (Go `CreateHeader`) e datas 1980-00-00 | `zip.CreateRaw` e `Modified` en `informe_odt.go` |
 | `TestDirsModulos` falla en macOS | `XDG_CONFIG_HOME` só manda en Linux | O test compara con `os.UserConfigDir()` |
 | Un adaptador común non compila noutra plataforma | Símbolo só definido nunha etiqueta de build | Dar tamén o caso baleiro nas outras (`edicion/doc.go`) |
+| O instalador de Windows deixa de pedir administrador | `wails3 task common:update:build-assets` reescribe `build/windows/wails.exe.manifest` con `asInvoker` | Volver poñer `requireAdministrator` (o ficheiro avisa) |

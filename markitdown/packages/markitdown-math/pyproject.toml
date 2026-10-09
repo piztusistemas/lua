@@ -1,0 +1,74 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "markitdown-math"
+dynamic = ["version"]
+description = 'Math plugin for MarkItDown - Converts PDFs containing mathematics to Markdown with embedded LaTeX via LLM Vision'
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+keywords = ["markitdown", "pdf", "math", "latex", "llm", "vision"]
+authors = [
+  { name = "Contributors", email = "noreply@github.com" },
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Programming Language :: Python :: Implementation :: CPython",
+]
+
+# pypdfium2 and Pillow are already pulled in by pdfplumber; they are listed
+# explicitly because this plugin renders pages to images with them.
+dependencies = [
+  "markitdown[pdf]>=0.1.8,<0.2.0",
+  "pypdfium2",
+  "Pillow>=9.0.0",
+]
+
+# llm_client is passed in by the user (same as for markitdown image descriptions);
+# install openai or any OpenAI-compatible SDK separately.
+[project.optional-dependencies]
+llm = [
+  "openai>=1.0.0",
+]
+
+[project.scripts]
+markitdown-math = "markitdown_math.__main__:main"
+
+[project.urls]
+Documentation = "https://github.com/microsoft/markitdown#readme"
+Issues = "https://github.com/microsoft/markitdown/issues"
+Source = "https://github.com/microsoft/markitdown"
+
+[tool.hatch.version]
+path = "src/markitdown_math/__about__.py"
+
+# Plugin entry point - MarkItDown discovers this plugin through it
+[project.entry-points."markitdown.plugin"]
+math = "markitdown_math"
+
+[tool.hatch.envs.default]
+features = ["llm"]
+
+[tool.hatch.envs.hatch-test]
+extra-dependencies = [
+  "openai>=1.0.0",
+]
+
+[tool.coverage.run]
+source_pkgs = ["markitdown_math", "tests"]
+branch = true
+parallel = true
+omit = [
+  "src/markitdown_math/__about__.py",
+]
+
+[tool.hatch.build.targets.sdist]
+only-include = ["src/markitdown_math"]

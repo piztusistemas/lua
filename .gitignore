@@ -1,6 +1,5 @@
 # Repositorios propios (teñen o seu .git): non se rastrexan desde aquí
 /yang/
-/markitdown/
 
 # Estado local do harness (rexenérase con `npx @ericrisco/rsc sync`)
 /.rsc/
