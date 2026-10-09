@@ -5,14 +5,14 @@ description: Regras non negociables que obedecen todas as fases SDD.
 tags: [sdd, constitution]
 timestamp: 2026-10-10T00:00:00Z
 topic: sdd
-version: v1.1.0
+version: v1.2.0
 ratified: 2026-10-10
 last_amended: 2026-10-10
 ---
 
 # lua_yang — Constitución
 
-> **v1.1.0 — ratificada o 2026-10-10.** Emendas: só engadir, coa versión e o porqué no rexistro.
+> **v1.2.0 — ratificada o 2026-10-10.** Emendas: só engadir, coa versión e o porqué no rexistro.
 > Cada regra é comprobable: `analyze`, `verify` e `review` cítana como «constitución vX.Y.Z, regra N».
 
 ## Feitos de partida
@@ -29,7 +29,8 @@ last_amended: 2026-10-10
 2. O frontend é JavaScript sen framework, con Vite. Engadir unha dependencia de execución (Go ou npm) require unha entrada en `decisions.md`.
 3. A lóxica que usa máis dunha app vive en `edicion/` e consómese con `replace`; nunca se copia entre apps.
 4. Maxima, LaTeX e o sidecar Python son opcionais: se faltan, a app segue funcionando e explica en que falla e como instalalo.
-5. `markitdown/` non se edita á man; os cambios van no build do sidecar (`buxo/sidecar/build.sh`).
+5. ~~`markitdown/` non se edita á man.~~ Substituída en v1.2.0.
+5b. `markitdown/` é unha copia de microsoft/markitdown dentro do repositorio (`markitdown/ORIXE.md`). Só se edita `packages/markitdown-math`; o resto actualízase desde Microsoft e anótase o commit en `ORIXE.md`.
 6. Plataformas: macOS, Windows e Linux. Sen móbil.
 
 ## 2. Calidade
@@ -55,7 +56,7 @@ last_amended: 2026-10-10
 ## 4. Ramas e entregas
 
 1. ~~O traballo vai directo á rama `main` de cada repositorio (raíz e `lua/`).~~ Substituída en v1.1.0.
-1b. Un só repositorio, `github.com/piztusistemas/lua`: harness, `lua/`, `edicion/` e `buxo/` xuntos, e o traballo vai directo á súa rama `main`. `yang/` e `markitdown/` conservan o seu propio repositorio e non se rastrexan.
+1b. Un só repositorio, `github.com/piztusistemas/lua`: harness, `lua/`, `edicion/` e `buxo/` xuntos, e o traballo vai directo á súa rama `main`. `markitdown/` tamén vai dentro (regra 1.5b). Só `yang/` conserva o seu propio repositorio.
 2. A versión é CalVer `AA.MM.N`. En Lua escríbese igual en `VERSION`, `wails.json`, `modulo.json`, `build/config.yml` e `build/darwin/Info*.plist`; unha release cambia todos á vez.
 3. A autoría dos commits e PR é só de Martín Pardiñas Fondo: sen `Co-Authored-By` dunha IA nin pé «generated with». Compróbase na fase `ship`.
 
@@ -98,3 +99,4 @@ last_amended: 2026-10-10
 | 2026-10-10 | draft | Borrador completo coas regras propostas. | Fase `constitution`. |
 | 2026-10-10 | v1.0.0 | Ratificada: obxectivo = Lua (absorbe Yang, usa `edicion` e `buxo`); autoría só humana; dous repositorios git; excepcións de tests medidas. | Ratificación explícita do usuario. |
 | 2026-10-10 | v1.1.0 | Regra 4.1 substituída pola 4.1b (un só repositorio en GitHub); excepcións de tests pechadas. | Decisión do usuario; os tests de Lua e `edicion` xa pasan. |
+| 2026-10-10 | v1.2.0 | Regra 1.5 substituída pola 1.5b (markitdown dentro do repositorio); a 4.1b inclúe markitdown. O instalador xa usa Wails v3, así que a regra 1.1 é exacta. | Decisión do usuario: que se poidan compilar Lua e Buxo desde un só clon. |

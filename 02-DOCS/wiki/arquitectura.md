@@ -15,12 +15,12 @@ topic: arquitectura
 flowchart LR
   subgraph repo["piztusistemas/lua"]
     LUA["lua/lua<br/>aplicación (Go + Wails v3)"]
-    INST["lua/lua_installer<br/>instalador (Go + Wails v2)"]
+    INST["lua/lua_installer<br/>instalador (Go + Wails v3)"]
     ED["edicion<br/>motor común (Go)"]
     BX["buxo<br/>módulo bóveda (Go + Wails v3)"]
+    MKD["markitdown<br/>conversor Python (copia de Microsoft)"]
   end
   YANG["yang/ (repo propio)<br/>fonte da que se migra"]
-  MKD["markitdown/ (repo propio)<br/>conversor Python"]
 
   LUA -- "replace ../../edicion" --> ED
   BX -- "replace ../edicion" --> ED
@@ -39,6 +39,9 @@ flowchart LR
   [`buxo/README.md`](../../buxo/README.md).
 - **`lua/lua_installer`** instala Lua e as súas dependencias (LaTeX, etc.) en
   Debian/Ubuntu, Windows e macOS.
+- **`markitdown`** é unha copia de MarkItDown, de Microsoft, co plugin propio
+  `markitdown-math`. Buxo empaquétao como *sidecar*: un executable Python que
+  lanza ao lado do seu. Orixe e como actualizalo: [`markitdown/ORIXE.md`](../../markitdown/ORIXE.md).
 
 Os módulos Go únense con `replace` (`lua/lua/go.mod` → `../../edicion`). Por iso
 van no mesmo repositorio: Lua non compila sen `edicion` ao carón.

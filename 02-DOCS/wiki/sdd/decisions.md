@@ -36,3 +36,13 @@ topic: sdd
 - Decisión: un só repositorio, `github.com/piztusistemas/lua`, que une a historia local cos ficheiros que xa había publicados alí.
 - Porqué: `lua/lua/go.mod` usa `../../edicion`, e por separado Lua non compila.
 - A historia antiga de `lua/.git`, que apuntaba a `yang-src`, gárdase fóra do proxecto en `../lua-git-respaldo`.
+
+## 2026-10-10 — Instalador en Wails v3
+- Decisión: o instalador pasa de Wails v2 a v3, coma Lua e Buxo.
+- Porqué: unha soa CLI (`wails3` + `task`) para todo o produto.
+- Coidado: `wails3 task common:update:build-assets` reescribe o manifesto de Windows e quita `requireAdministrator`.
+
+## 2026-10-10 — markitdown dentro do repositorio
+- Opcións: submódulo git de microsoft/markitdown · copia dentro do repositorio.
+- Decisión: copia dentro do repositorio, desde o commit `d9cae89`.
+- Porqué: o submódulo perdería o plugin propio `markitdown-math` e obrigaría a un paso extra ao clonar. A historia anterior está en `../markitdown-git-respaldo`.
