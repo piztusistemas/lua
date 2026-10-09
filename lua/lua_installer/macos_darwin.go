@@ -78,7 +78,7 @@ func refrescarPathMacOS() {
 	for _, dir := range []string{
 		"/opt/homebrew/bin", "/opt/homebrew/sbin", // Homebrew en Apple Silicon
 		"/usr/local/bin", "/usr/local/sbin", // Homebrew en Intel
-		"/Library/TeX/texbin", // MacTeX/BasicTeX
+		"/Library/TeX/texbin",               // MacTeX/BasicTeX
 		"/opt/local/bin", "/opt/local/sbin", // MacPorts
 	} {
 		engadir(dir, true)

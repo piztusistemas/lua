@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"runtime"
 	"strings"
 
@@ -48,9 +49,20 @@ func (a *App) Traducions() map[string]string { return a.tr.All() }
 func (a *App) EsRoot() bool          { return esRoot() }
 func (a *App) PermisoDenegado() bool { return a.permisoDenegado }
 func (a *App) DestDir() string       { return destDir }
-// Version é a versión de Lua que se vai instalar (a do modulo.json embebido), que
-// é a que ve o usuario na columna da esquerda; se non se lee, a do instalador.
+
+// Version é a versión de Lua que se vai instalar (a do Lua embebido), que é
+// a que ve o usuario na columna da esquerda; se non se le, a do instalador.
 func (a *App) Version() string {
+	if v := versionLuaEmbebida(); v != "" {
+		return v
+	}
+	return strings.TrimSpace(versionInstalador)
+}
+
+// versionLuaEmbebida le a versión do Lua que vai dentro do instalador: o
+// files/modulo.json en Linux e Windows, ou o Info.plist do bundle en macOS
+// (alí files/ só leva Contents/). "" se non se atopa.
+func versionLuaEmbebida() string {
 	if datos, err := luaFiles.ReadFile("files/modulo.json"); err == nil {
 		var m struct {
 			Version string `json:"version"`
@@ -59,7 +71,20 @@ func (a *App) Version() string {
 			return strings.TrimSpace(m.Version)
 		}
 	}
-	return strings.TrimSpace(versionInstalador)
+	if datos, err := luaFiles.ReadFile("files/Contents/Info.plist"); err == nil {
+		return versionDoInfoPlist(datos)
+	}
+	return ""
+}
+
+var reVersionPlist = regexp.MustCompile(`<key>CFBundleShortVersionString</key>\s*<string>([^<]*)</string>`)
+
+// versionDoInfoPlist saca CFBundleShortVersionString dun Info.plist en XML.
+func versionDoInfoPlist(datos []byte) string {
+	if m := reVersionPlist.FindSubmatch(datos); m != nil {
+		return strings.TrimSpace(string(m[1]))
+	}
+	return ""
 }
 
 func (a *App) InstalacionDesc() string { return fmt.Sprintf(a.tr.T("inst.desc"), destDir) }

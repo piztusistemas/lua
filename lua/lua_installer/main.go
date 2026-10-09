@@ -15,6 +15,7 @@ var appIcon []byte
 // versionInstalador é a versión deste instalador (non confundir coa de Lua
 // en si — lua/modulo.json → "version" — aínda que hoxe se publiquen sempre
 // xuntas). Ver App.Version en app.go. Mesmo patrón que installer/main.go.
+//
 //go:embed VERSION
 var versionInstalador string
 

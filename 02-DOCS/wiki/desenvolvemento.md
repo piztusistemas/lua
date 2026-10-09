@@ -97,3 +97,4 @@ beta non compila en Debian 12.
 | `TestDirsModulos` falla en macOS | `XDG_CONFIG_HOME` só manda en Linux | O test compara con `os.UserConfigDir()` |
 | Un adaptador común non compila noutra plataforma | Símbolo só definido nunha etiqueta de build | Dar tamén o caso baleiro nas outras (`edicion/doc.go`) |
 | O instalador de Windows deixa de pedir administrador | `wails3 task common:update:build-assets` reescribe `build/windows/wails.exe.manifest` con `asInvoker` | Volver poñer `requireAdministrator` (o ficheiro avisa) |
+| O instalador instala un Lua vello | Compilouse con `task` directamente e `files/` quedou dunha compilación anterior | Usar sempre `make build`; `version_test.go` falla se a versión embebida non é a de `lua/lua/VERSION` |
