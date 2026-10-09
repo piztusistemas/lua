@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="gl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PDF a Markdown</title>
+</head>
+<body>
+  <div id="app">
+    <header><h1>PDF a Markdown</h1><span>Motor: Microsoft MarkItDown</span></header>
+    <main>
+      <section class="panel">
+        <h2>1. Ficheiros dispoñibles</h2>
+        <ul id="left" class="list"></ul>
+        <div class="row">
+          <button id="add">Engadir PDF…</button>
+          <button id="clearLeft" class="ghost">Baleirar</button>
+        </div>
+      </section>
+
+      <div class="arrows">
+        <button id="toRight" title="Pasar os seleccionados (ou todos) á lista de conversión">➜</button>
+        <button id="toLeft" class="ghost" title="Devolver os seleccionados">⬅</button>
+      </div>
+
+      <section class="panel">
+        <h2>2. Ficheiros a converter</h2>
+        <ul id="right" class="list"></ul>
+        <div class="row out">
+          <input id="outDir" placeholder="Cartafol de destino" readonly/>
+          <button id="pickOut" class="ghost">Cambiar…</button>
+        </div>
+        <button id="convert" class="primary" disabled>Converter a Markdown</button>
+      </section>
+    </main>
+    <footer id="status">Engade ficheiros PDF para comezar.</footer>
+  </div>
+  <script src="./src/main.js" type="module"></script>
+</body>
+</html>

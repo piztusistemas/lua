@@ -1,0 +1,36 @@
+# Repositorios propios (teñen o seu .git): non se rastrexan desde aquí
+/lua/
+/yang/
+/markitdown/
+
+# Estado local do harness (rexenérase con `npx @ericrisco/rsc sync`)
+/.rsc/
+/.claude/settings.local.json
+
+# Builds, binarios e dependencias
+**/node_modules/
+**/frontend/dist/
+**/frontend/bindings/
+**/frontend/wailsjs/
+**/build/bin/
+**/.task/
+/buxo/buxo
+/buxo/buxo.exe
+/buxo/dist/
+/buxo/markitdown-gui/markitdown-gui
+/buxo/sidecar/.venv*/
+/buxo/sidecar/.build*/
+/buxo/sidecar/dist/
+/buxo/markitdown-gui/sidecar/.venv*/
+/buxo/markitdown-gui/sidecar/.build*/
+/buxo/markitdown-gui/embedded/
+/buxo/markitdown-gui/sidecar/dist/
+**/__pycache__/
+
+# Segredos
+.env
+.env.*
+!.env.example
+
+# Sistema
+.DS_Store

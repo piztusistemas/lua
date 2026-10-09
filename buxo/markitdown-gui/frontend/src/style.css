@@ -1,0 +1,24 @@
+:root { --bg:#f5f6f8; --card:#fff; --fg:#1d2330; --muted:#6b7280; --line:#d9dce3; --acc:#2f6fed; --ok:#15803d; --err:#b91c1c; --sel:#e3ecff; }
+@media (prefers-color-scheme: dark) { :root { --bg:#161a22; --card:#1f2430; --fg:#e8eaf0; --muted:#9aa3b2; --line:#333a4a; --acc:#5b8cff; --ok:#4ade80; --err:#f87171; --sel:#26335a; } }
+* { box-sizing:border-box; }
+html,body { margin:0; height:100%; background:var(--bg); color:var(--fg); font:14px system-ui,sans-serif; }
+#app { display:flex; flex-direction:column; height:100%; padding:14px 18px; gap:12px; }
+header { display:flex; align-items:baseline; gap:12px; }
+h1 { font-size:20px; margin:0; } header span { color:var(--muted); font-size:12px; }
+main { flex:1; min-height:0; display:flex; gap:12px; align-items:stretch; }
+.panel { flex:1; min-width:0; display:flex; flex-direction:column; gap:8px; background:var(--card); border:1px solid var(--line); border-radius:10px; padding:12px; }
+h2 { font-size:14px; margin:0; }
+.list { flex:1; min-height:0; overflow:auto; list-style:none; margin:0; padding:4px; border:1px dashed var(--line); border-radius:8px; }
+.list li { padding:6px 8px; border-radius:6px; cursor:pointer; display:flex; justify-content:space-between; gap:8px; user-select:none; }
+.list li small { color:var(--muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; direction:rtl; max-width:50%; }
+.list li.sel { background:var(--sel); }
+.list li.ok::after { content:"✔"; color:var(--ok); } .list li.err::after { content:"✖"; color:var(--err); }
+.arrows { display:flex; flex-direction:column; justify-content:center; gap:10px; }
+.arrows button { width:46px; height:46px; font-size:20px; padding:0; }
+.row { display:flex; gap:8px; } .out input { flex:1; min-width:0; }
+button, input { font:inherit; padding:8px 12px; border-radius:8px; border:1px solid var(--line); background:var(--card); color:var(--fg); }
+button { cursor:pointer; background:var(--acc); color:#fff; border-color:var(--acc); }
+button.ghost { background:transparent; color:var(--fg); border-color:var(--line); }
+button.primary { padding:11px; font-weight:600; }
+button:disabled { opacity:.45; cursor:not-allowed; }
+footer { color:var(--muted); min-height:18px; }

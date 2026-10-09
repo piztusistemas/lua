@@ -1,0 +1,122 @@
+/* Mesma escala que Lua (ver lua/lua/frontend/src/style.css) e o mesmo
+   terminal de rexistro. */
+:root {
+    color-scheme: light;
+    --bg-main: oklch(97.3% 0.004 264);
+    --panel-bg: oklch(100% 0 0);
+    --border-color: oklch(91% 0.006 264);
+    --border-strong: oklch(85% 0.008 264);
+    --text-dark: oklch(23% 0.02 264);
+    --text-muted: oklch(52% 0.018 264);
+    --btn-neutral-bg: oklch(96.8% 0.006 264);
+    --btn-neutral-bg-hover: oklch(90.5% 0.007 264);
+    --btn-neutral-text: oklch(38% 0.018 264);
+    --primary: oklch(56% 0.19 276);
+    --primary-hover: oklch(50% 0.2 276);
+    --primary-soft: oklch(94.5% 0.03 276);
+    --on: #10b981;
+    --off: #dc2626;
+    --amber: oklch(72% 0.15 70);
+    --amber-soft: oklch(95% 0.045 75);
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body { font-family: system-ui, "Segoe UI", sans-serif; font-size: 14px; background: var(--bg-main); color: var(--text-dark); }
+#app { height: 100%; display: flex; flex-direction: column; }
+[hidden] { display: none !important; }
+
+#cabeceira { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; background: var(--panel-bg); border-bottom: 1px solid var(--border-color); }
+#marca { display: flex; align-items: baseline; gap: 12px; min-width: 0; }
+#marca-nome { font-weight: 800; font-size: 18px; }
+#materia { color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#cabeceira-accions { display: flex; align-items: center; gap: 8px; }
+
+button { font: inherit; cursor: pointer; border: 1px solid var(--border-strong); background: var(--btn-neutral-bg); color: var(--btn-neutral-text); border-radius: 8px; padding: 6px 12px; }
+button:hover:not(:disabled) { background: var(--btn-neutral-bg-hover); }
+button:disabled { opacity: 0.5; cursor: not-allowed; }
+button.primario { background: var(--primary); border-color: var(--primary); color: #fff; font-weight: 600; }
+button.primario:hover:not(:disabled) { background: var(--primary-hover); }
+button.perigo { background: var(--off); border-color: var(--off); color: #fff; }
+button.grande { width: 100%; padding: 10px 12px; text-align: left; }
+
+.chip { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; background: var(--btn-neutral-bg); color: var(--text-muted); }
+.chip.on { background: color-mix(in oklch, var(--on) 18%, white); color: #047857; }
+.chip.off { background: color-mix(in oklch, var(--off) 14%, white); color: var(--off); }
+
+.aviso { margin: 10px 16px 0; padding: 10px 12px; border-radius: 8px; background: var(--amber-soft); border: 1px solid var(--amber); }
+
+#zonas { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(280px, 2fr) 3fr; gap: 12px; padding: 12px 16px; }
+.zona { display: flex; flex-direction: column; min-height: 0; background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 10px; }
+.zona h2 { margin: 0; padding: 10px 14px; font-size: 13px; letter-spacing: 0.03em; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 8px; }
+.zona-corpo { flex: 1; min-height: 0; overflow-y: auto; padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
+.rotulo { font-size: 12px; color: var(--text-muted); margin-top: 6px; }
+textarea { width: 100%; font: 12px "Cascadia Code", "Fira Mono", monospace; border: 1px solid var(--border-strong); border-radius: 8px; padding: 8px; resize: vertical; }
+.axuda { margin: 0; font-size: 12px; color: var(--text-muted); }
+
+#cola { padding: 6px 0; gap: 0; }
+.baleiro { padding: 24px 14px; color: var(--text-muted); text-align: center; }
+.fila { display: flex; align-items: center; gap: 10px; padding: 7px 14px; border-bottom: 1px solid var(--border-color); }
+.fila:last-child { border-bottom: none; }
+.fila-nome { flex: 1; min-width: 0; }
+.fila-nome strong { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
+.fila-nome small { display: block; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fila-nome small.erro { color: var(--off); white-space: normal; }
+.est { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+.est.pendente, .est.descargando, .est.convertendo { background: var(--primary-soft); color: var(--primary); }
+.est.feito { background: color-mix(in oklch, var(--on) 18%, white); color: #047857; }
+.est.erro { background: color-mix(in oklch, var(--off) 14%, white); color: var(--off); }
+.fila button { padding: 2px 8px; }
+
+/* Panel de rexistro: o mesmo terminal ca en Lua. */
+#log-panel { flex-shrink: 0; height: 200px; background: #000; border-top: 2px solid var(--border-color); display: flex; flex-direction: column; transition: height 0.15s ease; }
+#log-panel.collapsed { height: 28px; }
+#log-panel.collapsed #log-output { display: none; }
+.log-header { flex-shrink: 0; height: 28px; background: var(--btn-neutral-bg); border-bottom: 1px solid var(--border-color); padding: 0 10px; display: flex; align-items: center; justify-content: space-between; font-size: 10px; font-weight: 700; color: var(--text-muted); letter-spacing: 0.04em; text-transform: uppercase; }
+.log-header-actions { display: flex; align-items: center; gap: 4px; margin-right: 4px; }
+#btn-clear-log, #btn-toggle-log { width: 22px; height: 18px; display: flex; align-items: center; justify-content: center; border: none; border-radius: 3px; padding: 0; background: var(--btn-neutral-bg-hover); color: var(--btn-neutral-text); font-weight: 700; }
+#log-output { flex: 1; overflow-y: auto; padding: 4px 10px; color: #48bb78; font-family: "Cascadia Code", "Fira Mono", monospace; font-size: 11.5px; line-height: 1.5; }
+#log-output div { white-space: pre-wrap; word-break: break-all; }
+#log-output .aviso-l { color: #ecc94b; }
+#log-output .erro-l { color: #fc8181; }
+#log-output .hora { color: #718096; margin-right: 8px; }
+.chip:empty { display: none; }
+
+/* A IA está traballando: o chip pulsa e leva un indicador xirando ata rematar. */
+.chip.traballando { display: inline-flex; align-items: center; gap: 6px; animation: pulso-ia 1.4s ease-in-out infinite; }
+.chip.traballando::before { content: ""; width: 10px; height: 10px; border-radius: 50%; border: 2px solid currentColor; border-top-color: transparent; animation: xiro-ia 0.8s linear infinite; }
+@keyframes xiro-ia { to { transform: rotate(360deg); } }
+@keyframes pulso-ia { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
+@media (prefers-reduced-motion: reduce) { .chip.traballando, .chip.traballando::before { animation: none; } }
+
+/* Progreso múltiple da construción. */
+#progreso { flex-shrink: 0; max-height: 210px; display: flex; flex-direction: column; margin: 0 16px 10px; background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 10px; }
+.prog-total { display: flex; align-items: center; gap: 12px; padding: 8px 14px; border-bottom: 1px solid var(--border-color); font-size: 12px; }
+.prog-segmentos { flex: 1; display: flex; gap: 2px; height: 12px; }
+.prog-seg { flex: 1; min-width: 2px; border-radius: 3px; background: var(--btn-neutral-bg-hover); }
+.prog-seg.feita { background: var(--on); }
+.prog-seg.erro { background: var(--off); }
+.prog-seg.executando { background: var(--primary); animation: pulso-ia 1.2s ease-in-out infinite; }
+.prog-pct { font-weight: 700; min-width: 3.5em; text-align: right; }
+.prog-lista { overflow-y: auto; padding: 4px 14px 6px; }
+.prog-fila { display: grid; grid-template-columns: minmax(120px, 2fr) 3fr minmax(120px, 1.2fr); align-items: center; gap: 12px; padding: 3px 0; font-size: 12px; }
+.prog-nome { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.prog-barra { height: 8px; border-radius: 4px; background: var(--btn-neutral-bg-hover); overflow: hidden; }
+.prog-enche { display: block; height: 100%; width: 0; background: var(--primary); border-radius: 4px; transition: width 0.3s ease; }
+.prog-fila.feita .prog-enche { background: var(--on); }
+.prog-fila.erro .prog-enche { background: var(--off); }
+.prog-fila.executando .prog-enche { background-image: linear-gradient(45deg, rgba(255,255,255,.3) 25%, transparent 25%, transparent 50%, rgba(255,255,255,.3) 50%, rgba(255,255,255,.3) 75%, transparent 75%); background-size: 16px 16px; animation: raias-prog 0.8s linear infinite; }
+.prog-estado { color: var(--text-muted); text-align: right; white-space: nowrap; }
+.prog-fila.erro .prog-estado { color: var(--off); }
+@keyframes raias-prog { to { background-position: 16px 0; } }
+@media (prefers-reduced-motion: reduce) { .prog-seg.executando, .prog-fila.executando .prog-enche { animation: none; } }
+
+/* Licenza (consulta). */
+.superposicion { position: fixed; inset: 0; z-index: 20; display: flex; align-items: center; justify-content: center; background: rgba(0, 0, 0, 0.45); }
+.caixa-licenza { width: min(860px, 92vw); max-height: 86vh; display: flex; flex-direction: column; background: var(--panel-bg); border-radius: 10px; overflow: hidden; }
+.caixa-licenza header { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 1px solid var(--border-color); }
+.caixa-licenza pre { margin: 0; padding: 14px; overflow: auto; white-space: pre-wrap; font: 12px "Cascadia Code", "Fira Mono", monospace; }
+
+/* Modo de lectura e ficheiros lidos coa IA. */
+#modo { width: 100%; font: inherit; font-size: 12px; padding: 5px 6px; border-radius: 6px; border: 1px solid var(--border, #d4d4d8); background: var(--panel-bg, #fff); color: inherit; }
+.fila-nome small.vision { color: #6d28d9; }

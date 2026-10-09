@@ -1,0 +1,8 @@
+build/bin
+frontend/dist
+frontend/bindings
+frontend/node_modules
+sidecar/.venv
+sidecar/.build
+.task/
+dist

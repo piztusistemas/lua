@@ -1,0 +1,70 @@
+Third-party notices / Avisos de terceiros
+==========================================
+
+Buxo bundles Microsoft MarkItDown (in the "markitdown-sidecar" converter) and
+the Python packages listed below. MarkItDown is distributed under the MIT
+License, reproduced here as it requires:
+
+----------------------------------------------------------------------------
+MarkItDown — https://github.com/microsoft/markitdown
+
+MIT License
+
+Copyright (c) Microsoft Corporation.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE
+----------------------------------------------------------------------------
+
+Python packages bundled in the converter (name, version, licence as declared by
+each package; the full text of each licence is in its own project):
+
+  - beautifulsoup4 4.15.0: MIT License
+  - certifi 2026.7.22: MPL-2.0
+  - cffi 2.1.1: MIT-0
+  - charset-normalizer 3.5.2: MIT
+  - click 8.5.0: BSD-3-Clause
+  - cryptography 50.0.2: Apache-2.0 OR BSD-3-Clause
+  - defusedxml 0.7.1: PSFL
+  - flatbuffers 25.12.19: Apache 2.0
+  - idna 3.20: BSD-3-Clause
+  - magika 0.6.3: Apache-2.0
+  - markdownify 1.2.3: MIT License
+  - markitdown 0.1.8: MIT
+  - numpy 2.4.6: BSD-3-Clause AND 0BSD AND MIT AND Zlib AND CC0-1.0
+  - onnxruntime 1.30.0: MIT License
+  - packaging 26.3: Apache-2.0 OR BSD-2-Clause
+  - pdfminer.six 20260107: MIT
+  - pdfplumber 0.11.10: MIT License
+  - pillow 12.3.0: MIT-CMU
+  - protobuf 7.36.2: 3-Clause BSD License
+  - pycparser 3.0: BSD-3-Clause
+  - pypdfium2 5.13.0: BSD-3-Clause, Apache-2.0, dependency licenses
+  - python-dotenv 1.2.4: BSD-3-Clause
+  - requests 2.34.2: Apache-2.0
+  - six 1.17.0: MIT
+  - soupsieve 2.10: MIT
+  - typing_extensions 4.16.0: PSF-2.0
+  - urllib3 2.8.0: MIT
+
+Build tools / Ferramentas de compilación:
+  - PyInstaller (GPL-2.0 with the bootloader exception, which allows
+    distributing the resulting executables under any licence).
+
+Go and web components of Buxo / Compoñentes Go e web:
+  - Wails v3 (MIT), golang.org/x/net (BSD-3-Clause), @wailsio/runtime (MIT).

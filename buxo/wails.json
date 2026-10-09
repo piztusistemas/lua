@@ -1,0 +1,14 @@
+{
+  "$schema": "https://wails.io/schemas/config.v2.json",
+  "name": "buxo",
+  "outputfilename": "buxo",
+  "frontend:install": "npm install",
+  "frontend:build": "npm run build",
+  "frontend:dev:watcher": "npm run dev",
+  "frontend:dev:serverUrl": "auto",
+  "info": {
+    "productName": "Buxo",
+    "productVersion": "26.10.2",
+    "comments": "Bóveda de coñecemento a partir de PDF"
+  }
+}

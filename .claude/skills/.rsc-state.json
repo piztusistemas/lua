@@ -1,0 +1,251 @@
+{
+  "skills": {
+    "analyze": {
+      "files": [
+        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/analyze"
+      ],
+      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/analyze"
+    },
+    "automation-strategy": {
+      "files": [
+        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/automation-strategy"
+      ],
+      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/automation-strategy"
+    },
+    "clarify": {
+      "files": [
+        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/clarify"
+      ],
+      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/clarify"
+    },
+    "constitution": {
+      "files": [
+        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/constitution"
+      ],
+      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/constitution"
+    },
+    "debug": {
+      "files": [
+        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/debug"
+      ],
+      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/debug"
+    },
+    "decision-challenge": {
+      "files": [
+        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/decision-challenge"
+      ],
+      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/decision-challenge"
+    },
+    "deprecation": {
+      "files": [
+        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/deprecation"
+      ],
+      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/deprecation"
+    },
+    "fable-operator": {
+      "files": [
+        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/fable-operator"
+      ],
+      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/fable-operator"
+    },
+    "ftd": {
+      "files": [
+        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/ftd"
+      ],
+      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/ftd"
+    },
+    "go": {
+      "files": [
+        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/go"
+      ],
+      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/go"
+    },
+    "harness": {
+      "files": [
+        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/harness"
+      ],
+      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/harness"
+    },
+    "idea-refinement": {
+      "files": [
+        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/idea-refinement"
+      ],
+      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/idea-refinement"
+    },
+    "implement": {
+      "files": [
+        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/implement"
+      ],
+      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/implement"
+    },
+    "init": {
+      "files": [
+        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/init"
+      ],
+      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/init"
+    },
+    "orient": {
+      "files": [
+        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/orient"
+      ],
+      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/orient"
+    },
+    "parallel": {
+      "files": [
+        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/parallel"
+      ],
+      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/parallel"
+    },
+    "plan": {
+      "files": [
+        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/plan"
+      ],
+      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/plan"
+    },
+    "python": {
+      "files": [
+        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/python"
+      ],
+      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/python"
+    },
+    "review": {
+      "files": [
+        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/review"
+      ],
+      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/review"
+    },
+    "sdd": {
+      "files": [
+        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/sdd"
+      ],
+      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/sdd"
+    },
+    "sdd-init": {
+      "files": [
+        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/sdd-init"
+      ],
+      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/sdd-init"
+    },
+    "ship": {
+      "files": [
+        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/ship"
+      ],
+      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/ship"
+    },
+    "simplify-code": {
+      "files": [
+        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/simplify-code"
+      ],
+      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/simplify-code"
+    },
+    "source-grounded-development": {
+      "files": [
+        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/source-grounded-development"
+      ],
+      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/source-grounded-development"
+    },
+    "specify": {
+      "files": [
+        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/specify"
+      ],
+      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/specify"
+    },
+    "suggest": {
+      "files": [
+        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/suggest"
+      ],
+      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/suggest"
+    },
+    "tasks": {
+      "files": [
+        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/tasks"
+      ],
+      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/tasks"
+    },
+    "ui-engineering": {
+      "files": [
+        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/ui-engineering"
+      ],
+      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/ui-engineering"
+    },
+    "unslop": {
+      "files": [
+        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/unslop"
+      ],
+      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/unslop"
+    },
+    "verify": {
+      "files": [
+        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/verify"
+      ],
+      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/verify"
+    },
+    "worktrees": {
+      "files": [
+        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/worktrees"
+      ],
+      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/worktrees"
+    }
+  },
+  "agents": [
+    "developer",
+    "finding-verifier",
+    "go-build-resolver",
+    "go-reviewer",
+    "python-reviewer",
+    "refuter-correctness",
+    "refuter-security",
+    "refuter-tests"
+  ],
+  "agentCollisions": [],
+  "agentsKept": [],
+  "explicitAgents": [],
+  "memory": {
+    "mode": "full",
+    "reason": "wired",
+    "paths": [
+      "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/session-memory-core.mjs",
+      "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/session-memory-adapter.mjs",
+      "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/session-memory.mjs",
+      "/Users/martin/Desktop/lua_yang/lua_yang/.claude/settings.local.json"
+    ]
+  },
+  "update": {
+    "mode": "hook"
+  },
+  "knowledge": {
+    "mode": "wired",
+    "reason": null,
+    "paths": [
+      "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/knowledge-sync.mjs",
+      "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/trunk-policy.mjs",
+      "/Users/martin/Desktop/lua_yang/lua_yang/.claude/settings.local.json"
+    ]
+  },
+  "gitPermissions": {
+    "mode": "wired",
+    "path": "/Users/martin/Desktop/lua_yang/lua_yang/.claude/settings.json"
+  },
+  "policy": {
+    "baseAgents": true,
+    "alwaysOn": true,
+    "codeHooks": true,
+    "dangerGuard": true,
+    "laneGate": true,
+    "gitmojiGuard": true,
+    "memory": true,
+    "context7": false
+  },
+  "commands": [
+    "build-fix",
+    "checkpoint",
+    "go-build",
+    "go-review",
+    "learn",
+    "python-review",
+    "resume-session",
+    "save-session"
+  ],
+  "commandCollisions": [],
+  "version": "3.0.12"
+}
