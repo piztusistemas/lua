@@ -1,0 +1,24 @@
+# Dependencias e builds de frontend (Node/Vite/Wails)
+**/node_modules/
+**/frontend/dist/
+**/frontend/wailsjs/
+**/frontend/bindings/
+**/*.tsbuildinfo
+
+# Binarios compilados e empaquetado
+**/build/bin/
+lua/build/debian+windows+macos/
+lua/build/debian+windows+macos_3/
+lua/lua-wails
+lua/bin/
+lua_installer/lua_installer
+lua_installer/files/
+lua_installer/assets/logo.png
+lua_installer/build/appicon.png
+lua_installer/frontend/src/assets/images/logo.png
+
+# Ferramentas de build (Taskfile/wails3)
+**/.task/
+
+# Sistema operativo
+**/.DS_Store

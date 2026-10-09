@@ -52,9 +52,15 @@ func TestDirDestinoPrefereOPrimeiroEscribible(t *testing.T) {
 }
 
 func TestDirsModulos(t *testing.T) {
+	// XDG_CONFIG_HOME só manda en Linux; en macOS e Windows os.UserConfigDir
+	// devolve o cartafol do sistema, así que se compara co que el diga.
 	t.Setenv("XDG_CONFIG_HOME", "/cfg")
+	cfg, err := os.UserConfigDir()
+	if err != nil {
+		t.Skip("sen cartafol de configuración:", err)
+	}
 	d := DirsModulos("yang")
-	if len(d) != 2 || d[1] != "/cfg/yang/modulos" || filepath.Base(d[0]) != "modulos" {
+	if len(d) != 2 || d[1] != filepath.Join(cfg, "yang", "modulos") || filepath.Base(d[0]) != "modulos" {
 		t.Errorf("dirs: %v", d)
 	}
 }

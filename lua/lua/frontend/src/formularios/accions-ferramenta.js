@@ -1,0 +1,40 @@
+// Que se pode facer con cada ferramenta da columna esquerda (cronograma,
+// actas e cada formulario): as MESMAS accións no menú do botón dereito da
+// icona e no menú «⋯» da biblioteca. Só devolve a lista; quen chama pinta o menú.
+//
+//   biblioteca()      estado actual (biblioteca-modelo.js)
+//   gardar(nova)      persiste un novo estado (Promise)
+//   eliminar(id)      borra un formulario, con confirmación (Promise)
+//   exportar(id)      (opcional) garda o formulario nun ficheiro para compartilo (Promise)
+import { esIntegrada, estaFixa, estaAgochada, podeBorrar, fixar, desfixar, agochar } from './biblioteca-modelo.js'
+
+export function itemsDeFerramenta(id, { t, biblioteca, gardar, eliminar, exportar }) {
+  const b = biblioteca()
+  const items = []
+  const agochada = estaAgochada(b, id)
+  items.push({
+    texto: agochada ? t('formularios.menu.amosar', 'Amosar na columna') : t('formularios.menu.ocultar', 'Ocultar da columna'),
+    titulo: agochada ? undefined : t('formularios.menu.ocultar.title', 'Non se borra: segue na biblioteca e podes volver amosalo'),
+    aoPremer: () => gardar(agochar(b, id, !agochada)),
+  })
+  if (esIntegrada(id)) return items
+
+  items.unshift(estaFixa(b, id)
+    ? { texto: t('formularios.menu.desfixar', 'Quitar da zona fixa'), titulo: t('formularios.menu.desfixar.title', 'Pasa á zona de abaixo (onde si se pode borrar)'), aoPremer: () => gardar(desfixar(b, id)) }
+    : { texto: t('formularios.menu.fixar', 'Fixar na zona superior'), titulo: t('formularios.menu.fixar.title', 'Xunto ao cronograma e ás actas. Os fixos non se poden borrar, só ocultar'), aoPremer: () => gardar(fixar(b, id)) })
+  if (exportar) {
+    items.push({
+      texto: t('formularios.menu.exportar', 'Exportar formulario…'),
+      titulo: t('formularios.menu.exportar.title', 'Garda o formulario nun ficheiro (con ou sen datos) para pasarllo a un compañeiro, que o importará á súa biblioteca'),
+      aoPremer: () => exportar(id),
+    })
+  }
+  items.push({ separador: true })
+  const borrable = podeBorrar(b, id)
+  items.push({
+    texto: t('formularios.menu.eliminar', 'Eliminar formulario…'), perigo: true, desactivado: !borrable,
+    titulo: borrable ? undefined : t('formularios.menu.eliminar.fixo', 'Os formularios da zona fixa non se poden borrar: quítao da zona fixa primeiro (ou ocúltao).'),
+    aoPremer: () => eliminar(id),
+  })
+  return items
+}

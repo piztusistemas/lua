@@ -1062,14 +1062,21 @@ type TipografiaOpts struct {
 	Fonte       string  `json:"fonte"`       // id dun preset (ver presetsFonte); "" = por defecto
 }
 
-// presetsFonte: id -> paquete a cargar en pdflatex / nome de fonte para
+// presetsFonte: id -> paquete a cargar en pdflatex / base do ficheiro TeX Gyre para
 // \setmainfont en xelatex+lualatex. Só familias moi estendidas (viven en
 // texlive-latex-recommended / texlive-fonts-recommended); se faltan, o aviso
 // de "instalar paquete de LaTeX" (paquetelatex.go) xa o cobre.
 var presetsFonte = map[string]struct{ pdflatex, unicode string }{
-	"serif":    {"\\usepackage{mathptmx}", "TeX Gyre Termes"},
-	"sans":     {"\\usepackage[scaled]{helvet}\n\\renewcommand\\familydefault{\\sfdefault}", "TeX Gyre Heros"},
-	"palatino": {"\\usepackage{mathpazo}", "TeX Gyre Pagella"},
+	"serif":    {"\\usepackage{mathptmx}", "texgyretermes"},
+	"sans":     {"\\usepackage[scaled]{helvet}\n\\renewcommand\\familydefault{\\sfdefault}", "texgyreheros"},
+	"palatino": {"\\usepackage{mathpazo}", "texgyrepagella"},
+}
+
+// setmainfontTeXGyre carga unha familia TeX Gyre polos seus ficheiros .otf
+// de TeX Live (texgyreheros-regular.otf...). Polo nome («TeX Gyre Heros»)
+// fontspec só a atopa se está no sistema, e en macOS non o está.
+func setmainfontTeXGyre(base string) string {
+	return "\\setmainfont{" + base + "}[Extension=.otf,UprightFont=*-regular,BoldFont=*-bold,ItalicFont=*-italic,BoldItalicFont=*-bolditalic]\n"
 }
 
 // esFonteDoSistema di se `f` é un nome de familia do sistema (fc-list), é
@@ -1103,7 +1110,7 @@ func tipografiaPreambulo(t *TipografiaOpts, engine string) string {
 			if p.unicode == "" {
 				return ""
 			}
-			return "\\setmainfont{" + p.unicode + "}\n"
+			return setmainfontTeXGyre(p.unicode)
 		}
 		return p.pdflatex + "\n"
 	}

@@ -1,0 +1,81 @@
+# Ficheiro de idioma do instalador de Lua — PORTUGUÊS
+win.title = Lua — Instalador
+permiso.title = Lua — Permissão necessária
+permiso.texto = O instalador requer permissões de administrador.\n\nExecute-o no terminal com:\n\n    sudo ./build/bin/lua-installer
+permiso.pechar = Fechar
+
+nav.anterior = ← Anterior
+nav.seguinte = Seguinte →
+nav.pechar = Fechar
+dialogo.cancelar = Cancelar
+nav.finalizar = Finalizar
+nav.idioma = Idioma
+nav.progreso = Passo %d de %d
+
+paso.benvida = 🏠  Boas-vindas
+paso.instalacion = 1  Instalação
+paso.completado = ✅  Concluído
+paso.desinstalar = 🗑️  Desinstalar
+
+app.info = Lua {v}\nMódulo de Piztu\npiztu@omeu.gal\npiztu.org\nLicença: AGPLv3
+app.licenza = Licença AGPLv3
+
+benvida.titulo = Bem-vindo ao instalador do Lua
+benvida.desc = Este assistente vai guiá-lo na instalação do Lua, o gerador de relatórios do Piztu (a documentação dos departamentos dos centros educativos: cronograma anual e atas, com estilos próprios para cada centro e exportação para PDF com LaTeX). Pode fechar e continuar mais tarde.
+benvida.que.titulo = 📅  O que é o Lua?
+benvida.que.sub = Relatórios do departamento, com o estilo do seu centro
+benvida.que.corpo = O Lua gera a documentação de qualquer departamento didático: o cronograma anual (adiciona as tarefas de cada mês) e as atas mensais do departamento com os relatórios de acompanhamento das disciplinas. Compila-se com LaTeX e o design e os textos fixos de cada documento estão no modelo. Cada centro pode ter o seu próprio modelo (logótipo, nome, telefones…) e exportar para PDF, LaTeX, Markdown, Word e OpenDocument.
+benvida.deps.titulo = 📦  Dependências que vai instalar
+benvida.deps.sub = A cadeia LaTeX (não texlive-full)
+benvida.deps.corpo = • pdflatex, xelatex e lualatex (compiladores LaTeX)\n• TikZ (desenhos vetoriais) e poppler-utils (pré-visualização)\n\nSão umas centenas de MB, não vários GB: escolhem-se só os pacotes que o Lua usa realmente.
+benvida.modulo.titulo = 🧩  Integra-se com o Piztu
+benvida.modulo.sub = Aparece em ⚙ Sala → Módulos
+benvida.modulo.corpo = Se o Piztu já estiver instalado neste equipamento, o Lua liga-se automaticamente ao seu seletor de módulos. Caso contrário, o Lua funciona igualmente como aplicação independente.
+benvida.aviso = ⚠️  Para instalar em /opt/piztu/modulos e criar atalhos, execute o instalador com sudo.
+
+inst.card = Passo 1 — Instalação
+inst.desc = Este passo:\n• Copia os ficheiros do Lua para %s (a pasta de módulos do Piztu, para já aparecer no seu seletor)\n• Instala a cadeia LaTeX (pdflatex/xelatex/lualatex, TikZ, poppler-utils)\n• Deixa o Lua pré-configurado no idioma desta instalação
+inst.out.inicial = Prima o botão para começar a instalação...
+inst.btn = 🚀 Instalar Lua
+inst.iniciando = A iniciar a instalação...\n
+inst.erro = \n❌ Erro: %s
+inst.ok = \n✅ Instalação concluída! Continue para o passo seguinte.
+inst.log.extraendo = 📁 A extrair ficheiros para %s…
+inst.log.extraidos = ✅ Ficheiros extraídos\n
+inst.log.deps = 📦 A instalar LaTeX (pode demorar vários minutos)…
+inst.log.depsok = ✅ LaTeX instalado\n
+inst.log.depsfail = ⚠️  Não foi possível instalar todas as dependências: %s\n    Pode tentar novamente depois em Lua → Opções.
+
+fin.card = ✅  Lua instalado com sucesso!
+fin.desc = O Lua foi instalado em %s.\n\nSe tiver o Piztu (piztu) instalado, abra-o e procure o Lua em ⚙ Sala → Módulos.\n\nCrie os atalhos para aceder ao Lua a partir do ambiente de trabalho:
+fin.btn = 🖥️  Criar atalhos
+fin.erro = ❌ Erro: %s
+fin.creados = ✅ Atalhos criados:\n• Menu de aplicações (Educação → Lua)\n• Ambiente de trabalho (Lua)
+
+desinst.titulo = ⚠️  Zona de perigo
+desinst.intro = Esta ação desfaz a instalação e não pode ser revertida.
+desinst.card = 🗑️  Desinstalar Lua
+desinst.desc = Remove /opt/piztu/modulos/lua (incluindo a configuração pessoal e quaisquer chaves de IA guardadas), os atalhos e o ícone.
+desinst.deps.label = Desinstalar também o LaTeX (pacotes de sistema; outros programas podem usá-los)
+desinst.palabra = DESINSTALAR
+desinst.confirmar.label = Escreva %s para confirmar
+desinst.btn = 🗑️  Desinstalar Lua
+desinst.confirm = Isto vai remover o Lua por completo deste equipamento, incluindo a configuração pessoal. Não pode ser desfeito. Continuar?
+desinst.erro = \n❌ Erro: %s
+desinst.ok = \n✅ Lua desinstalado por completo.
+
+# ── Variantes para macOS ───────────────────────────────────────────
+# As chaves terminadas em ".darwin" substituem a chave base quando o
+# instalador corre num Mac (ver aplicarVariantesSO, i18n.go).
+benvida.aviso.darwin = ⚠️  Não é possível escrever na pasta Aplicações. Inicie sessão com uma conta de administrador (não use sudo: o Homebrew recusa-se a funcionar como root).
+benvida.deps.sub.darwin = Instaladas com Homebrew
+benvida.deps.corpo.darwin = • Homebrew (o gestor de pacotes do macOS; é instalado se não o tiver)\n• MacTeX (pdflatex, xelatex, lualatex e TikZ)\n• poppler (pré-visualização) e pandoc (exportar para Word/ODT)\n\nO MacTeX são vários GB e demora bastante. Será pedida a palavra-passe de administrador só para esse passo.
+benvida.modulo.titulo.darwin = 🍎  Aplicação nativa de macOS
+benvida.modulo.sub.darwin = Instala-se em Aplicações
+benvida.modulo.corpo.darwin = O Lua é instalado como /Applications/Lua.app, pelo que aparece no Launchpad e no Spotlight como qualquer outra aplicação. O Piztu é um sistema para escolas baseado em Linux e não existe no macOS, por isso aqui o Lua funciona sempre como aplicação independente.
+inst.desc.darwin = Este passo:\n• Instala o Lua em %s\n• Instala o Homebrew (se necessário) e o MacTeX\n• Deixa o Lua pré-configurado no idioma desta instalação
+fin.desc.darwin = O Lua foi instalado em %s.\n\nJá o pode abrir a partir do Launchpad ou do Spotlight. Prima o botão para o registar no sistema e aparecer de imediato:
+fin.btn.darwin = 🍎  Registar o Lua no sistema
+fin.creados.darwin = ✅ Lua registado:\n• Launchpad e Spotlight\n• Pasta Aplicações
+desinst.desc.darwin = Remove /Applications/Lua.app (incluindo a configuração pessoal e quaisquer chaves de IA guardadas) e retira-o do registo do sistema.
+desinst.deps.label.darwin = Desinstalar também o MacTeX do Homebrew (outros programas podem usá-lo)

@@ -1,0 +1,94 @@
+//go:build darwin
+
+package main
+
+import (
+	"path/filepath"
+	"testing"
+)
+
+// TestBundleQueContenA: de acertar mal aquí dependen dúas cousas serias -
+// volver asinar o .app despois dunha actualización (sen iso a app non
+// arrinca en Apple Silicon) e relanzalo con `open` en vez de executar o
+// binario interno.
+func TestBundleQueContenA(t *testing.T) {
+	casos := []struct {
+		nome     string
+		exe      string
+		esperado string
+	}{
+		{
+			nome:     "instalación normal en /Applications",
+			exe:      "/Applications/Lua.app/Contents/MacOS/lua",
+			esperado: "/Applications/Lua.app",
+		},
+		{
+			nome:     "bundle de desenvolvemento (task run)",
+			exe:      "/Users/profe/lua/build/bin/lua.dev.app/Contents/MacOS/lua",
+			esperado: "/Users/profe/lua/build/bin/lua.dev.app",
+		},
+		{
+			nome:     "binario solto: non hai bundle que asinar",
+			exe:      "/Users/profe/lua/build/bin/lua",
+			esperado: "",
+		},
+		{
+			// Mesma profundidade ca un bundle, pero sen ser un: non se pode
+			// dar por bo só porque haxa tres niveis por riba.
+			nome:     "ruta parecida pero sen .app",
+			exe:      "/opt/piztu/modulos/Contents/MacOS/lua",
+			esperado: "",
+		},
+		{
+			nome:     "dentro do bundle pero fóra de Contents/MacOS",
+			exe:      "/Applications/Lua.app/Contents/Resources/lua",
+			esperado: "",
+		},
+	}
+
+	for _, c := range casos {
+		t.Run(c.nome, func(t *testing.T) {
+			if got := bundleQueContenA(c.exe); got != c.esperado {
+				t.Errorf("bundleQueContenA(%q) = %q, esperaba %q", c.exe, got, c.esperado)
+			}
+		})
+	}
+}
+
+// TestComandoRelanzarUsaOpenNoBundle: relanzar o binario interno en vez do
+// .app deixaría un proceso que Launch Services non recoñece coma Lua (sen
+// icona nin nome no Dock).
+func TestComandoRelanzarUsaOpenNoBundle(t *testing.T) {
+	cmd := comandoRelanzar("/Applications/Lua.app/Contents/MacOS/lua")
+	if filepath.Base(cmd.Path) != "open" {
+		t.Errorf("esperaba relanzar con open, obtiven %q", cmd.Path)
+	}
+	// -n é imprescindible: cando se chama isto a instancia vella aínda non
+	// pechou, e sen -n `open` limitaríase a traela ao fronte sen arrincar a
+	// versión nova.
+	temN, temApp := false, false
+	for _, a := range cmd.Args {
+		if a == "-n" {
+			temN = true
+		}
+		if a == "/Applications/Lua.app" {
+			temApp = true
+		}
+	}
+	if !temN {
+		t.Errorf("falta -n en %v", cmd.Args)
+	}
+	if !temApp {
+		t.Errorf("esperaba a ruta do .app en %v", cmd.Args)
+	}
+}
+
+// TestComandoRelanzarBinarioSolto: fóra dun bundle (execución dende un
+// terminal, `task build` sen empaquetar) hai que executar o binario tal cal.
+func TestComandoRelanzarBinarioSolto(t *testing.T) {
+	exe := "/Users/profe/lua/build/bin/lua"
+	cmd := comandoRelanzar(exe)
+	if cmd.Path != exe {
+		t.Errorf("esperaba executar %q directamente, obtiven %q", exe, cmd.Path)
+	}
+}

@@ -1,0 +1,385 @@
+/* Asistente de IA: botón da barra e panel lateral. Usa as variables de
+   deseño de style.css (--panel-bg, --primary, --ai-1/--ai-2...). */
+
+/* ---------- Botón da barra (á esquerda de Xerar) ---------- */
+
+.btn-asistente {
+    position: relative;
+}
+#toolbar .btn-asistente { padding-left: 0.5rem; }
+.btn-asistente__logo {
+    display: inline-flex;
+    width: 20px;
+    height: 20px;
+    flex: none;
+}
+#toolbar .btn-asistente__logo svg { width: 20px; height: 20px; color: inherit; }
+body.asistente-aberto .btn-asistente { background: var(--ai-soft); box-shadow: inset 0 0 0 1px var(--ai-border); }
+.btn-asistente--ocupado::after {
+    content: "";
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--ai-1);
+    animation: asis-pulso 1s ease-in-out infinite;
+}
+@keyframes asis-pulso { 0%, 100% { opacity: 0.25; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.15); } }
+
+/* ---------- Panel ---------- */
+
+.asistente {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: min(460px, 100vw);
+    z-index: 15;
+    display: flex;
+    flex-direction: column;
+    background: var(--panel-bg);
+    border-left: 1px solid var(--border-color);
+    box-shadow: -8px 0 28px rgba(0, 0, 0, 0.16);
+    color: var(--text-dark);
+}
+
+.asistente__cab {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.7rem 0.8rem 0.7rem 1rem;
+    background: linear-gradient(135deg, var(--ai-soft), var(--panel-bg));
+    border-bottom: 1px solid var(--ai-border);
+}
+.asistente__logo { display: inline-flex; width: 30px; height: 30px; flex: none; }
+.asistente__logo svg { width: 30px; height: 30px; }
+.asistente__cab-txt { display: flex; flex-direction: column; min-width: 0; line-height: 1.2; }
+.asistente__titulo { font-size: 1rem; }
+.asistente__subtitulo { color: var(--text-muted); font-size: 0.74rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.asistente__espazo { flex: 1; }
+.asistente__ico {
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    color: var(--text-muted);
+    border: 0;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+}
+.asistente__ico svg { width: 16px; height: 16px; }
+.asistente__ico:hover { background: var(--btn-neutral-bg-hover); color: var(--text-dark); }
+.asistente__ico--x:hover { background: #dc2626; color: #fff; }
+
+.asistente__aviso {
+    flex: none;
+    margin: 0.7rem 1rem 0;
+    padding: 0.6rem 0.8rem;
+    background: var(--amber-soft);
+    border: 1px solid var(--amber-soft-border);
+    border-radius: var(--radius-sm);
+    font-size: 0.83rem;
+}
+.asistente__aviso p { margin: 0 0 0.5rem; }
+.asistente__btn-opcions, .asistente__nova-acc button, .asis-tarxeta__acc button, .asis-tarxeta__opcions button, .asis-reintentar {
+    font: 600 0.8rem var(--font-ui);
+    color: var(--btn-neutral-text);
+    background: var(--btn-neutral-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 0.35rem 0.75rem;
+    cursor: pointer;
+}
+.asistente__btn-opcions:hover, .asistente__nova-acc button:hover, .asis-tarxeta__acc button:hover, .asis-tarxeta__opcions button:hover, .asis-reintentar:hover { background: var(--btn-neutral-bg-hover); }
+.asistente button.primary, .asis-tarxeta__acc button.primary, .asistente__nova-acc button.primary { background: var(--primary); color: #fff; border-color: var(--primary); }
+.asis-tarxeta__acc button.primary:hover, .asistente__nova-acc button.primary:hover { background: var(--primary-hover); }
+.asistente button:disabled { opacity: 0.5; cursor: default; }
+
+/* ---------- Tarefas (fichas) ---------- */
+
+.asistente__tarefas { flex: none; padding: 0.7rem 1rem 0.5rem; border-bottom: 1px solid var(--border-color); max-height: 42vh; overflow-y: auto; }
+.asistente__h { margin: 0 0 0.45rem; font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); }
+.asistente__chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.asistente__chip {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.36rem 0.7rem;
+    font: 600 0.78rem var(--font-ui);
+    color: var(--text-dark);
+    background: var(--ai-soft);
+    border: 1px solid var(--ai-border);
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 0.12s, transform 0.05s, box-shadow 0.12s;
+}
+.asistente__chip:hover:not(:disabled) { background: color-mix(in oklab, var(--ai-1) 14%, var(--ai-soft)); box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1); }
+.asistente__chip:active:not(:disabled) { transform: translateY(1px); }
+.asistente__chip-ico { font-size: 0.85rem; color: var(--ai-1); line-height: 1; }
+.asistente__chip--propia { background: var(--primary-soft); border-color: var(--primary-soft-border); padding-right: 1.5rem; }
+.asistente__chip--propia .asistente__chip-ico { color: var(--primary); }
+.asistente__chip-x { position: absolute; right: 5px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; display: none; align-items: center; justify-content: center; border-radius: 50%; color: var(--text-muted); }
+.asistente__chip-x svg { width: 10px; height: 10px; }
+.asistente__chip:hover .asistente__chip-x { display: inline-flex; }
+.asistente__chip-x:hover { background: #dc2626; color: #fff; }
+.asistente__chip--nova { background: transparent; border-style: dashed; border-color: var(--border-strong); color: var(--text-muted); }
+.asistente__chip--nova svg { width: 12px; height: 12px; }
+.asistente__chip:disabled { opacity: 0.5; cursor: default; }
+
+.asistente__nova { margin-top: 0.6rem; display: flex; flex-direction: column; gap: 0.4rem; }
+.asistente__nova input, .asistente__nova textarea, .asis-tarxeta__acc input {
+    font: 0.83rem var(--font-ui);
+    color: var(--text-dark);
+    background: var(--panel-bg);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    padding: 0.4rem 0.55rem;
+    resize: vertical;
+    min-width: 0;
+}
+.asistente__nova input:focus, .asistente__nova textarea:focus, .asis-tarxeta__acc input:focus, .asistente__caixa:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-soft); }
+.asistente__nova-acc { display: flex; justify-content: flex-end; gap: 0.4rem; }
+.asistente__erro-form { margin: 0; color: #b91c1c; font-size: 0.78rem; }
+
+/* ---------- Conversa ---------- */
+
+.asistente__conversa { flex: 1; min-height: 0; overflow-y: auto; padding: 0.8rem 1rem; display: flex; flex-direction: column; gap: 0.55rem; background: var(--bg-main); }
+
+.asis-benvida { color: var(--text-muted); font-size: 0.84rem; line-height: 1.5; }
+.asis-benvida p { margin: 0 0 0.4rem; }
+.asis-benvida__nota { font-size: 0.76rem; color: var(--text-faint); }
+
+.asis-msg { max-width: 94%; padding: 0.5rem 0.75rem; border-radius: 12px; font-size: 0.86rem; line-height: 1.5; overflow-wrap: anywhere; }
+.asis-msg--user { align-self: flex-end; background: var(--primary); color: #fff; border-bottom-right-radius: 3px; }
+.asis-txt { white-space: pre-wrap; }
+.asis-msg--ia { align-self: flex-start; background: var(--panel-bg); border: 1px solid var(--border-color); border-bottom-left-radius: 3px; }
+.asis-md p { margin: 0 0 0.5em; font-size: inherit; color: inherit; }
+.asis-md p:last-child, .asis-md ul:last-child, .asis-md ol:last-child { margin-bottom: 0; }
+.asis-md ul, .asis-md ol { margin: 0 0 0.5em; padding-left: 1.3em; }
+.asis-md h4, .asis-md h5, .asis-md h6 { margin: 0.6em 0 0.25em; font-size: 0.95em; }
+.asis-md blockquote { margin: 0 0 0.5em; padding-left: 0.7em; border-left: 3px solid var(--ai-border); color: var(--text-muted); }
+.asis-md a { color: var(--primary); }
+.asis-msg--aviso { align-self: stretch; max-width: 100%; background: var(--amber-soft); border: 1px solid var(--amber-soft-border); font-size: 0.8rem; }
+.asis-msg--erro { align-self: stretch; max-width: 100%; background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; font-size: 0.82rem; }
+.asis-reintentar { margin-top: 0.4rem; }
+
+/* Liña dunha ferramenta */
+.asis-ferr { align-self: stretch; font-size: 0.76rem; border: 1px solid var(--border-color); border-left: 3px solid var(--ai-1); border-radius: var(--radius-sm); background: var(--panel-bg); }
+.asis-ferr summary { display: flex; align-items: center; gap: 0.4rem; padding: 0.28rem 0.55rem; cursor: pointer; list-style: none; color: var(--text-muted); }
+.asis-ferr summary::-webkit-details-marker { display: none; }
+.asis-ferr__ico { font-size: 0.8rem; }
+.asis-ferr__nome { font-weight: 700; color: var(--text-dark); white-space: nowrap; }
+.asis-ferr__detalle { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.asis-ferr__estado { margin-left: auto; font-weight: 800; }
+.asis-ferr--ok { border-left-color: var(--on); }
+.asis-ferr--ok .asis-ferr__estado { color: var(--on); }
+.asis-ferr--erro { border-left-color: var(--off); }
+.asis-ferr--erro .asis-ferr__estado { color: var(--off); }
+.asis-ferr--traballando .asis-ferr__estado { animation: asis-pulso 1s ease-in-out infinite; }
+.asis-ferr__pre { margin: 0; padding: 0.4rem 0.6rem; max-height: 200px; overflow: auto; font: 0.72rem/1.4 var(--font-mono); background: var(--btn-neutral-bg); border-top: 1px solid var(--border-color); white-space: pre-wrap; overflow-wrap: anywhere; }
+
+/* "Pensando..." */
+.asis-pensando { align-self: flex-start; display: inline-flex; gap: 4px; padding: 0.5rem 0.7rem; }
+.asis-pensando span { width: 7px; height: 7px; border-radius: 50%; background: var(--ai-1); animation: asis-pulso 1s ease-in-out infinite; }
+.asis-pensando span:nth-child(2) { animation-delay: 0.18s; }
+.asis-pensando span:nth-child(3) { animation-delay: 0.36s; }
+
+/* Tarxetas: confirmar / preguntar */
+.asis-tarxeta { align-self: stretch; max-width: 100%; background: var(--panel-bg); border: 1px solid var(--ai-border); border-left: 4px solid var(--ai-1); }
+.asis-tarxeta--conf { border-left-color: var(--amber); }
+.asis-tarxeta__tit { font-weight: 700; font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.2rem; }
+.asis-tarxeta__txt { margin-bottom: 0.5rem; white-space: pre-wrap; }
+.asis-tarxeta__acc { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0.4rem; align-items: center; }
+.asis-tarxeta__acc input { flex: 1 1 10rem; }
+.asis-tarxeta__opcions { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 0.5rem; }
+.asis-tarxeta__res { margin-top: 0.4rem; font-size: 0.8rem; font-weight: 700; color: var(--text-muted); }
+.asis-tarxeta--feita { opacity: 0.85; }
+
+/* ---------- Pé: caixa de instrucións ---------- */
+
+.asistente__pe { flex: none; padding: 0.7rem 1rem 0.8rem; background: var(--panel-bg); border-top: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 0.5rem; }
+.asistente__caixa {
+    width: 100%;
+    box-sizing: border-box;
+    resize: vertical;
+    min-height: 3.6rem;
+    max-height: 30vh;
+    font: 0.86rem/1.45 var(--font-ui);
+    color: var(--text-dark);
+    background: var(--panel-bg);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    padding: 0.5rem 0.65rem;
+}
+.asistente__accions { display: flex; align-items: center; gap: 0.6rem; }
+.asistente__confirmar { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.76rem; color: var(--text-muted); cursor: pointer; }
+.asistente__enviar, .asistente__parar {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font: 700 0.82rem var(--font-ui);
+    border: 0;
+    border-radius: var(--radius-sm);
+    padding: 0.45rem 0.95rem;
+    cursor: pointer;
+    color: #fff;
+}
+.asistente__enviar { background: linear-gradient(135deg, var(--ai-1), var(--ai-2)); }
+.asistente__enviar:hover:not(:disabled) { filter: brightness(1.07); }
+.asistente__parar { background: #dc2626; }
+.asistente__enviar svg, .asistente__parar svg { width: 14px; height: 14px; }
+.asistente__enviar[hidden], .asistente__parar[hidden] { display: none; }
+
+/* Con o panel aberto, a xanela de resultado desacoplada e o editor seguen a
+   verse por detrás; en pantallas estreitas o panel tapa case todo. */
+@media (max-width: 560px) { .asistente { width: 100vw; } }
+
+/* ---------- Panel incrustado (pantalla de edición dunha tarefa) ---------- */
+
+.asistente--incrustado {
+    position: static;
+    width: min(440px, 42%);
+    min-width: 320px;
+    flex: none;
+    z-index: auto;
+    box-shadow: none;
+    border-left: 1px solid var(--ai-border);
+}
+
+/* Botón do asistente na cabeceira da pantalla da tarefa */
+.tarefa-asistente {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.35rem 0.8rem 0.35rem 0.6rem;
+    font: 700 0.8rem var(--font-ui);
+    color: var(--text-dark);
+    background: var(--ai-soft);
+    border: 1px solid var(--ai-border);
+    border-radius: 999px;
+    cursor: pointer;
+}
+.tarefa-asistente:hover { background: color-mix(in oklab, var(--ai-1) 14%, var(--ai-soft)); }
+.tarefa-asistente__logo { display: inline-flex; width: 18px; height: 18px; }
+.tarefa-asistente__logo svg { width: 18px; height: 18px; }
+.tarefa-asistente--ocupado::after {
+    content: "";
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--ai-1);
+    animation: asis-pulso 1s ease-in-out infinite;
+}
+.tarefa-desfacer-ia {
+    padding: 0.35rem 0.7rem;
+    font: 600 0.78rem var(--font-ui);
+    color: var(--btn-neutral-text);
+    background: var(--btn-neutral-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+}
+.tarefa-desfacer-ia:hover { background: var(--btn-neutral-bg-hover); }
+.tarefa-desfacer-ia[hidden] { display: none; }
+
+/* ---------- Adxuntos ---------- */
+
+.asistente__clip {
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+}
+.asistente__clip svg { width: 16px; height: 16px; }
+.asistente__clip:hover:not(:disabled) { color: var(--primary); border-color: var(--primary-soft-border); background: var(--primary-soft); }
+
+.asistente__adxuntos { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.asistente__adxuntos[hidden], .asistente__erro-adx[hidden] { display: none; }
+.asis-adx-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    max-width: 100%;
+    padding: 0.2rem 0.3rem 0.2rem 0.35rem;
+    font: 600 0.74rem var(--font-ui);
+    color: var(--text-dark);
+    background: var(--primary-soft);
+    border: 1px solid var(--primary-soft-border);
+    border-radius: var(--radius-sm);
+}
+.asis-adx-chip__mini { width: 26px; height: 26px; object-fit: cover; border-radius: 4px; background: #fff; }
+.asis-adx-chip__ico { font-size: 1.05rem; line-height: 1; }
+.asis-adx-chip__nome { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.asis-adx-chip__tam { color: var(--text-muted); font-weight: 500; }
+.asis-adx-chip__x {
+    width: 18px;
+    height: 18px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    background: transparent;
+    border: 0;
+    border-radius: 50%;
+    cursor: pointer;
+}
+.asis-adx-chip__x svg { width: 10px; height: 10px; }
+.asis-adx-chip__x:hover { background: #dc2626; color: #fff; }
+.asistente__erro-adx { margin: 0; color: #b91c1c; font-size: 0.76rem; }
+
+/* Arrastrando ficheiros sobre o panel */
+.asistente--arrastrando::after {
+    content: "📎  Solta aquí os ficheiros";
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font: 700 1rem var(--font-ui);
+    color: var(--primary);
+    background: color-mix(in oklab, var(--primary-soft) 88%, transparent);
+    border: 3px dashed var(--primary);
+    pointer-events: none;
+}
+.asistente { position: fixed; }
+.asistente--incrustado { position: relative; }
+
+.asis-msg__adx { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.35rem; }
+.asis-adx { padding: 0.1rem 0.45rem; font-size: 0.72rem; background: rgba(255, 255, 255, 0.22); border-radius: 999px; }
+
+.asis-ferr__imaxes { display: flex; flex-wrap: wrap; gap: 0.4rem; padding: 0.4rem 0.6rem; border-top: 1px solid var(--border-color); background: var(--btn-neutral-bg); }
+.asis-ferr__img { max-width: 100%; max-height: 220px; border: 1px solid var(--border-color); border-radius: 4px; background: #fff; }
+
+/* Bóveda de Obsidian conectada ao asistente */
+.asistente__boveda { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; padding: 0.4rem 0.75rem; border-bottom: 1px solid var(--border, rgba(128,128,128,0.25)); font-size: 0.85em; }
+.asistente__boveda-txt { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.asistente__boveda-txt small { opacity: 0.75; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.asistente__boveda button { font: inherit; padding: 0.2rem 0.55rem; border-radius: 6px; border: 1px solid var(--border, rgba(128,128,128,0.35)); background: var(--btn-neutral-bg, transparent); color: inherit; cursor: pointer; }
+.asistente__boveda button:hover { background: var(--btn-neutral-bg-hover, rgba(128,128,128,0.15)); }
+.asistente__boveda-conectar { width: 100%; text-align: left; }
+.asistente__boveda-erro { color: #c0392b; margin: 0; flex-basis: 100%; }
+.asistente__menu-clip { display: flex; flex-direction: column; gap: 2px; margin: 0 0 0.3rem; padding: 0.25rem; border: 1px solid var(--border, rgba(128,128,128,0.35)); border-radius: 8px; background: var(--panel-bg, Canvas); }
+.asistente__menu-clip[hidden] { display: none; }
+.asistente__menu-clip button { text-align: left; font: inherit; padding: 0.3rem 0.5rem; border: 0; border-radius: 6px; background: transparent; color: inherit; cursor: pointer; }
+.asistente__menu-clip button:hover { background: var(--btn-neutral-bg-hover, rgba(128,128,128,0.15)); }
+.asistente__boveda[hidden] { display: none; }

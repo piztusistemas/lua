@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=lua
+Exec=lua
+Icon=lua
+Categories=Development;
+Terminal=false
+Keywords=wails
+Version=1.0
+StartupNotify=false

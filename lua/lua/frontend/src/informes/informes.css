@@ -1,0 +1,436 @@
+/* Informes ("Cronograma anual") - ver informes/*.js.
+   Usa as variables de deseño de style.css (--panel-bg, --primary...). */
+
+/* ---------- Contenedor do editor ----------
+   #informeEditor (index.html) é o único fillo de .pane-editor: o editor do
+   cronograma (createCronogramaEditor, cronograma-editor.js) ocupa toda a parte
+   esquerda da xanela. */
+#informeEditor, #actasEditor { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+#informeEditor[hidden], #actasEditor[hidden] { display: none; }
+
+/* ---------- Editor ---------- */
+
+.crono-editor {
+    flex: 1;
+    min-height: 0;
+    flex-direction: column;
+    gap: 0.9rem;
+    overflow-y: auto;
+    padding: 1rem 1.1rem 2rem;
+    background: var(--bg-main);
+}
+.crono-editor--bloqueado .crono-meses { opacity: 0.92; }
+
+.crono-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--btn-neutral-bg);
+    color: var(--btn-neutral-text);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 0.4rem 0.8rem;
+    font: 600 0.82rem var(--font-ui);
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+.crono-btn:hover:not(:disabled) { background: var(--btn-neutral-bg-hover); }
+.crono-btn:disabled { opacity: 0.45; cursor: default; }
+.crono-btn svg { width: 14px; height: 14px; flex: none; }
+.crono-btn--pequeno { padding: 0.28rem 0.65rem; font-size: 0.78rem; background: var(--panel-bg); }
+.crono-btn--suave { background: transparent; }
+
+.crono-erro {
+    margin: 0.3rem 0 0;
+    padding: 0.4rem 0.6rem;
+    border-radius: var(--radius-sm);
+    background: oklch(95.5% 0.03 25);
+    border: 1px solid oklch(85% 0.08 25);
+    color: oklch(42% 0.15 25);
+    font-size: 0.8rem;
+}
+.crono-erro[hidden] { display: none; }
+.crono-aviso {
+    margin: 0;
+    padding: 0.5rem 0.7rem;
+    border-radius: var(--radius-sm);
+    background: var(--amber-soft);
+    border: 1px solid var(--amber-soft-border);
+    font-size: 0.8rem;
+}
+.crono-baleiro { color: var(--text-muted); font-size: 0.88rem; text-align: center; padding: 1.5rem 0.5rem; margin: 0; }
+
+/* ---------- Datos do curso ---------- */
+
+.crono-config {
+    background: var(--panel-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+}
+.crono-config > summary {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.2rem 0.8rem;
+    padding: 0.7rem 0.95rem;
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+}
+.crono-config > summary::-webkit-details-marker { display: none; }
+.crono-config > summary::before {
+    content: "▸";
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    transition: transform 0.15s ease;
+}
+.crono-config[open] > summary::before { transform: rotate(90deg); }
+.crono-config__titulo { font-weight: 700; font-size: 0.92rem; }
+.crono-config__resumo { color: var(--text-muted); font-size: 0.78rem; }
+.crono-config__corpo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    padding: 0.2rem 0.95rem 0.95rem;
+    border-top: 1px solid var(--border-color);
+    padding-top: 0.8rem;
+}
+
+.crono-fila { display: flex; flex-wrap: wrap; gap: 0.7rem; }
+.crono-fila > * { flex: 1 1 10rem; min-width: 0; }
+.crono-fila--centro { align-items: flex-end; }
+.crono-camp { display: flex; flex-direction: column; gap: 0.25rem; min-width: 0; }
+.crono-camp--curto { flex: 0 1 8rem !important; }
+.crono-camp--data { flex: 0 1 10rem !important; }
+.crono-camp--mes { flex: 0 1 14rem !important; }
+.crono-camp__etq { font-size: 0.74rem; font-weight: 600; color: var(--text-muted); }
+.crono-camp--check { flex-direction: row; align-items: center; gap: 0.5rem; font-size: 0.85rem; }
+.crono-camp input[type="text"],
+.crono-camp input[type="date"],
+.crono-camp select,
+.crono-camp textarea {
+    width: 100%;
+    font: 0.86rem var(--font-ui);
+    color: var(--text-dark);
+    background: var(--panel-bg);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    padding: 0.42rem 0.6rem;
+}
+.crono-camp textarea { resize: vertical; min-height: 4.5rem; line-height: 1.4; }
+.crono-camp input:focus,
+.crono-camp select:focus,
+.crono-camp textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-soft);
+}
+.crono-camp input:disabled, .crono-camp textarea:disabled, .crono-camp select:disabled { background: var(--btn-neutral-bg); color: var(--text-muted); }
+
+.crono-logo { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+.crono-logo__vista {
+    width: 64px;
+    height: 44px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    background: repeating-conic-gradient(#f3f3f3 0 25%, #fff 0 50%) 0 0 / 12px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+.crono-logo__vista[hidden] { display: none; }
+.crono-logo__vista img { max-width: 100%; max-height: 100%; object-fit: contain; }
+
+/* ---------- Meses ---------- */
+
+.crono-meses { display: flex; flex-direction: column; gap: 0.7rem; }
+.crono-mes {
+    background: var(--panel-bg);
+    border: 1px solid var(--border-color);
+    border-left: 5px solid var(--cor-mes, var(--border-strong));
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+}
+.crono-mes--actual { border-color: var(--primary-soft-border); border-left-color: var(--primary); box-shadow: 0 0 0 2px var(--primary-soft); }
+.crono-mes__cab {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.55rem 0.8rem;
+    background: color-mix(in oklab, var(--cor-mes, transparent) 55%, var(--panel-bg));
+}
+.crono-mes__cab h3 {
+    flex: 1;
+    display: flex;
+    align-items: baseline;
+    gap: 0.45rem;
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--text-dark);
+}
+.crono-mes__cab h3 small { font-weight: 500; color: var(--text-muted); font-size: 0.78rem; }
+.crono-mes__actual {
+    font-style: normal;
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--primary);
+    background: var(--primary-soft);
+    border-radius: 999px;
+    padding: 0.1rem 0.5rem;
+}
+.crono-mes__n { font-size: 0.75rem; color: var(--text-muted); }
+
+.crono-tarefas { list-style: none; margin: 0; padding: 0.5rem 0.6rem 0.6rem; display: flex; flex-direction: column; gap: 0.35rem; }
+.crono-tarefa {
+    display: flex;
+    align-items: stretch;
+    background: var(--tf);
+    border: 1px solid var(--tb);
+    border-radius: var(--radius-sm);
+    color: var(--tt);
+}
+.crono-tarefa__corpo {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    text-align: left;
+    background: none;
+    border: none;
+    padding: 0.5rem 0.7rem;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+}
+.crono-tarefa__titulo { font-weight: 700; font-size: 0.86rem; overflow-wrap: anywhere; }
+.crono-tarefa__resumo { font-size: 0.75rem; opacity: 0.78; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.crono-tarefa__accions { display: flex; align-items: center; padding-right: 0.3rem; opacity: 0.55; transition: opacity 0.12s ease; }
+.crono-tarefa:hover .crono-tarefa__accions,
+.crono-tarefa:focus-within .crono-tarefa__accions { opacity: 1; }
+.crono-icona {
+    display: inline-flex;
+    width: 26px;
+    height: 26px;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    border-radius: 6px;
+    color: inherit;
+    cursor: pointer;
+}
+.crono-icona svg { width: 15px; height: 15px; }
+.crono-icona:hover:not(:disabled) { background: rgba(0, 0, 0, 0.08); }
+.crono-icona:disabled { opacity: 0.3; cursor: default; }
+
+/* ---------- Pantalla "Editar tarefa" (ver tarefa-editor.js) ----------
+   Ocupa a xanela enteira: como overlay dentro da xanela principal
+   (.tarefa-overlay) ou como páxina da xanela propia (body.xanela-tarefa). */
+
+.tarefa-overlay { padding: 0; align-items: stretch; justify-content: stretch; background: var(--bg-main); z-index: 20; }
+
+.tarefa-pantalla,
+.modal.crono-modal.tarefa-pantalla {
+    width: 100vw;
+    max-width: none;
+    height: 100vh;
+    max-height: none;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 0;
+    gap: 0;
+    overflow: hidden;
+    background: var(--bg-main);
+}
+
+.tarefa-cab {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 0.55rem 0.9rem 0.55rem 1.4rem;
+    background: var(--panel-bg);
+    border-bottom: 1px solid var(--border-color);
+}
+.tarefa-cab__titulo { margin: 0; font-size: 1.1rem; color: var(--text-dark); }
+.tarefa-cab__estado { flex: 1; font-size: 0.8rem; color: var(--text-muted); }
+
+/* A "X" vermella arriba á dereita: pecha a pantalla (co mesmo aviso de
+   cambios sen gardar ca Cancelar). */
+.tarefa-x {
+    flex: none;
+    width: 38px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: #dc2626;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.12s;
+}
+.tarefa-x svg { width: 18px; height: 18px; }
+.tarefa-x:hover { background: #b91c1c; }
+.tarefa-x:focus-visible { outline: 3px solid #fca5a5; outline-offset: 2px; }
+
+/* Corpo + (se o hai) o panel do asistente ao lado */
+.tarefa-medio { flex: 1; min-height: 0; display: flex; }
+
+.tarefa-corpo {
+    min-width: 0;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    padding: 1rem 1.4rem 0.6rem;
+}
+.tarefa-corpo .crono-md,
+.tarefa-corpo .crono-md-vista { min-height: 0; }
+.tarefa-corpo .crono-camp:first-child { flex: 1; }
+.crono-camp--cores { flex: 0 0 auto; }
+
+.tarefa-pantalla .tarefa-pe {
+    flex: none;
+    margin: 0;
+    padding: 0.7rem 1.4rem;
+    background: var(--panel-bg);
+    border-top: 1px solid var(--border-color);
+}
+.tarefa-aplicar { font-weight: 700; }
+
+body.xanela-tarefa #app { display: none; }
+body.xanela-tarefa #tarefaXanela { position: fixed; inset: 0; }
+
+/* ---------- Modal de tarefa ---------- */
+
+.crono-modal {
+    width: min(1120px, 94vw);
+    max-height: 92vh;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+}
+.crono-modal h2 { margin: 0; }
+.crono-modal .modal-actions { margin-top: 0.2rem; justify-content: flex-end; }
+
+.crono-cores { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.crono-cor {
+    width: 38px;
+    height: 30px;
+    border-radius: var(--radius-sm);
+    border: 2px solid;
+    font: 700 0.72rem var(--font-ui);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.crono-cor--activa { outline: 3px solid var(--primary); outline-offset: 1px; }
+.crono-cor:disabled { cursor: default; opacity: 0.6; }
+
+.crono-md-area { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; min-height: 0; flex: 1; }
+@media (max-width: 800px) { .crono-md-area { grid-template-columns: 1fr; } }
+.crono-md-editor, .crono-md-previa { display: flex; flex-direction: column; gap: 0.3rem; min-height: 0; min-width: 0; }
+.crono-md {
+    flex: 1;
+    min-height: 16rem;
+    resize: none;
+    font: 0.85rem/1.5 var(--font-mono);
+    color: var(--text-dark);
+    background: var(--panel-bg);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    padding: 0.6rem 0.7rem;
+}
+.crono-md:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-soft); }
+.crono-md-vista {
+    flex: 1;
+    min-height: 16rem;
+    overflow: auto;
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 0.7rem 0.9rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: #1c1917;
+}
+.crono-md-vista p { margin: 0 0 0.6em; font-size: inherit; color: inherit; }
+.crono-md-vista h4, .crono-md-vista h5, .crono-md-vista h6 { margin: 0.7em 0 0.3em; }
+.crono-md-vista h4 { font-size: 1.15em; } .crono-md-vista h5 { font-size: 1.05em; } .crono-md-vista h6 { font-size: 0.95em; }
+.crono-md-vista ul, .crono-md-vista ol { margin: 0 0 0.6em; padding-left: 1.4em; }
+.crono-md-vista blockquote { margin: 0 0 0.6em 1em; padding-left: 0.7em; border-left: 3px solid var(--border-strong); font-style: italic; }
+.crono-md-vista .md-aviso { color: var(--text-faint); font-style: italic; }
+
+.crono-fmtbarra { display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem; }
+.crono-fmt {
+    min-width: 28px;
+    height: 28px;
+    padding: 0 0.5rem;
+    background: var(--btn-neutral-bg);
+    color: var(--btn-neutral-text);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font: 600 0.78rem var(--font-ui);
+    cursor: pointer;
+}
+.crono-fmt:hover:not(:disabled) { background: var(--btn-neutral-bg-hover); }
+.crono-fmt:disabled { opacity: 0.45; cursor: default; }
+.crono-fmt--n { font-weight: 800; }
+.crono-fmt--c { font-style: italic; font-family: serif; }
+.crono-fmt--sel { padding: 0 0.3rem; }
+.crono-fmt__sep { width: 1px; height: 18px; background: var(--border-color); margin: 0 0.15rem; }
+
+
+/* ---------- Actas do departamento (ver actas-editor.js) ---------- */
+
+.actas-lista { display: flex; flex-direction: column; gap: 0.35rem; }
+.actas-lista__fila { display: flex; gap: 0.4rem; align-items: center; }
+.actas-lista__fila input { flex: 1 1 9rem; min-width: 0; }
+.actas-lista__fila input.actas-lista__curto { flex: 0 1 9rem; }
+.actas-lista .crono-baleiro { padding: 0.3rem 0; text-align: left; }
+.actas-mes__corpo { padding: 0.5rem 0.7rem 0.7rem; display: flex; flex-direction: column; gap: 0.5rem; }
+.actas-acta { --tf: var(--primary-soft); --tt: var(--primary); --tb: var(--primary-soft-border); }
+.actas-materias { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.actas-materia {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.28rem 0.7rem;
+    border: 1px dashed var(--border-strong);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--text-muted);
+    font: inherit;
+    font-size: 0.78rem;
+    cursor: pointer;
+    max-width: 100%;
+}
+.actas-materia:hover { background: var(--btn-neutral-bg-hover); }
+.actas-materia--feita { border-style: solid; border-color: var(--success-soft-border); background: var(--success-soft); color: var(--text-dark); font-weight: 600; }
+.actas-materia__nome { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.actas-materia__pct { font-size: 0.72rem; color: #047857; font-weight: 700; }
+.actas-aviso { margin: 0; color: var(--text-muted); font-size: 0.8rem; }
+
+/* Pantalla da acta / informe de materia */
+.actas-corpo { overflow-y: auto; }
+.actas-form { display: flex; flex-direction: column; gap: 0.9rem; max-width: 980px; width: 100%; margin: 0 auto; padding-bottom: 1rem; }
+.actas-md { width: 100%; box-sizing: border-box; font-family: inherit; }
+.actas-asistentes { display: flex; flex-wrap: wrap; gap: 0.3rem 1.2rem; }
+.actas-asistente { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.86rem; }
+.actas-asistentes__acc { display: flex; gap: 0.4rem; margin-top: 0.3rem; }
+.actas-resumo-seg { display: flex; flex-direction: column; gap: 0.25rem; font-size: 0.82rem; }
+.actas-resumo-seg__fila { display: flex; gap: 0.7rem; align-items: baseline; padding: 0.25rem 0.5rem; background: var(--bg-main); border-radius: var(--radius-sm); }
+.actas-resumo-seg__doc { color: var(--text-muted); }
+.actas-resumo-seg__txt { color: var(--text-muted); font-style: italic; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }

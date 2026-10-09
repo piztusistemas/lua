@@ -1,5 +1,4 @@
 # Repositorios propios (teñen o seu .git): non se rastrexan desde aquí
-/lua/
 /yang/
 /markitdown/
 
@@ -34,3 +33,9 @@
 
 # Sistema
 .DS_Store
+
+# Lua: binarios que o .gitignore de lua/ non cubría
+/lua/lua/lua-wails.exe
+/lua/lua/lua-wails
+/lua/lua_installer/dist/
+Thumbs.db

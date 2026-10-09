@@ -1,0 +1,8 @@
+{
+  "id": "lua",
+  "nome": "Lua",
+  "icona": "🌙",
+  "iconaImaxe": "appicon.png",
+  "executable": "lua",
+  "version": "26.10.3"
+}
