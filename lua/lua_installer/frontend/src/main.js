@@ -5,8 +5,8 @@ import {
     Idioma, SetIdioma, Idiomas, Traducions,
     EsRoot, PermisoDenegado, DestDir, InstalacionDesc, CompletadoDesc, Version,
     Instalar, CrearAccesosDirectos, DesinstalarLua,
-} from '../wailsjs/go/main/App';
-import {EventsOn, Quit} from '../wailsjs/runtime/runtime';
+} from '../bindings/piztu/lua_installer/app.js';
+import {Application, Events} from '@wailsio/runtime';
 import {confirmar} from './dialogs.js';
 
 // ── Estado global ────────────────────────────────────────────────────────────
@@ -50,7 +50,7 @@ function renderPermisoDenegado() {
         </div>
       </div>
     `;
-    document.getElementById('btn-permiso-pechar').addEventListener('click', () => Quit());
+    document.getElementById('btn-permiso-pechar').addEventListener('click', () => Application.Quit());
 }
 
 // ── Esqueleto principal (barra lateral + panel) ─────────────────────────────
@@ -104,7 +104,7 @@ function render() {
         btn.addEventListener('click', () => goTo(parseInt(btn.dataset.step, 10)));
     });
     document.getElementById('btn-prev').addEventListener('click', () => goTo(current - 1));
-    document.getElementById('btn-close').addEventListener('click', () => Quit());
+    document.getElementById('btn-close').addEventListener('click', () => Application.Quit());
 
     // A "Zona de perigo" queda fóra do asistente lineal (só se chega a ela
     // dende a barra lateral): tanto "completado" coma "desinstalar" ofrecen
@@ -113,7 +113,7 @@ function render() {
     const esUltimo = STEPS[current].id === 'completado' || STEPS[current].id === 'desinstalar';
     btnNext.textContent = esUltimo ? t('nav.finalizar', 'Finalizar') : t('nav.seguinte', 'Seguinte →');
     btnNext.addEventListener('click', () => {
-        if (esUltimo) { Quit(); } else { goTo(current + 1); }
+        if (esUltimo) { Application.Quit(); } else { goTo(current + 1); }
     });
 
     document.getElementById('btn-prev').disabled = current === 0;
@@ -207,11 +207,11 @@ function wireInstalacion() {
     });
 }
 
-EventsOn('inst_log', (line) => {
+Events.On('inst_log', ({data: line}) => {
     const box = document.getElementById('inst-log');
     if (box) addLogLine(box, line);
 });
-EventsOn('inst_completo', () => {
+Events.On('inst_completo', () => {
     const btn = document.getElementById('btn-instalar');
     if (btn) btn.disabled = false;
 });
@@ -303,11 +303,11 @@ function wireDesinstalar() {
     });
 }
 
-EventsOn('desinst_log', (line) => {
+Events.On('desinst_log', ({data: line}) => {
     const box = document.getElementById('desinst-log');
     if (box) addLogLine(box, line);
 });
-EventsOn('desinst_completo', () => {
+Events.On('desinst_completo', () => {
     // Non se reactiva o botón: se fallou, hai que revisar o log antes de
     // volver intentalo, e se non fallou xa non hai nada que desinstalar.
 });

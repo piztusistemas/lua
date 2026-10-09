@@ -1,4 +1,4 @@
-.PHONY: build clean deps deps-darwin check-go check-wails check-wails3 files files-darwin copia-macos zip-actualizacion-macos help
+.PHONY: build clean deps deps-darwin check-go check-wails3 files files-darwin copia-macos zip-actualizacion-macos help
 
 BINARY = lua-installer
 VERSION := $(shell tr -d '[:space:]' < VERSION)
@@ -15,18 +15,18 @@ else
 FILES_TARGET = files
 endif
 
-## build: Compila o instalador (require Go, wails e node/npm)
+## build: Compila o instalador (require Go, wails3, task e node/npm)
 ## Fronte da propia interface do instalador (frontend/) — non confundir con
 ## "files"/"files-darwin", que empaquetan o Lua que se instala. Mesmo esquema
 ## ca installer/Makefile.
-build: check-go check-wails assets/logo.png build/appicon.png $(FILES_TARGET)
+build: check-go check-wails3 assets/logo.png build/appicon.png $(FILES_TARGET)
 	go mod tidy
 ifeq ($(UNAME_S),Darwin)
-	wails build -platform darwin/universal
+	task darwin:package:universal
 	@lipo -info build/bin/$(BINARY).app/Contents/MacOS/$(BINARY)
 	@$(MAKE) --no-print-directory copia-macos
 else
-	wails build
+	task build EXTRA_TAGS=gtk3
 endif
 	@echo ""
 ifeq ($(UNAME_S),Darwin)
@@ -41,7 +41,7 @@ endif
 
 ## copia-macos: Refresca lua-installer-macos.app dende o recén compilado.
 ## Ese nome é o que se distribúe (di explicitamente para que SO é), pero
-## "wails build" só produce lua-installer.app: ata agora a copia facíase á
+## "task darwin:package:universal" só produce lua-installer.app: ata agora a copia facíase á
 ## man e quedaba conxelada. Iso xa causou un fallo real — instalouse un Lua
 ## de dous días antes, SEN as plantillas de fábrica de plantillas_fabrica.go,
 ## e a biblioteca de plantillas saía baleira. Ao ir dentro de "build" xa non
@@ -131,7 +131,7 @@ files: check-go check-wails3
 ## nota do //go:embed all:files en install.go).
 ##
 ## Universal (arm64 + x86_64, "task darwin:package:universal"), coma o propio
-## instalador ("wails build -platform darwin/universal"): un só .app que corre
+## instalador ("task darwin:package:universal"): un só .app que corre
 ## nativo en Apple Silicon e en Intel. Un Lua só x86_64 corría por Rosetta nos
 ## Mac Apple Silicon, e macOS avisa de que deixará de admitir esas apps.
 ##
@@ -156,7 +156,6 @@ deps-darwin:
 	@xcode-select -p > /dev/null 2>&1 || xcode-select --install
 	@which brew > /dev/null 2>&1 || (echo "❌ Instala Homebrew primeiro: https://brew.sh" && exit 1)
 	brew install go node
-	go install github.com/wailsapp/wails/v2/cmd/wails@latest
 	go install github.com/wailsapp/wails/v3/cmd/wails3@latest
 	brew install go-task
 	@echo ""
@@ -176,8 +175,7 @@ deps:
 		gcc \
 		pkg-config \
 		libgtk-3-dev \
-		libwebkit2gtk-4.0-dev
-	go install github.com/wailsapp/wails/v2/cmd/wails@latest
+		libwebkit2gtk-4.1-dev
 	go install github.com/wailsapp/wails/v3/cmd/wails3@latest
 	sudo snap install task --classic || sudo apt-get install -y task
 	@echo ""
@@ -187,16 +185,13 @@ deps:
 clean:
 	rm -rf build/bin
 	rm -f assets/logo.png build/appicon.png frontend/src/assets/images/logo.png
-	rm -rf frontend/dist frontend/wailsjs
+	rm -rf frontend/dist frontend/bindings
 	rm -rf files
 
 check-go:
 	@which go > /dev/null 2>&1 || (echo "❌ Go non está instalado. Executa: make deps" && exit 1)
 
-check-wails:
-	@which wails > /dev/null 2>&1 || (echo "❌ wails non está instalado. Executa: go install github.com/wailsapp/wails/v2/cmd/wails@latest" && exit 1)
-
-## check-wails3: para "files" (compila lua, que está en Wails v3).
+## check-wails3: Lua e o propio instalador compílanse con Wails v3 (task + wails3).
 check-wails3:
 	@which wails3 > /dev/null 2>&1 || (echo "❌ wails3 non está instalado. Executa: go install github.com/wailsapp/wails/v3/cmd/wails3@latest" && exit 1)
 	@which task > /dev/null 2>&1 || (echo "❌ task non está instalado (require wails3 build). Ver https://taskfile.dev/installation/" && exit 1)

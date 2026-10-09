@@ -3,10 +3,7 @@ package main
 import (
 	"embed"
 
-	"github.com/wailsapp/wails/v2"
-	"github.com/wailsapp/wails/v2/pkg/options"
-	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
-	"github.com/wailsapp/wails/v2/pkg/options/linux"
+	"github.com/wailsapp/wails/v3/pkg/application"
 )
 
 //go:embed all:frontend/dist
@@ -34,25 +31,35 @@ func main() {
 		app := NewApp()
 		app.permisoDenegado = permisoDenegado
 
-		err := wails.Run(&options.App{
-			Title:            "Lua — Instalador",
-			Width:            1024,
-			Height:           720,
-			WindowStartState: options.Maximised,
-			AssetServer: &assetserver.Options{
-				Assets: assets,
+		wailsApp := application.New(application.Options{
+			Name:        "Lua Installer",
+			Description: "Instalador de Lua",
+			Services: []application.Service{
+				application.NewService(app),
 			},
-			BackgroundColour: &options.RGBA{R: 245, G: 245, B: 244, A: 1}, // --bg-main
-			OnStartup:        app.startup,
-			Bind: []interface{}{
-				app,
+			Assets: application.AssetOptions{
+				Handler: application.AssetFileServerFS(assets),
 			},
-			Linux: &linux.Options{
-				Icon:        appIcon,
+			Icon: appIcon,
+			Linux: application.LinuxOptions{
 				ProgramName: "Lua Installer",
+			},
+			// Unha soa xanela: ao pechala remata o instalador.
+			Mac: application.MacOptions{
+				ApplicationShouldTerminateAfterLastWindowClosed: true,
 			},
 		})
 
+		wailsApp.Window.NewWithOptions(application.WebviewWindowOptions{
+			Title:            "Lua — Instalador",
+			Width:            1024,
+			Height:           720,
+			StartState:       application.WindowStateMaximised,
+			BackgroundColour: application.NewRGB(245, 245, 244), // --bg-main
+			URL:              "/",
+		})
+
+		err := wailsApp.Run()
 		if err != nil {
 			println("Error:", err.Error())
 		}

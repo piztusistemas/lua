@@ -2,11 +2,11 @@
 .SYNOPSIS
     Compila Lua para Windows e empaqueta o instalador (lua_installer).
     Equivalente Windows do obxectivo "build"/"files" do Makefile (que é só
-    bash/apt+wails v2, pensado para Linux): compila lua.exe (Wails v3, via
+    bash/apt, pensado para Linux e macOS): compila lua.exe (Wails v3, via
     Taskfile - ver lua/Taskfile.yml) e mételo en files/ (o que
     install.go despois extrae a destDir vía go:embed), e por último
-    "wails build" (CLI v2, este instalador segue en Wails v2) para xerar
-    build\bin\lua-installer.exe. Ver Makefile para a versión Linux/make e
+    "task build" (Wails v3, coma Lua) para xerar
+    build\bin\lua-installer.exe co manifesto que pide administrador. Ver Makefile para a versión Linux/make e
     install.go/nomeExecutable para por que o binario ten que chamarse
     "lua.exe" aquí dentro.
 
@@ -36,7 +36,6 @@ function Require-Command {
 
 Write-Host "==> Comprobando dependencias de compilación..." -ForegroundColor Cyan
 Require-Command go    "Instala Go: https://go.dev/dl/"
-Require-Command wails "Instala: go install github.com/wailsapp/wails/v2/cmd/wails@latest"
 Require-Command wails3 "Instala: go install github.com/wailsapp/wails/v3/cmd/wails3@latest"
 Require-Command task  "Instala: winget install Task.Task (ou choco install go-task)"
 Require-Command npm   "Instala Node.js: https://nodejs.org/"
@@ -76,16 +75,16 @@ if (-not $SkipFiles) {
     Write-Host "==> -SkipFiles: uso files\ tal como está" -ForegroundColor Yellow
 }
 
-# ── O propio instalador (segue en Wails v2) ─────────────────────────────────
+# ── O propio instalador (Wails v3) ─────────────────────────────────────────
 Push-Location $installerDir
 try {
     Write-Host "==> go mod tidy..." -ForegroundColor Cyan
     go mod tidy
     if ($LASTEXITCODE -ne 0) { throw "go mod tidy fallou" }
 
-    Write-Host "==> wails build..." -ForegroundColor Cyan
-    wails build
-    if ($LASTEXITCODE -ne 0) { throw "wails build fallou" }
+    Write-Host "==> task build (instalador)..." -ForegroundColor Cyan
+    task build
+    if ($LASTEXITCODE -ne 0) { throw "task build (instalador) fallou" }
 } finally {
     Pop-Location
 }

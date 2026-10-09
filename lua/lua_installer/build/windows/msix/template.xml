@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MsixPackagingToolTemplate
+    xmlns="http://schemas.microsoft.com/msix/packaging/msixpackagingtool/template/2022">
+    <Settings
+        AllowTelemetry="false"
+        ApplyACLsToPackageFiles="true"
+        GenerateCommandLineFile="true"
+        AllowPromptForPassword="false">
+    </Settings>
+    <Installer
+        Path="lua-installer"
+        Arguments=""
+        InstallLocation="C:\Program Files\Piztu\Lua">
+    </Installer>
+    <PackageInformation
+        PackageName="Lua"
+        PackageDisplayName="Lua"
+        PublisherName="CN=Piztu"
+        PublisherDisplayName="Piztu"
+        Version="26.10.3.0"
+        PackageDescription="Instalador de Lua">
+        <Capabilities>
+            <Capability Name="runFullTrust" />
+            
+        </Capabilities>
+        <Applications>
+            <Application
+                Id="gal.omeu.piztu.lua-installer"
+                Description="Instalador de Lua"
+                DisplayName="Lua"
+                ExecutableName="lua-installer"
+                EntryPoint="Windows.FullTrustApplication">
+                
+            </Application>
+        </Applications>
+        <Resources>
+            <Resource Language="en-us" />
+        </Resources>
+        <Dependencies>
+            <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.17763.0" MaxVersionTested="10.0.19041.0" />
+        </Dependencies>
+        <Properties>
+            <Framework>false</Framework>
+            <DisplayName>Lua</DisplayName>
+            <PublisherDisplayName>Piztu</PublisherDisplayName>
+            <Description>Instalador de Lua</Description>
+            <Logo>Assets\AppIcon.png</Logo>
+        </Properties>
+    </PackageInformation>
+    <SaveLocation PackagePath="lua-installer.msix" />
+    <PackageIntegrity>
+        <CertificatePath></CertificatePath>
+    </PackageIntegrity>
+</MsixPackagingToolTemplate>

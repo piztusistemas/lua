@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -9,16 +8,15 @@ import (
 	"runtime"
 	"strings"
 
-	wruntime "github.com/wailsapp/wails/v2/pkg/runtime"
+	"github.com/wailsapp/wails/v3/pkg/application"
 )
 
 // App é o núcleo do instalador de Lua: expón métodos chamables desde o
-// frontend (bindings, xerados por `wails build` en
-// frontend/wailsjs/go/main/App.js) e emite eventos de progreso durante os
+// frontend (bindings, xerados por `wails3 generate bindings` en
+// frontend/bindings/) e emite eventos de progreso durante os
 // pasos longos, mesmo patrón que installer/app.go (o instalador de Piztu).
 type App struct {
-	ctx context.Context
-	tr  *Translator
+	tr *Translator
 
 	// permisoDenegado: true cando main() non puido reexecutarse como root
 	// (pkexec non dispoñible ou cancelado) en Linux. O frontend, ao arrincar,
@@ -30,8 +28,12 @@ func NewApp() *App {
 	return &App{tr: NewTranslator(idiomaFallback)}
 }
 
-func (a *App) startup(ctx context.Context) {
-	a.ctx = ctx
+// emitir envía un evento ao frontend. application.Get() é nil fóra do ciclo
+// de vida de Wails (nun test, por exemplo), e entón non fai nada.
+func emitir(nome string, datos any) {
+	if app := application.Get(); app != nil {
+		app.Event.Emit(nome, datos)
+	}
 }
 
 // ── Idioma ────────────────────────────────────────────────────────────────────
@@ -70,16 +72,16 @@ func (a *App) CompletadoDesc() string  { return fmt.Sprintf(a.tr.T("fin.desc"), 
 func (a *App) Instalar() {
 	go func() {
 		emit := func(line string) {
-			wruntime.EventsEmit(a.ctx, "inst_log", strings.Trim(line, "\n"))
+			emitir("inst_log", strings.Trim(line, "\n"))
 		}
 		if err := a.doInstall(emit); err != nil {
 			erro := fmt.Sprintf(a.tr.T("inst.erro"), err.Error())
 			emit(erro)
-			wruntime.EventsEmit(a.ctx, "inst_completo", map[string]any{"ok": false, "erro": erro})
+			emitir("inst_completo", map[string]any{"ok": false, "erro": erro})
 			return
 		}
 		emit(a.tr.T("inst.ok"))
-		wruntime.EventsEmit(a.ctx, "inst_completo", map[string]any{"ok": true, "erro": ""})
+		emitir("inst_completo", map[string]any{"ok": true, "erro": ""})
 	}()
 }
 
@@ -142,15 +144,15 @@ func (a *App) CrearAccesosDirectos() error {
 func (a *App) DesinstalarLua(borrarDeps bool) {
 	go func() {
 		emit := func(line string) {
-			wruntime.EventsEmit(a.ctx, "desinst_log", strings.Trim(line, "\n"))
+			emitir("desinst_log", strings.Trim(line, "\n"))
 		}
 		if err := desinstalarLuaCompleto(emit, borrarDeps); err != nil {
 			erro := fmt.Sprintf(a.tr.T("desinst.erro"), err.Error())
 			emit(erro)
-			wruntime.EventsEmit(a.ctx, "desinst_completo", map[string]any{"ok": false, "erro": erro})
+			emitir("desinst_completo", map[string]any{"ok": false, "erro": erro})
 			return
 		}
 		emit(a.tr.T("desinst.ok"))
-		wruntime.EventsEmit(a.ctx, "desinst_completo", map[string]any{"ok": true, "erro": ""})
+		emitir("desinst_completo", map[string]any{"ok": true, "erro": ""})
 	}()
 }

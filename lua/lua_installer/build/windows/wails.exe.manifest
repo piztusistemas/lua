@@ -1,19 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <!--
-  Manifesto de lua-installer.exe. Parte do manifesto por defecto de Wails
-  (que "wails build" xeraría automaticamente aquí se este ficheiro non
-  existise — ver pkg/buildassets/build/windows/wails.exe.manifest no propio
-  módulo wailsapp/wails/v2); a ÚNICA diferenza é o bloque <trustInfo> do
-  final con requestedExecutionLevel="requireAdministrator". Iso é o que fai
-  que Windows amose o diálogo de UAC e eleve o proceso ANTES sequera de que
-  main() empece a executarse — ver elevate_normal.go (intentarElevar) e o
-  comentario de destDir en install.go. Sen este bloque, lua-installer.exe
-  arrincaría sen privilexios e fallaría ao escribir en Program Files e en
-  %ProgramData%\Microsoft\Windows\Start Menu\Programs (ver
-  createShortcutsWindows en install.go).
+  Manifesto de lua-installer.exe. É o de Wails v3 cunha ÚNICA diferenza:
+  requestedExecutionLevel="requireAdministrator". Así Windows amosa o UAC e
+  eleva o proceso ANTES de que main() empece (ver elevate.go e destDir en
+  install.go). Sen isto o instalador non pode escribir en Program Files nin
+  no menú Inicio de %ProgramData%.
+  OLLO: `wails3 task common:update:build-assets` reescribe este ficheiro e
+  volve a "asInvoker". Se o executas, restaura esta liña despois.
 -->
 <assembly manifestVersion="1.0" xmlns="urn:schemas-microsoft-com:asm.v1" xmlns:asmv3="urn:schemas-microsoft-com:asm.v3">
-    <assemblyIdentity type="win32" name="com.wails.{{.Name}}" version="{{.Info.ProductVersion}}.0" processorArchitecture="*"/>
+    <assemblyIdentity type="win32" name="gal.omeu.piztu.lua-installer" version="26.10.3" processorArchitecture="*"/>
     <dependency>
         <dependentAssembly>
             <assemblyIdentity type="win32" name="Microsoft.Windows.Common-Controls" version="6.0.0.0" processorArchitecture="*" publicKeyToken="6595b64144ccf1df" language="*"/>

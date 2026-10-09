@@ -1,5 +1,3 @@
-//go:build !bindings
-
 package main
 
 import (
@@ -13,7 +11,9 @@ import (
 // debe saír sen abrir xanela ningunha (a instancia root xestionou todo). Se
 // non, permisoDenegado indica se pkexec fallou/foi cancelado (para amosar a
 // pantalla de instrucións no frontend en vez do asistente). Porte directo de
-// installer/elevate_normal.go.
+// installer/elevate_normal.go. (En Wails v2 había ademais un
+// elevate_bindings.go co tag "bindings", porque `wails build` executaba o
+// programa para xerar os bindings; wails3 analiza o código sen executalo.)
 //
 // En macOS NON se eleva, e non é unha limitación senón o deseño correcto:
 // alí Lua instálase en /Applications/Lua.app, que o usuario administrador

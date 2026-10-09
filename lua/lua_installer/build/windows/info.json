@@ -1,15 +1,15 @@
 {
 	"fixed": {
-		"file_version": "{{.Info.ProductVersion}}"
+		"file_version": "26.10.3"
 	},
 	"info": {
 		"0000": {
-			"ProductVersion": "{{.Info.ProductVersion}}",
-			"CompanyName": "{{.Info.CompanyName}}",
-			"FileDescription": "{{.Info.ProductName}}",
-			"LegalCopyright": "{{.Info.Copyright}}",
-			"ProductName": "{{.Info.ProductName}}",
-			"Comments": "{{.Info.Comments}}"
+			"ProductVersion": "26.10.3",
+			"CompanyName": "Piztu",
+			"FileDescription": "Instalador de Lua",
+			"LegalCopyright": "Copyright © Piztu",
+			"ProductName": "Lua",
+			"Comments": "Instalador de Lua — xerador de informes para centros educativos (LaTeX)"
 		}
 	}
 }
