@@ -116,7 +116,7 @@ export function abrirDisenador({ t: tIn, esquema, api, confirmar, obterDatos = (
 
     // ---------- Paleta ----------
     paleta.append(el('h3', { class: 'dis-tit', text: t('formularios.dis.campos', 'Campos') }),
-      el('p', { class: 'dis-axuda', text: t('formularios.dis.campos.axuda', 'Arrastra un campo ao formulario, ou prememe nel para engadilo ao final.') }))
+      el('p', { class: 'dis-axuda', text: t('formularios.dis.campos.axuda', 'Arrastra un campo ao formulario, ou preme nel para engadilo ao final.') }))
     for (const tipo of TIPOS) {
       const b = el('button', { type: 'button', class: 'dis-tipo', 'data-tipo': tipo, html: `${svgTipo(tipo)}<span>${nome(tipo)}</span>` })
       b.addEventListener('click', () => engadir(tipo, est.campos.length))
