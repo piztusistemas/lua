@@ -45,6 +45,9 @@ cd lua/lua/frontend && npm test               # vitest
   LibreOffice de verdade.
 - Os tests que precisan `xelatex`, `soffice`, `pdftotext` ou Maxima fan
   `t.Skip` se a ferramenta falta. Un «ok» nun equipo sen elas proba menos.
+- `i18n_test.go` falla se o frontend usa unha clave que non está en
+  `idiomas/gl.json`, ou se `es`, `en` e `pt` non teñen as mesmas claves e
+  variables ca o galego. Cada texto novo leva a súa clave nos catro JSON.
 - O frontend compartido ten un test que falla se a copia de
   `frontend/src/comun/` non coincide con `edicion/web/estatico/`. Arránxase con
   `cd edicion && go run ./cmd/sincronizarweb <destinos>`, nunca editando a copia.
