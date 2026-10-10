@@ -1058,5 +1058,17 @@
   "toolbar.solutions.label": "Soluciones",
   "toolbar.solutions.non": "No (examen)",
   "toolbar.solutions.title": "Qué soluciones salen en el documento",
-  "toolbar.solutions.xunto": "Debajo de cada pregunta"
+  "toolbar.solutions.xunto": "Debajo de cada pregunta",
+  "go.latex.motor_falta": "no se encontró %s. Instala una distribución LaTeX (p. ej. 'sudo apt install %s')",
+  "go.latex.motor_cambiado": "%s no consiguió compilar este informe; se usó %s automáticamente. Puedes cambiar el motor por defecto en Opciones.",
+  "go.latex.fonte_falta": "la plantilla pide la fuente «%s», que no está instalada en este equipo: instálala, o cambia la fuente (\\setmainfont/\\setsansfont/\\setmonofont) en el editor de plantillas",
+  "go.latex.paquete_falta": "falta el paquete de LaTeX «%s»: instálalo (p. ej. 'sudo tlmgr install %s') o quítalo de la plantilla",
+  "go.latex.ambiente_inexistente": "el documento usa un entorno LaTeX que no existe («%s»); suele venir de la IA al mezclar \\begin{...} con las etiquetas <...>. Regenera ese ejercicio, o en su resolución usa <SISTEMA> para los sistemas y <MAT>matrix(...)</MAT> para las matrices en vez de \\begin{...}",
+  "go.latex.imaxe_non_lida": "la imagen «%s» no se pudo leer (%v): se omitió",
+  "go.latex.imaxe_formato": "la imagen «%s» tiene un formato que LaTeX no lee (solo PNG, JPEG y GIF): se omitió",
+  "go.latex.imaxe_gif": "la imagen «%s» (GIF) no se pudo convertir: se omitió",
+  "go.latex.vista_previa": "no se pudo generar la vista previa de las páginas: %v",
+  "go.latex.imaxes_plantilla": "no se pudieron copiar las imágenes de la plantilla: %w",
+  "go.latex.sen_paxinas": "LaTeX no generó ninguna página",
+  "go.plantilla.variable_indefinida": "la plantilla usa {{%s}}, que no está definida: quedó vacía"
 }

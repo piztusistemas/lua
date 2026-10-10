@@ -1,6 +1,7 @@
 package main
 
 import (
+	"edicion/idioma"
 	"encoding/base64"
 	"fmt"
 	"os"
@@ -209,13 +210,13 @@ var ambienteIndefinidoRe = regexp.MustCompile(`Environment (\S+) undefined`)
 // sempre, que para un erro de sintaxe é máis útil ca calquera paráfrase).
 func pistaLatexAccionable(log string) string {
 	if m := fonteQueFaltaRe.FindStringSubmatch(log); m != nil {
-		return fmt.Sprintf("a plantilla pide a fonte «%s», que non está instalada neste equipo: instálaa, ou cambia a fonte (\\setmainfont/\\setsansfont/\\setmonofont) no editor de plantillas", m[1])
+		return idioma.T("go.latex.fonte_falta", "a plantilla pide a fonte «%s», que non está instalada neste equipo: instálaa, ou cambia a fonte (\\setmainfont/\\setsansfont/\\setmonofont) no editor de plantillas", m[1])
 	}
 	if m := paqueteQueFaltaRe.FindStringSubmatch(log); m != nil {
-		return fmt.Sprintf("falta o paquete de LaTeX «%s»: instálao (p.ex. 'sudo tlmgr install %s') ou quítao da plantilla", m[1], m[1])
+		return idioma.T("go.latex.paquete_falta", "falta o paquete de LaTeX «%s»: instálao (p.ex. 'sudo tlmgr install %s') ou quítao da plantilla", m[1], m[1])
 	}
 	if m := ambienteIndefinidoRe.FindStringSubmatch(log); m != nil {
-		return fmt.Sprintf("o documento usa un ambiente LaTeX que non existe («%s»); adoita vir da IA ao mesturar \\begin{...} coas etiquetas <...>. Rexenera ese exercicio, ou na súa resolución usa <SISTEMA> para os sistemas e <MAT>matrix(...)</MAT> para as matrices en vez de \\begin{...}", strings.Trim(m[1], `.`))
+		return idioma.T("go.latex.ambiente_inexistente", "o documento usa un ambiente LaTeX que non existe («%s»); adoita vir da IA ao mesturar \\begin{...} coas etiquetas <...>. Rexenera ese exercicio, ou na súa resolución usa <SISTEMA> para os sistemas e <MAT>matrix(...)</MAT> para as matrices en vez de \\begin{...}", strings.Trim(m[1], `.`))
 	}
 	return ""
 }

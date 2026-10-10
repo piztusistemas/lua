@@ -10,6 +10,7 @@ package main
 import (
 	"bytes"
 	"crypto/sha256"
+	"edicion/idioma"
 	"encoding/base64"
 	"encoding/hex"
 	"fmt"
@@ -101,7 +102,7 @@ func compilarLote(motor string, pezas []string, pp int, out []recorteLatex) (str
 	pdf, log, err := compilarLatexCrono(dir, documentoRecortes(motor, pezas), motor)
 	if err != nil || len(pdf) == 0 {
 		if err == nil {
-			err = fmt.Errorf("LaTeX non deu ningunha páxina")
+			err = idioma.Errorf("go.latex.sen_paxinas", "LaTeX non deu ningunha páxina")
 		}
 		return log, err
 	}

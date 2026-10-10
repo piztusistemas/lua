@@ -1058,5 +1058,17 @@
   "toolbar.solutions.label": "Solutions",
   "toolbar.solutions.non": "No (exam)",
   "toolbar.solutions.title": "Which solutions appear in the document",
-  "toolbar.solutions.xunto": "Below each question"
+  "toolbar.solutions.xunto": "Below each question",
+  "go.latex.motor_falta": "%s was not found. Install a LaTeX distribution (e.g. 'sudo apt install %s')",
+  "go.latex.motor_cambiado": "%s could not compile this report; %s was used automatically. You can change the default engine in Options.",
+  "go.latex.fonte_falta": "the template asks for the font “%s”, which is not installed on this computer: install it, or change the font (\\setmainfont/\\setsansfont/\\setmonofont) in the template editor",
+  "go.latex.paquete_falta": "the LaTeX package “%s” is missing: install it (e.g. 'sudo tlmgr install %s') or remove it from the template",
+  "go.latex.ambiente_inexistente": "the document uses a LaTeX environment that does not exist (“%s”); it usually comes from the AI mixing \\begin{...} with the <...> tags. Regenerate that exercise, or in its solution use <SISTEMA> for systems and <MAT>matrix(...)</MAT> for matrices instead of \\begin{...}",
+  "go.latex.imaxe_non_lida": "the image “%s” could not be read (%v): skipped",
+  "go.latex.imaxe_formato": "the image “%s” has a format LaTeX cannot read (only PNG, JPEG and GIF): skipped",
+  "go.latex.imaxe_gif": "the image “%s” (GIF) could not be converted: skipped",
+  "go.latex.vista_previa": "the page preview could not be generated: %v",
+  "go.latex.imaxes_plantilla": "the template images could not be copied: %w",
+  "go.latex.sen_paxinas": "LaTeX produced no pages",
+  "go.plantilla.variable_indefinida": "the template uses {{%s}}, which is not defined: left empty"
 }

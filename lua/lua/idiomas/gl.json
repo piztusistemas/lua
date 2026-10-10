@@ -1058,5 +1058,17 @@
   "toolbar.solutions.label": "Solucións",
   "toolbar.solutions.non": "Non (exame)",
   "toolbar.solutions.title": "Que solucións saen no documento",
-  "toolbar.solutions.xunto": "Debaixo de cada pregunta"
+  "toolbar.solutions.xunto": "Debaixo de cada pregunta",
+  "go.latex.motor_falta": "non se atopou %s. Instala unha distribución LaTeX (p.ex. 'sudo apt install %s')",
+  "go.latex.motor_cambiado": "%s non conseguiu compilar este informe; usouse %s automaticamente. Podes cambiar o motor por defecto en Opcións.",
+  "go.latex.fonte_falta": "a plantilla pide a fonte «%s», que non está instalada neste equipo: instálaa, ou cambia a fonte (\\setmainfont/\\setsansfont/\\setmonofont) no editor de plantillas",
+  "go.latex.paquete_falta": "falta o paquete de LaTeX «%s»: instálao (p.ex. 'sudo tlmgr install %s') ou quítao da plantilla",
+  "go.latex.ambiente_inexistente": "o documento usa un ambiente LaTeX que non existe («%s»); adoita vir da IA ao mesturar \\begin{...} coas etiquetas <...>. Rexenera ese exercicio, ou na súa resolución usa <SISTEMA> para os sistemas e <MAT>matrix(...)</MAT> para as matrices en vez de \\begin{...}",
+  "go.latex.imaxe_non_lida": "a imaxe «%s» non se puido ler (%v): omitiuse",
+  "go.latex.imaxe_formato": "a imaxe «%s» ten un formato que LaTeX non le (só PNG, JPEG e GIF): omitiuse",
+  "go.latex.imaxe_gif": "a imaxe «%s» (GIF) non se puido converter: omitiuse",
+  "go.latex.vista_previa": "non se puido xerar a vista previa das páxinas: %v",
+  "go.latex.imaxes_plantilla": "non se puideron copiar as imaxes da plantilla: %w",
+  "go.latex.sen_paxinas": "LaTeX non deu ningunha páxina",
+  "go.plantilla.variable_indefinida": "a plantilla usa {{%s}}, que non está definida: quedou baleira"
 }

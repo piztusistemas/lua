@@ -1058,5 +1058,17 @@
   "toolbar.solutions.label": "Soluções",
   "toolbar.solutions.non": "Não (exame)",
   "toolbar.solutions.title": "Que soluções aparecem no documento",
-  "toolbar.solutions.xunto": "Por baixo de cada pergunta"
+  "toolbar.solutions.xunto": "Por baixo de cada pergunta",
+  "go.latex.motor_falta": "não se encontrou o %s. Instale uma distribuição LaTeX (p. ex. 'sudo apt install %s')",
+  "go.latex.motor_cambiado": "o %s não conseguiu compilar este relatório; usou-se o %s automaticamente. Pode alterar o motor predefinido nas Opções.",
+  "go.latex.fonte_falta": "o modelo pede o tipo de letra «%s», que não está instalado neste computador: instale-o, ou mude o tipo de letra (\\setmainfont/\\setsansfont/\\setmonofont) no editor de modelos",
+  "go.latex.paquete_falta": "falta o pacote de LaTeX «%s»: instale-o (p. ex. 'sudo tlmgr install %s') ou retire-o do modelo",
+  "go.latex.ambiente_inexistente": "o documento usa um ambiente LaTeX que não existe («%s»); costuma vir da IA ao misturar \\begin{...} com as etiquetas <...>. Regenere esse exercício, ou na sua resolução use <SISTEMA> para os sistemas e <MAT>matrix(...)</MAT> para as matrizes em vez de \\begin{...}",
+  "go.latex.imaxe_non_lida": "não foi possível ler a imagem «%s» (%v): omitida",
+  "go.latex.imaxe_formato": "a imagem «%s» tem um formato que o LaTeX não lê (só PNG, JPEG e GIF): omitida",
+  "go.latex.imaxe_gif": "não foi possível converter a imagem «%s» (GIF): omitida",
+  "go.latex.vista_previa": "não foi possível gerar a pré-visualização das páginas: %v",
+  "go.latex.imaxes_plantilla": "não foi possível copiar as imagens do modelo: %w",
+  "go.latex.sen_paxinas": "o LaTeX não gerou nenhuma página",
+  "go.plantilla.variable_indefinida": "o modelo usa {{%s}}, que não está definida: ficou vazia"
 }

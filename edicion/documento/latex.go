@@ -2,6 +2,7 @@ package documento
 
 import (
 	"bytes"
+	"edicion/idioma"
 	"encoding/base64"
 	"fmt"
 	"os"
@@ -816,7 +817,7 @@ func compileLatexAuto(dir, body, preferido string, p *plantilla.Plantilla, dep *
 		case "lualatex":
 			pacote = "texlive-luatex"
 		}
-		return nil, "", "", "", nil, fmt.Errorf("non se atopou %s. Instala unha distribución LaTeX (p.ex. 'sudo apt install %s')", preferido, pacote)
+		return nil, "", "", "", nil, idioma.Errorf("go.latex.motor_falta", "non se atopou %s. Instala unha distribución LaTeX (p.ex. 'sudo apt install %s')", preferido, pacote)
 	}
 
 	var primeiroErro error
@@ -848,11 +849,11 @@ func compileLatex(dir, body, engine string, p *plantilla.Plantilla, dep *plantil
 	// depender de onde estea gardado o .matex. Ver copiarImaxesPlantilla.
 	if dep != nil && p != nil {
 		if err := dep.CopiarImaxesPlantilla(p, dir); err != nil {
-			return nil, "", "", nil, fmt.Errorf("non se puideron copiar as imaxes da plantilla: %w", err)
+			return nil, "", "", nil, idioma.Errorf("go.latex.imaxes_plantilla", "non se puideron copiar as imaxes da plantilla: %w", err)
 		}
 	}
 	if false {
-		return nil, "", "", nil, fmt.Errorf("non se puideron copiar as imaxes da plantilla: %w", err)
+		return nil, "", "", nil, idioma.Errorf("go.latex.imaxes_plantilla", "non se puideron copiar as imaxes da plantilla: %w", err)
 	}
 	texPath := filepath.Join(dir, "doc.tex")
 	full, avisosPlantilla, err := documentoLatexConPlantilla(body, engine, p, nomeDoc, tip)
@@ -928,13 +929,13 @@ var ambienteIndefinidoRe = regexp.MustCompile(`Environment (\S+) undefined`)
 // sempre, que para un erro de sintaxe é máis útil ca calquera paráfrase).
 func pistaLatexAccionable(log string) string {
 	if m := fonteQueFaltaRe.FindStringSubmatch(log); m != nil {
-		return fmt.Sprintf("a plantilla pide a fonte «%s», que non está instalada neste equipo: instálaa, ou cambia a fonte (\\setmainfont/\\setsansfont/\\setmonofont) no editor de plantillas", m[1])
+		return idioma.T("go.latex.fonte_falta", "a plantilla pide a fonte «%s», que non está instalada neste equipo: instálaa, ou cambia a fonte (\\setmainfont/\\setsansfont/\\setmonofont) no editor de plantillas", m[1])
 	}
 	if m := paqueteQueFaltaRe.FindStringSubmatch(log); m != nil {
-		return fmt.Sprintf("falta o paquete de LaTeX «%s»: instálao (p.ex. 'sudo tlmgr install %s') ou quítao da plantilla", m[1], m[1])
+		return idioma.T("go.latex.paquete_falta", "falta o paquete de LaTeX «%s»: instálao (p.ex. 'sudo tlmgr install %s') ou quítao da plantilla", m[1], m[1])
 	}
 	if m := ambienteIndefinidoRe.FindStringSubmatch(log); m != nil {
-		return fmt.Sprintf("o documento usa un ambiente LaTeX que non existe («%s»); adoita vir da IA ao mesturar \\begin{...} coas etiquetas <...>. Rexenera ese exercicio, ou na súa resolución usa <SISTEMA> para os sistemas e <MAT>matrix(...)</MAT> para as matrices en vez de \\begin{...}", strings.Trim(m[1], `.`))
+		return idioma.T("go.latex.ambiente_inexistente", "o documento usa un ambiente LaTeX que non existe («%s»); adoita vir da IA ao mesturar \\begin{...} coas etiquetas <...>. Rexenera ese exercicio, ou na súa resolución usa <SISTEMA> para os sistemas e <MAT>matrix(...)</MAT> para as matrices en vez de \\begin{...}", strings.Trim(m[1], `.`))
 	}
 	return ""
 }

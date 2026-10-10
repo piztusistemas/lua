@@ -45,3 +45,11 @@ Fallbacks: sen `02-DOCS/wiki/sdd/config.yaml` (ordes da constitución: gofmt, go
 - green: sen mutacións, verde
 - files: lua/lua/i18n_test.go
 - decision: os verbos `%s %d %v %q %w` compáranse en orde; as variables `{x}` do frontend seguen comparándose ordenadas
+
+## T006 — 2026-10-10
+- status: complete
+- red: TestPistaPaqueteLatexEnPortugues (texto en galego) e TestAvisoCambioDeMotorEnIngles (aviso en galego)
+- green: os dous verdes e executados (non saltados); `go test ./...` en edicion e lua/lua verde; garda T005 verde
+- files: edicion/documento/latex.go, edicion/plantilla/composicion.go, lua/lua/{debuxos_latex,informe_cronograma,latexdoc}.go, idiomas/*.json, idioma_mensaxes_test.go
+- claves: 12 (go.latex.*, go.plantilla.variable_indefinida), 20 sitios
+- decision: traducións por situación (ver decisions.md); F1 da análise aceptado: non hai test da mensaxe «non se atopou %s» (precisa un equipo sen motor LaTeX)

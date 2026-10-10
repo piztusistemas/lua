@@ -1,7 +1,7 @@
 package plantilla
 
 import (
-	"fmt"
+	"edicion/idioma"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -53,7 +53,7 @@ func SubstituirVariables(texto string, p *Plantilla, auto map[string]string, bal
 		if !ok {
 			if !vistos[nome] {
 				vistos[nome] = true
-				avisos = append(avisos, fmt.Sprintf("a plantilla usa {{%s}}, que non está definida: quedou baleira", nome))
+				avisos = append(avisos, idioma.T("go.plantilla.variable_indefinida", "a plantilla usa {{%s}}, que non está definida: quedou baleira", nome))
 			}
 			return baleiro
 		}

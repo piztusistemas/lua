@@ -57,3 +57,9 @@ topic: sdd
 - Opcións descartadas: códigos de erro traducidos en JS (habería que tocar ~40 bindings); un tradutor propio en Buxo (duplicaría código, contra a regra 1.3).
 - Lua pásalle o idioma a Buxo coa variable de entorno `BUXO_IDIOMA`, non cun argumento: un Buxo vello péchase cun argumento descoñecido.
 - O rexistro de Buxo garda clave + argumentos: así o panel sae traducido e `buxo.log` en galego.
+
+## 2026-10-10 — Traducir en cada situación, non ao final  (feature: mensaxes-go-idiomas, task: T006)
+Context   — O test de idiomas exixe que cada clave estea nos catro JSON; engadir só o galego en T006-T012 e traducir en T013 deixaría os tests en vermello entre medias (constitución 2.2).
+Options    — (a) traducir cada situación na súa tarefa; (b) relaxar o test ata T013.
+Decision   — (a). T013 queda como comprobación final (74 claves en cada idioma).
+Why        — Non se debilita un test para avanzar, e cada commit queda verde.

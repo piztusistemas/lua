@@ -16,6 +16,7 @@ package main
 import (
 	"bytes"
 	"crypto/sha1"
+	"edicion/idioma"
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
@@ -464,12 +465,12 @@ func (e *escritorImaxesCrono) escribir(uri, nome string) *imaxeCrono {
 
 	raw, err := decodificarDataURICrono(uri)
 	if err != nil {
-		e.avisos = append(e.avisos, fmt.Sprintf("a imaxe «%s» non se puido ler (%v): omitiuse", nome, err))
+		e.avisos = append(e.avisos, idioma.T("go.latex.imaxe_non_lida", "a imaxe «%s» non se puido ler (%v): omitiuse", nome, err))
 		return nil
 	}
 	cfg, formato, err := image.DecodeConfig(bytes.NewReader(raw))
 	if err != nil {
-		e.avisos = append(e.avisos, fmt.Sprintf("a imaxe «%s» ten un formato que LaTeX non le (só PNG, JPEG e GIF): omitiuse", nome))
+		e.avisos = append(e.avisos, idioma.T("go.latex.imaxe_formato", "a imaxe «%s» ten un formato que LaTeX non le (só PNG, JPEG e GIF): omitiuse", nome))
 		return nil
 	}
 	ext := "png"
@@ -480,12 +481,12 @@ func (e *escritorImaxesCrono) escribir(uri, nome string) *imaxeCrono {
 	case "gif":
 		g, err := gif.Decode(bytes.NewReader(raw))
 		if err != nil {
-			e.avisos = append(e.avisos, fmt.Sprintf("a imaxe «%s» (GIF) non se puido converter: omitiuse", nome))
+			e.avisos = append(e.avisos, idioma.T("go.latex.imaxe_gif", "a imaxe «%s» (GIF) non se puido converter: omitiuse", nome))
 			return nil
 		}
 		var buf bytes.Buffer
 		if err := png.Encode(&buf, g); err != nil {
-			e.avisos = append(e.avisos, fmt.Sprintf("a imaxe «%s» (GIF) non se puido converter: omitiuse", nome))
+			e.avisos = append(e.avisos, idioma.T("go.latex.imaxe_gif", "a imaxe «%s» (GIF) non se puido converter: omitiuse", nome))
 			return nil
 		}
 		raw = buf.Bytes()
@@ -915,13 +916,13 @@ func compilarComMotores(preferido string, tip *TipografiaOpts, dir string, plant
 		case "lualatex":
 			pacote = "texlive-luatex"
 		}
-		return res, fmt.Errorf("non se atopou %s. Instala unha distribución LaTeX (p.ex. 'sudo apt install %s')", preferido, pacote)
+		return res, idioma.Errorf("go.latex.motor_falta", "non se atopou %s. Instala unha distribución LaTeX (p.ex. 'sudo apt install %s')", preferido, pacote)
 	}
 	// As imaxes (logotipos) da plantilla van a carón do doc.tex: así o
 	// \includegraphics{logotipo.png} que escribiu quen fixo a plantilla
 	// atópaas sen rutas. Ver copiarImaxesPlantilla.
 	if err := copiarImaxesPlantilla(plantilla, dir); err != nil {
-		return res, fmt.Errorf("non se puideron copiar as imaxes da plantilla: %w", err)
+		return res, idioma.Errorf("go.latex.imaxes_plantilla", "non se puideron copiar as imaxes da plantilla: %w", err)
 	}
 
 	var primeiroErro error
@@ -937,7 +938,7 @@ func compilarComMotores(preferido string, tip *TipografiaOpts, dir string, plant
 		if err == nil {
 			res.PDF, res.Tex, res.Log, res.Motor, res.Avisos = pdf, tex, log, motor, avisos
 			if motor != preferido {
-				res.Avisos = append(res.Avisos, fmt.Sprintf("%s non conseguiu compilar este informe; usouse %s automaticamente. Podes cambiar o motor por defecto en Opcións.", preferido, motor))
+				res.Avisos = append(res.Avisos, idioma.T("go.latex.motor_cambiado", "%s non conseguiu compilar este informe; usouse %s automaticamente. Podes cambiar o motor por defecto en Opcións.", preferido, motor))
 			}
 			return res, nil
 		}
@@ -986,7 +987,7 @@ func (a *App) xerarPDFPedido(req XerarInformeCronogramaRequest, plantilla *Plant
 	if commandExists("pdftoppm") {
 		imaxes, imgErr := pdfPageImages(dir, filepath.Join(dir, "doc.pdf"))
 		if imgErr != nil {
-			result.Warnings = append(result.Warnings, fmt.Sprintf("non se puido xerar a vista previa das páxinas: %v", imgErr))
+			result.Warnings = append(result.Warnings, idioma.T("go.latex.vista_previa", "non se puido xerar a vista previa das páxinas: %v", imgErr))
 		} else {
 			result.PageImages = imaxes
 		}
@@ -1046,7 +1047,7 @@ func (a *App) exportarTexCrono(req XerarInformeCronogramaRequest, plantilla *Pla
 	}
 	result.Warnings = avisos
 	if err := escribirImaxesPlantilla(plantilla, filepath.Dir(path)); err != nil {
-		return result, fmt.Errorf("non se puideron copiar as imaxes da plantilla: %w", err)
+		return result, idioma.Errorf("go.latex.imaxes_plantilla", "non se puideron copiar as imaxes da plantilla: %w", err)
 	}
 	if err := os.WriteFile(path, []byte(tex), 0o644); err != nil {
 		return result, err
@@ -1238,7 +1239,7 @@ func (a *App) exportarMarkdownCrono(req XerarInformeCronogramaRequest, plantilla
 	md, avisos := markdownInformeConPlantilla(req, plantilla, "md", filepath.Dir(path))
 	result.Warnings = avisos
 	if err := copiarImaxesPlantillaMarkdown(plantilla, filepath.Dir(path)); err != nil {
-		return result, fmt.Errorf("non se puideron copiar as imaxes da plantilla: %w", err)
+		return result, idioma.Errorf("go.latex.imaxes_plantilla", "non se puideron copiar as imaxes da plantilla: %w", err)
 	}
 	if err := os.WriteFile(path, []byte(md), 0o644); err != nil {
 		return result, err
