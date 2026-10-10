@@ -2,6 +2,7 @@ package plantilla
 
 import (
 	"bytes"
+	"edicion/idioma"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -187,7 +188,7 @@ func (x *XeradorIA) Xerar(req PlantillaIARequest) (Plantilla, error) {
 		return Plantilla{}, fmt.Errorf("describe a plantilla, achega un documento de mostra ou indica unha URL")
 	}
 	if x.ChamarIA == nil {
-		return Plantilla{}, fmt.Errorf("non hai ningún provedor de IA configurado")
+		return Plantilla{}, idioma.Errorf("go.ia.sen_provedor", "non hai ningún provedor de IA configurado")
 	}
 
 	raw, err := x.ChamarIA(x.Sistema, strings.Join(partes, "\n\n---\n\n"))

@@ -6,6 +6,7 @@ package ia
 
 import (
 	"context"
+	"edicion/idioma"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -64,10 +65,10 @@ func BaseURLPorDefecto(provedor string) string {
 
 func (c Config) resolver() (string, string, *http.Client, error) {
 	if strings.TrimSpace(c.APIKey) == "" {
-		return "", "", nil, fmt.Errorf("falta a clave da API de IA (configúraa en Opcións)")
+		return "", "", nil, idioma.Errorf("go.ia.sen_clave", "falta a clave da API de IA (configúraa en Opcións)")
 	}
 	if strings.TrimSpace(c.Modelo) == "" {
-		return "", "", nil, fmt.Errorf("falta o modelo de IA (configúrao en Opcións)")
+		return "", "", nil, idioma.Errorf("go.ia.sen_modelo", "falta o modelo de IA (configúrao en Opcións)")
 	}
 	p := c.Provedor
 	if p == "" {

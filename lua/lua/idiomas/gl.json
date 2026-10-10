@@ -1124,5 +1124,13 @@
   "go.buxo.non_instalado": "Buxo aínda non está instalado (descárgase ao arrincar Lua; mira Opcións)",
   "go.buxo.non_lanza": "non se puido lanzar Buxo: %w",
   "go.modulo.sen_zip": "a última Release de %s non leva ningún «%s*.zip» para esta plataforma (¿sen rede?)",
-  "go.modulo.non_instalado": "non se puido instalar o módulo: %w"
+  "go.modulo.non_instalado": "non se puido instalar o módulo: %w",
+  "go.ia.sen_clave": "falta a clave da API de IA (configúraa en Opcións)",
+  "go.ia.sen_modelo": "falta o modelo de IA (configúrao en Opcións)",
+  "go.ia.sen_conexion": "non se puido contactar coa IA: %w",
+  "go.ia.resposta_http": "resposta non válida da IA (HTTP %d)",
+  "go.ia.sen_resultado": "a IA non devolveu resultado (HTTP %d)",
+  "go.ia.resposta_non_valida": "resposta non válida da IA: %w",
+  "go.ia.erro": "erro da IA: %s",
+  "go.ia.sen_provedor": "non hai ningún provedor de IA configurado"
 }

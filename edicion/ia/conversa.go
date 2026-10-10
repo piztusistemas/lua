@@ -20,6 +20,7 @@ package ia
 
 import (
 	"bytes"
+	"edicion/idioma"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -115,7 +116,7 @@ func postJSONIA(cliente *http.Client, url string, cabeceiras map[string]string, 
 	}
 	resp, err := cliente.Do(req)
 	if err != nil {
-		return nil, 0, fmt.Errorf("non se puido contactar coa IA: %w", err)
+		return nil, 0, idioma.Errorf("go.ia.sen_conexion", "non se puido contactar coa IA: %w", err)
 	}
 	defer resp.Body.Close()
 	b, _ := io.ReadAll(resp.Body)
@@ -237,17 +238,17 @@ func turnoOpenAI(baseURL, apiKey, model, sistema string, msgs []IAMensaxe, ferra
 	}
 	var r openAITurnoResposta
 	if err := json.Unmarshal(b, &r); err != nil {
-		return IATurno{}, fmt.Errorf("resposta non válida da IA (HTTP %d)", estado)
+		return IATurno{}, idioma.Errorf("go.ia.resposta_http", "resposta non válida da IA (HTTP %d)", estado)
 	}
 	if r.Error != nil {
-		return IATurno{}, fmt.Errorf("erro da IA: %s", r.Error.Message)
+		return IATurno{}, idioma.Errorf("go.ia.erro", "erro da IA: %s", r.Error.Message)
 	}
 	if estado != http.StatusOK || len(r.Choices) == 0 {
-		return IATurno{}, fmt.Errorf("a IA non devolveu resultado (HTTP %d)", estado)
+		return IATurno{}, idioma.Errorf("go.ia.sen_resultado", "a IA non devolveu resultado (HTTP %d)", estado)
 	}
 	var m openAIMsgSaida
 	if err := json.Unmarshal(r.Choices[0].Message, &m); err != nil {
-		return IATurno{}, fmt.Errorf("resposta non válida da IA: %w", err)
+		return IATurno{}, idioma.Errorf("go.ia.resposta_non_valida", "resposta non válida da IA: %w", err)
 	}
 	t := IATurno{Truncado: r.Choices[0].FinishReason == "length"}
 	if m.Content != nil {
@@ -365,13 +366,13 @@ func turnoAnthropic(baseURL, apiKey, model, sistema string, msgs []IAMensaxe, fe
 	}
 	var r anthropicTurnoResposta
 	if err := json.Unmarshal(b, &r); err != nil {
-		return IATurno{}, fmt.Errorf("resposta non válida da IA (HTTP %d)", estado)
+		return IATurno{}, idioma.Errorf("go.ia.resposta_http", "resposta non válida da IA (HTTP %d)", estado)
 	}
 	if r.Error != nil {
-		return IATurno{}, fmt.Errorf("erro da IA: %s", r.Error.Message)
+		return IATurno{}, idioma.Errorf("go.ia.erro", "erro da IA: %s", r.Error.Message)
 	}
 	if estado != http.StatusOK || len(r.Content) == 0 {
-		return IATurno{}, fmt.Errorf("a IA non devolveu resultado (HTTP %d)", estado)
+		return IATurno{}, idioma.Errorf("go.ia.sen_resultado", "a IA non devolveu resultado (HTTP %d)", estado)
 	}
 	var bloques []struct {
 		Type  string          `json:"type"`
@@ -381,7 +382,7 @@ func turnoAnthropic(baseURL, apiKey, model, sistema string, msgs []IAMensaxe, fe
 		Input json.RawMessage `json:"input"`
 	}
 	if err := json.Unmarshal(r.Content, &bloques); err != nil {
-		return IATurno{}, fmt.Errorf("resposta non válida da IA: %w", err)
+		return IATurno{}, idioma.Errorf("go.ia.resposta_non_valida", "resposta non válida da IA: %w", err)
 	}
 	t := IATurno{Bruto: string(r.Content), Truncado: r.StopReason == "max_tokens"}
 	var texto strings.Builder
@@ -480,13 +481,13 @@ func turnoGemini(baseURL, apiKey, model, sistema string, msgs []IAMensaxe, ferra
 	}
 	var r geminiTurnoResposta
 	if err := json.Unmarshal(b, &r); err != nil {
-		return IATurno{}, fmt.Errorf("resposta non válida da IA (HTTP %d)", estado)
+		return IATurno{}, idioma.Errorf("go.ia.resposta_http", "resposta non válida da IA (HTTP %d)", estado)
 	}
 	if r.Error != nil {
-		return IATurno{}, fmt.Errorf("erro da IA: %s", r.Error.Message)
+		return IATurno{}, idioma.Errorf("go.ia.erro", "erro da IA: %s", r.Error.Message)
 	}
 	if estado != http.StatusOK || len(r.Candidates) == 0 {
-		return IATurno{}, fmt.Errorf("a IA non devolveu resultado (HTTP %d)", estado)
+		return IATurno{}, idioma.Errorf("go.ia.sen_resultado", "a IA non devolveu resultado (HTTP %d)", estado)
 	}
 	var partes []struct {
 		Text         string `json:"text"`

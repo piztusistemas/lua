@@ -82,3 +82,9 @@ Fallbacks: sen `02-DOCS/wiki/sdd/config.yaml` (ordes da constitución: gofmt, go
 - green: `go test ./...` e `go vet` en edicion (tamén GOOS=windows e linux) e lua/lua verdes; garda verde
 - claves: 14 (go.act.*, go.buxo.*, go.modulo.*), 15 sitios
 - nota: a mensaxe 56 do plan estaba cortada na lista; o texto real remata «…por seguridade», e tradúcese enteiro
+
+## T012 — 2026-10-10
+- status: complete
+- red: TestIASenClaveEnIngles (erro en galego)
+- green: verde e executado; `go test ./...` e `go vet` en edicion e lua/lua verdes; garda verde
+- claves: 8 (go.ia.*), 41 sitios (os erros da IA están repetidos en tres clientes)

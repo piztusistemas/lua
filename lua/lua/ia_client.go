@@ -2,8 +2,8 @@ package main
 
 import (
 	"bytes"
+	"edicion/idioma"
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"strings"
@@ -153,20 +153,20 @@ func chamarGemini(baseURL, apiKey, model, sistema, peticion string, maxTokens in
 
 	resp, err := cliente.Do(req)
 	if err != nil {
-		return "", fmt.Errorf("non se puido contactar coa IA: %w", err)
+		return "", idioma.Errorf("go.ia.sen_conexion", "non se puido contactar coa IA: %w", err)
 	}
 	defer resp.Body.Close()
 
 	corpoResposta, _ := io.ReadAll(resp.Body)
 	var r geminiResposta
 	if err := json.Unmarshal(corpoResposta, &r); err != nil {
-		return "", fmt.Errorf("resposta non válida da IA (HTTP %d)", resp.StatusCode)
+		return "", idioma.Errorf("go.ia.resposta_http", "resposta non válida da IA (HTTP %d)", resp.StatusCode)
 	}
 	if r.Error != nil {
-		return "", fmt.Errorf("erro da IA: %s", r.Error.Message)
+		return "", idioma.Errorf("go.ia.erro", "erro da IA: %s", r.Error.Message)
 	}
 	if resp.StatusCode != http.StatusOK || len(r.Candidates) == 0 || len(r.Candidates[0].Content.Parts) == 0 {
-		return "", fmt.Errorf("a IA non devolveu resultado (HTTP %d)", resp.StatusCode)
+		return "", idioma.Errorf("go.ia.sen_resultado", "a IA non devolveu resultado (HTTP %d)", resp.StatusCode)
 	}
 
 	return limparValadosMarkdown(r.Candidates[0].Content.Parts[0].Text), nil
@@ -259,20 +259,20 @@ func chamarAnthropic(baseURL, apiKey, model, sistema, peticion string, maxTokens
 
 	resp, err := cliente.Do(req)
 	if err != nil {
-		return "", fmt.Errorf("non se puido contactar coa IA: %w", err)
+		return "", idioma.Errorf("go.ia.sen_conexion", "non se puido contactar coa IA: %w", err)
 	}
 	defer resp.Body.Close()
 
 	corpoResposta, _ := io.ReadAll(resp.Body)
 	var r anthropicResposta
 	if err := json.Unmarshal(corpoResposta, &r); err != nil {
-		return "", fmt.Errorf("resposta non válida da IA (HTTP %d)", resp.StatusCode)
+		return "", idioma.Errorf("go.ia.resposta_http", "resposta non válida da IA (HTTP %d)", resp.StatusCode)
 	}
 	if r.Error != nil {
-		return "", fmt.Errorf("erro da IA: %s", r.Error.Message)
+		return "", idioma.Errorf("go.ia.erro", "erro da IA: %s", r.Error.Message)
 	}
 	if resp.StatusCode != http.StatusOK || len(r.Content) == 0 {
-		return "", fmt.Errorf("a IA non devolveu resultado (HTTP %d)", resp.StatusCode)
+		return "", idioma.Errorf("go.ia.sen_resultado", "a IA non devolveu resultado (HTTP %d)", resp.StatusCode)
 	}
 
 	var texto strings.Builder
@@ -341,20 +341,20 @@ func chamarOpenAICompatible(baseURL, apiKey, model, sistema, peticion string, ma
 
 	resp, err := cliente.Do(req)
 	if err != nil {
-		return "", fmt.Errorf("non se puido contactar coa IA: %w", err)
+		return "", idioma.Errorf("go.ia.sen_conexion", "non se puido contactar coa IA: %w", err)
 	}
 	defer resp.Body.Close()
 
 	corpoResposta, _ := io.ReadAll(resp.Body)
 	var r openAIResposta
 	if err := json.Unmarshal(corpoResposta, &r); err != nil {
-		return "", fmt.Errorf("resposta non válida da IA (HTTP %d)", resp.StatusCode)
+		return "", idioma.Errorf("go.ia.resposta_http", "resposta non válida da IA (HTTP %d)", resp.StatusCode)
 	}
 	if r.Error != nil {
-		return "", fmt.Errorf("erro da IA: %s", r.Error.Message)
+		return "", idioma.Errorf("go.ia.erro", "erro da IA: %s", r.Error.Message)
 	}
 	if resp.StatusCode != http.StatusOK || len(r.Choices) == 0 {
-		return "", fmt.Errorf("a IA non devolveu resultado (HTTP %d)", resp.StatusCode)
+		return "", idioma.Errorf("go.ia.sen_resultado", "a IA non devolveu resultado (HTTP %d)", resp.StatusCode)
 	}
 
 	return limparValadosMarkdown(r.Choices[0].Message.Content), nil

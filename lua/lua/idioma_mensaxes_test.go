@@ -68,3 +68,16 @@ func TestFicheiroNonValidoEnCastelan(t *testing.T) {
 		t.Errorf("JSON roto: erro en castelán, obtido %v", err)
 	}
 }
+
+// Spec mensaxes-go-idiomas, aceptación 7: sen clave de API e Lua en inglés,
+// o erro do asistente está en inglés.
+func TestIASenClaveEnIngles(t *testing.T) {
+	conIdioma(t, "en")
+	_, _, _, err := resolverIA(Settings{})
+	if err == nil {
+		t.Fatal("sen clave de API debería dar erro")
+	}
+	if !strings.Contains(err.Error(), "AI API key is missing") {
+		t.Errorf("erro en inglés, obtido %q", err.Error())
+	}
+}
