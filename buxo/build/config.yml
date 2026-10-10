@@ -10,7 +10,7 @@ info:
   description: "Bóveda de coñecemento (método Karpathy) a partir de PDF"
   copyright: "Copyright © Piztu"
   comments: "Bóveda de coñecemento"
-  version: "26.10.1"
+  version: "26.10.3"
 
 dev_mode:
   root_path: .
