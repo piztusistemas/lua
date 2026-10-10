@@ -6,12 +6,12 @@ tags: [sdd, spec, i18n, lua, edicion]
 timestamp: 2026-10-10T00:00:00Z
 topic: sdd
 slug: mensaxes-go-idiomas
-status: draft
+status: clarified
 ---
 
 # Spec — Mensaxes frecuentes de Lua no idioma activo
 
-> Slug: `mensaxes-go-idiomas` · Status: draft · Creada: 2026-10-10
+> Slug: `mensaxes-go-idiomas` · Status: clarified · Creada: 2026-10-10
 > Inherits: [constitution](../constitution.md) (v1.2.0, regra 3.2: ningún texto de interface cableado)
 > Irmá: [buxo-idiomas](buxo-idiomas.md)
 
@@ -52,18 +52,23 @@ Docentes que usan Lua en castelán, inglés ou portugués e se atopan cun aviso 
 un erro ao xerar, exportar, instalar dependencias ou abrir ficheiros.
 
 ## Behaviour
-- Main path: as mensaxes destas seis situacións saen no idioma activo:
+- Main path: unha lista escollida de mensaxes, unhas 70, sae no idioma activo.
+  Escóllense dentro destas sete situacións, só as que ve case todo o mundo;
+  a lista apróbaa o usuario mensaxe a mensaxe antes de traducir:
   1. compilar a PDF: motor LaTeX que falta, paquete que falta, cambio automático de motor;
   2. Maxima: detectar, instalar e fallos ao calcular;
   3. instalar dependencias desde Lua (LaTeX, ImageMagick e similares);
   4. exportar e previsualizar (PDF, TeX, Markdown, Word, OpenDocument);
   5. abrir e gardar cursos, formularios, proxectos e plantillas, incluído un ficheiro non válido;
-  6. actualizacións de Lua e do módulo Buxo.
+  6. actualizacións de Lua e do módulo Buxo;
+  7. erros do provedor de IA: falta a clave ou o modelo, sen conexión, resposta non válida, límite superado.
 - Edge cases:
   - A parte variable dunha mensaxe (unha ruta, o nome dun paquete, un número) mantense tal cal dentro do texto traducido.
   - A persoa cambia de idioma: as mensaxes que aparecen desde ese momento saen no idioma novo.
   - Unha mensaxe da lista sen tradución nun idioma: sae en galego, coma no resto de Lua.
   - Unha mensaxe que non está na lista: sae en galego, coma hoxe.
+  - Unha operación longa que remata despois de cambiar de idioma: a mensaxe sae no idioma activo cando aparece.
+  - Unha mensaxe que ve a persoa e que tamén se lle pasa á IA: vai no idioma activo; a IA enténdea igual.
 - Error paths: se unha mensaxe inclúe a saída dun programa externo, esa parte non se traduce e o texto que a rodea si.
 
 ## Acceptance criteria
@@ -72,14 +77,22 @@ un erro ao xerar, exportar, instalar dependencias ou abrir ficheiros.
 - Given Lua en portugués, When falta un paquete de LaTeX, Then a mensaxe está en portugués e inclúe o nome exacto do paquete.
 - Given Lua en galego, When aparece calquera mensaxe, Then o texto é idéntico ao de hoxe.
 - Given a lista de mensaxes frecuentes, When se pasan os tests de Lua, Then fallan se unha mensaxe da lista non ten tradución nalgún dos catro idiomas ou se as súas partes variables non coinciden entre idiomas.
-- Given a lista aprobada, When se conta, Then cada mensaxe pertence a unha das seis situacións de Behaviour.
+- Given a lista aprobada, When se conta, Then cada mensaxe pertence a unha das sete situacións de Behaviour.
+- Given Lua en inglés e sen clave de API configurada, When a persoa usa o asistente, Then o erro está en inglés.
+- Given o plan, When se presenta, Then inclúe a lista completa de mensaxes escollidas para que o usuario a aprobe antes de traducir.
 
 ## Points to clarify
-- **pregunta abierta** — Aprobas as seis situacións como definición de «frecuente»? Hai algunha que sobre ou que falte, por exemplo o asistente de IA sen conexión?
-- **suposición tomada** — A lista terá unhas 60-80 mensaxes. *Base:* reconto por ficheiros do 2026-10-10 (LaTeX, actualización, adxuntos, exportación). *Riesgo:* se sae moito máis longa, revísase o alcance antes de traducir.
+- **suposición tomada** — Unhas 70 mensaxes escollidas. *Base:* as sete situacións suman ~209 mensaxes (reconto do 2026-10-10), e escóllense as frecuentes. *Riesgo:* se a lista escollida pasa moito de 70, revísase co usuario.
 - **suposición tomada** — As mensaxes que comparten Lua e outras apps a través de `edicion` tradúcense igual para todas. *Base:* constitución 1.3, o motor común non se copia. *Riesgo:* Yang usaría as mesmas traducións, o que é aceptable.
 - **decisión diferida** — Traducir os erros raros: quedan en galego neste ciclo. Revísase se alguén informa dun concreto.
-- **área no formulable** — Como afecta isto ás mensaxes que xa chegan á IA mesturadas co que ve a persoa, por exemplo un erro de compilación que o asistente le e explica. Hai unha fronteira aí que aínda non sei enunciar.
+- **decisión diferida** — O instalador ten as súas propias traducións e queda fóra.
 
 ## Revisions
 - 2026-10-10 — Borrador. Alcance decidido polo usuario: só as frecuentes; respostas para a IA e rexistros quedan en galego.
+- 2026-10-10 — Aprobada polo usuario («aprobo»), fase a fase (sen autopiloto).
+
+## Clarifications
+- 2026-10-10 — «Frecuente» → lista escollida de ~70 dentro das situacións, aprobada mensaxe a mensaxe no plan. *Porqué:* as seis situacións suman ~186 e o usuario quere só as que ve case todo o mundo. (Decisión do usuario; a suposición de 60-80 rompeu e substituíuse.)
+- 2026-10-10 — Engádese a situación 7, erros do provedor de IA. *Porqué:* aparecen sempre que a IA falla ou está mal configurada. (Decisión do usuario.)
+- 2026-10-10 — A área non formulable (mensaxes que ve a persoa e tamén a IA) gradúase a comportamento: van no idioma activo. *Porqué:* a IA entende os catro idiomas.
+- 2026-10-10 — Por defecto (sen obxección): cambio de idioma a metade dunha operación → idioma activo ao aparecer a mensaxe; o instalador fica fóra (ten traducións propias). Motor común en `edicion` → resolto pola constitución 1.3.

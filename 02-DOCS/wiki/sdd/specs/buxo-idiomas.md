@@ -6,12 +6,12 @@ tags: [sdd, spec, i18n, buxo]
 timestamp: 2026-10-10T00:00:00Z
 topic: sdd
 slug: buxo-idiomas
-status: draft
+status: clarified
 ---
 
 # Spec — Buxo no idioma de Lua
 
-> Slug: `buxo-idiomas` · Status: draft · Creada: 2026-10-10
+> Slug: `buxo-idiomas` · Status: clarified · Creada: 2026-10-10
 > Inherits: [constitution](../constitution.md) (v1.2.0, regra 3.2: ningún texto de interface cableado)
 > Irmá: [mensaxes-go-idiomas](mensaxes-go-idiomas.md)
 
@@ -40,7 +40,7 @@ escribir esa explicación, que ademais habería que manter igual.
 ## Non-goals / out of scope
 - Un selector de idioma propio en Buxo (decisión do usuario, 2026-10-10).
 - O contido que a IA escribe na bóveda (wiki, resumos): vai na lingua da materia, non na da interface.
-- O ficheiro de rexistro `buxo.log` no disco.
+- O ficheiro de rexistro `buxo.log` no disco: segue en galego.
 - As mensaxes do Go de Lua e de `edicion`: son a especificación irmá.
 
 ## Users & context
@@ -55,8 +55,12 @@ proxecto de Lua para converter PDF, imaxes ou documentos nunha bóveda de Obsidi
   - Lua pide un idioma que Buxo non coñece: sae en galego.
   - A un texto concreto fáltalle a tradución: ese texto sae en galego e o resto no idioma pedido.
   - A persoa cambia o idioma de Lua con Buxo xa aberto: Buxo segue no idioma que tiña ata que se volve abrir.
+- O panel de rexistro que se ve dentro da xanela de Buxo («Convertido X»,
+  «Erro en Y») sae no idioma de Lua; o ficheiro `buxo.log` do disco, en galego.
+- Os diálogos que abre Buxo (escoller ficheiros ou cartafol) levan o título no idioma de Lua.
 - Error paths: as mensaxes de erro que Buxo mostra na súa xanela (conversión
-  fallida, sen IA, sen conexión con Lua) saen no idioma de Lua.
+  fallida, sen IA, sen conexión con Lua) saen no idioma de Lua. As que lle
+  chegan desde Lua seguen a regra da spec irmá: traducidas só se están na súa lista.
 
 ## Acceptance criteria
 - Given Lua en castelán, When a persoa abre Buxo desde un proxecto, Then o título, os botóns e as axudas de Buxo están en castelán.
@@ -64,12 +68,18 @@ proxecto de Lua para converter PDF, imaxes ou documentos nunha bóveda de Obsidi
 - Given Buxo aberto sen Lua, When aparece a xanela, Then está en galego.
 - Given un texto visible novo na interface de Buxo sen tradución nos catro idiomas, When se pasan os tests de Buxo, Then fallan e din que texto falta.
 - Given Lua en galego, When se abre Buxo, Then a interface é idéntica á de hoxe.
+- Given Lua en portugués, When Buxo converte un ficheiro, Then a liña do panel de rexistro está en portugués e a mesma operación en `buxo.log` está en galego.
 
 ## Points to clarify
-- **pregunta abierta** — As liñas do panel de rexistro que se ven dentro da xanela de Buxo («Convertido X», «Erro en Y») contan como interface (traducir) ou como rexistro interno (galego)? Recomendo traducilas: a persoa ve ese panel.
 - **suposición tomada** — Buxo non cambia de idioma en quente. *Base:* Lua abre Buxo como programa á parte e a persoa adoita cambiar de idioma unha soa vez. *Riesgo:* se se pide cambio en quente, fai falla unha canle de aviso entre Lua e Buxo.
 - **suposición tomada** — O galego segue sendo a fonte das traducións, coma en Lua. *Base:* constitución 3.2 e `lua/lua/idiomas/README.md`. *Riesgo:* ningún coñecido.
 - **decisión diferida** — Traducir o diálogo de licenza (texto legal MIT e avisos de terceiros): queda en inglés orixinal.
 
 ## Revisions
 - 2026-10-10 — Borrador. Alcance decidido polo usuario: Buxo segue o idioma de Lua, sen selector propio; o rexistro interno queda en galego.
+- 2026-10-10 — Aprobada polo usuario («aprobo»), fase a fase (sen autopiloto).
+
+## Clarifications
+- 2026-10-10 — Panel de rexistro de Buxo → tradúcese; `buxo.log` queda en galego. *Porqué:* a persoa ve o panel, o ficheiro é para depurar. (Decisión do usuario.)
+- 2026-10-10 — Buxo non cambia de idioma en quente → validada sen obxección. Galego como fonte → resolta pola constitución 3.2. Licenza → segue diferida.
+- 2026-10-10 — Por defecto (sen obxección): os diálogos de ficheiros de Buxo van no idioma de Lua; as mensaxes que veñen de Lua seguen a spec irmá.
