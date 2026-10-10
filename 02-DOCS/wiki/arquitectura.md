@@ -1,13 +1,13 @@
 ---
 type: article
-title: Arquitectura de Lua
+title: Arquitectura de Lúa
 description: Como encaixan lua/lua, edicion e buxo, que ferramentas externas usan e como viaxan as versións.
 tags: [arquitectura, lua, edicion, buxo]
 timestamp: 2026-10-10T00:00:00Z
 topic: arquitectura
 ---
 
-# Arquitectura de Lua
+# Arquitectura de Lúa
 
 ## As pezas
 
@@ -32,31 +32,31 @@ flowchart LR
 
 - **`lua/lua`** é o produto. Contén o dominio: cronograma, actas, formularios,
   problemas, asistente e plantillas. Que fai cada ferramenta: [`lua/README.md`](../../lua/README.md).
-- **`edicion`** é o motor que comparten Lua, Buxo e Yang. Non importa Wails e
+- **`edicion`** é o motor que comparten Lúa, Buxo e Yang. Non importa Wails e
   non coñece a configuración do usuario. Todo lle chega por parámetro ou por
   interface. As súas regras de deseño están en [`edicion/doc.go`](../../edicion/doc.go).
-- **`buxo`** é un executable á parte. Lua descárgao como módulo e lánzao. Que fai:
+- **`buxo`** é un executable á parte. Lúa descárgao como módulo e lánzao. Que fai:
   [`buxo/README.md`](../../buxo/README.md).
-- **`lua/lua_installer`** instala Lua e as súas dependencias (LaTeX, etc.) en
+- **`lua/lua_installer`** instala Lúa e as súas dependencias (LaTeX, etc.) en
   Debian/Ubuntu, Windows e macOS.
 - **`markitdown`** é unha copia de MarkItDown, de Microsoft, co plugin propio
   `markitdown-math`. Buxo empaquétao como *sidecar*: un executable Python que
   lanza ao lado do seu. Orixe e como actualizalo: [`markitdown/ORIXE.md`](../../markitdown/ORIXE.md).
 
 Os módulos Go únense con `replace` (`lua/lua/go.mod` → `../../edicion`). Por iso
-van no mesmo repositorio: Lua non compila sen `edicion` ao carón.
+van no mesmo repositorio: Lúa non compila sen `edicion` ao carón.
 
 ## Paquetes de `edicion`
 
 | Paquete | Para que |
 |---------|----------|
 | `actualizacion` | Autoactualización desde as Releases de GitHub. |
-| `api` | API local de Lua para os módulos (`PIZTU_API_URL`, `PIZTU_API_TOKEN`). |
+| `api` | API local de Lúa para os módulos (`PIZTU_API_URL`, `PIZTU_API_TOKEN`). |
 | `boveda` | Bóveda de Obsidian (espazo de traballo de Buxo). |
 | `calculo` | Avaliador das fórmulas dos nodos «calcular» das tuberías. |
 | `cas` | Ponte con Maxima (opcional, con tempo máximo por chamada). |
 | `documento` | Xeración de documentos herdada de Yang. |
-| `ficha` | Importar formularios de Lua como fichas. |
+| `ficha` | Importar formularios de Lúa como fichas. |
 | `ia` | Cliente de IA conversacional con chamadas a ferramentas. |
 | `latex` | Escape, preámbulo e compilación LaTeX; paquetes requiridos. |
 | `lectura` | Lectura de PDF por capas (texto, páxinas). |
@@ -76,29 +76,29 @@ editan á man**: un test de cada app falla se se desvían.
 
 | Ferramenta | Uso | Se falta |
 |------------|-----|----------|
-| TeX Live / MacTeX (`pdflatex`, `xelatex`) | PDF de todos os informes | Lua non xera PDF e di que instalar |
+| TeX Live / MacTeX (`pdflatex`, `xelatex`) | PDF de todos os informes | Lúa non xera PDF e di que instalar |
 | Maxima | Problemas e cálculo simbólico | Os problemas non se resolven |
 | LibreOffice (`soffice`) | Vista previa e lectura de Word/ODT | Sen vista previa ofimática |
 | `pdftotext`, `pdffonts` (Poppler) | Tests e lectura de PDF | Os tests que os usan sáltanse |
-| ImageMagick, Inkscape, dcraw | Converter imaxes raras a PNG | Lua di que instalar |
+| ImageMagick, Inkscape, dcraw | Converter imaxes raras a PNG | Lúa di que instalar |
 | Provedor de IA (Gemini, Claude, compatible OpenAI) | Asistente, Buxo, problemas | As funcións de IA non aparecen |
 
 Todo se lanza con `exec` e argumentos separados, nunca a través dun shell, e
 LaTeX vai sen `--shell-escape` (constitución, regra 5.3).
 
-## Lua e Buxo
+## Lúa e Buxo
 
-1. Lua descarga `buxo_<versión>_<so>_<arq>.zip` da última Release, comproba o
+1. Lúa descarga `buxo_<versión>_<so>_<arq>.zip` da última Release, comproba o
    SHA-256 e instálao no seu cartafol de módulos (`edicion/modulo`).
-2. Lua lánzao con `buxo --boveda <cartafol> --materia <texto> --id <id>` e coas
+2. Lúa lánzao con `buxo --boveda <cartafol> --materia <texto> --id <id>` e coas
    variables `PIZTU_API_URL` e `PIZTU_API_TOKEN`.
-3. Buxo pide a Lua os turnos de IA e as ferramentas `boveda_*` pola API local.
+3. Buxo pide a Lúa os turnos de IA e as ferramentas `boveda_*` pola API local.
    Buxo nunca ve a clave da IA.
 
 ## Versións e Releases
 
-- CalVer `AA.MM.N`. Lua e Buxo saen coa **mesma versión** na mesma Release.
-- En Lua, a versión está en seis sitios que deben coincidir: `VERSION`,
+- CalVer `AA.MM.N`. Lúa e Buxo saen coa **mesma versión** na mesma Release.
+- En Lúa, a versión está en seis sitios que deben coincidir: `VERSION`,
   `wails.json`, `modulo.json`, `build/config.yml` e `build/darwin/Info*.plist`.
 - O actualizador mira só a **última** Release de `piztusistemas/lua` e, dentro
   dela, o zip da súa plataforma.

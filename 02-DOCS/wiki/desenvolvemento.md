@@ -1,13 +1,13 @@
 ---
 type: article
-title: Desenvolvemento de Lua
-description: Como preparar o equipo, compilar, probar e publicar Lua, e as trampas xa coñecidas.
+title: Desenvolvemento de Lúa
+description: Como preparar o equipo, compilar, probar e publicar Lúa, e as trampas xa coñecidas.
 tags: [desenvolvemento, build, tests, release]
 timestamp: 2026-10-10T00:00:00Z
 topic: desenvolvemento
 ---
 
-# Desenvolvemento de Lua
+# Desenvolvemento de Lúa
 
 ## Preparar o equipo
 
@@ -16,7 +16,7 @@ topic: desenvolvemento
 | Go 1.25+ | Todo o backend | `brew install go` |
 | Node 20+ e npm | Frontend (Vite, vitest) | `brew install node` |
 | Task | Tarefas de Wails v3 | `brew install go-task` |
-| `wails3` | Lua, Buxo e o instalador | `go install github.com/wailsapp/wails/v3/cmd/wails3@latest` |
+| `wails3` | Lúa, Buxo e o instalador | `go install github.com/wailsapp/wails/v3/cmd/wails3@latest` |
 | Python 3.12 universal2 (python.org) | Sidecar de Buxo | instalador de python.org |
 | MacTeX / TeX Live | PDF e tests de LaTeX | `brew install --cask mactex` |
 | LibreOffice, Poppler, Maxima | Tests de integración | `brew install --cask libreoffice; brew install poppler maxima` |
@@ -58,7 +58,7 @@ cd lua/lua/frontend && npm test               # vitest
 cd lua/lua && task build                      # build/bin/ da plataforma actual
 cd lua/lua && task darwin:package:universal   # lua.app universal (arm64 + amd64)
 cd buxo && sidecar/build.sh && task build EXTRA_TAGS=gtk3 && ./package.sh
-cd lua/lua_installer && make build            # Lua + instalador (en macOS, universais)
+cd lua/lua_installer && make build            # Lúa + instalador (en macOS, universais)
 ```
 
 En Linux, `EXTRA_TAGS=gtk3` forza GTK3/WebKit2GTK, porque o GTK4 de Wails v3
@@ -66,13 +66,13 @@ beta non compila en Debian 12.
 
 ## Publicar unha Release
 
-1. Cambia a versión de Lua nos seis sitios (constitución, regra 4.2):
+1. Cambia a versión de Lúa nos seis sitios (constitución, regra 4.2):
    `VERSION`, `wails.json`, `modulo.json`, `build/config.yml`,
    `build/darwin/Info.plist` e `build/darwin/Info.dev.plist`. Buxo leva a mesma versión.
-2. Lua para macOS:
+2. Lúa para macOS:
    ```bash
    cd lua/lua_installer
-   make build                    # compila Lua universal e o instalador
+   make build                    # compila Lúa universal e o instalador
    make zip-actualizacion-macos  # dist/lua_<v>_darwin_{arm64,amd64}.zip + .sha256
    ```
 3. Buxo: `cd buxo && ./package.sh` → `dist/buxo_<v>_<so>_<arq>.zip` + `.sha256`.
@@ -93,8 +93,8 @@ beta non compila en Debian 12.
 |---------|-------|----------------------|
 | `localStorage.clear is not a function` en vitest | Node 25 trae un `localStorage` propio que tapa o de jsdom | `lua/lua/frontend/vitest.config.js` pasa `--no-experimental-webstorage` |
 | O informe sae con pdflatex en vez de xelatex en macOS | fontspec non atopa «TeX Gyre Heros» polo nome | Cargar polo ficheiro: `setmainfontTeXGyre` en `latexdoc.go` e `edicion/documento` |
-| LibreOffice: «source file could not be loaded» cun ODT de Lua | `mimetype` con descritor de datos (Go `CreateHeader`) e datas 1980-00-00 | `zip.CreateRaw` e `Modified` en `informe_odt.go` |
+| LibreOffice: «source file could not be loaded» cun ODT de Lúa | `mimetype` con descritor de datos (Go `CreateHeader`) e datas 1980-00-00 | `zip.CreateRaw` e `Modified` en `informe_odt.go` |
 | `TestDirsModulos` falla en macOS | `XDG_CONFIG_HOME` só manda en Linux | O test compara con `os.UserConfigDir()` |
 | Un adaptador común non compila noutra plataforma | Símbolo só definido nunha etiqueta de build | Dar tamén o caso baleiro nas outras (`edicion/doc.go`) |
 | O instalador de Windows deixa de pedir administrador | `wails3 task common:update:build-assets` reescribe `build/windows/wails.exe.manifest` con `asInvoker` | Volver poñer `requireAdministrator` (o ficheiro avisa) |
-| O instalador instala un Lua vello | Compilouse con `task` directamente e `files/` quedou dunha compilación anterior | Usar sempre `make build`; `version_test.go` falla se a versión embebida non é a de `lua/lua/VERSION` |
+| O instalador instala un Lúa vello | Compilouse con `task` directamente e `files/` quedou dunha compilación anterior | Usar sempre `make build`; `version_test.go` falla se a versión embebida non é a de `lua/lua/VERSION` |
