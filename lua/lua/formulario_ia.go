@@ -33,12 +33,12 @@ func esqCampoFormulario() map[string]any {
 		"opcions":  map[string]any{"type": "array", "items": map[string]any{"type": "string"}, "description": "Só para escolla."},
 	}, "required": []string{"id", "tipo", "etiqueta"}}
 	return map[string]any{"type": "object", "properties": map[string]any{
-		"id":          esqTxt("Identificador estable do campo: minúsculas, díxitos e _ (p. ex. data_reunion). Os nodos «campo» da tubería refírense a el."),
+		"id":          esqTxt("Identificador estable do campo: minúsculas, díxitos e _ (p. ex. data_reunion). Os nodos «campo» da tubaxe refírense a el."),
 		"tipo":        esqEnum("Tipo de campo.", tiposCampoFormulario...),
 		"etiqueta":    esqTxt("O que ve o usuario (e o rótulo no documento)."),
 		"axuda":       esqTxt("Axuda curta opcional."),
 		"obrigatorio": esqBool("Se falta, Lúa avisa ao xerar."),
-		"agochado":    esqBool("O dato só serve para a plantilla ou a tubería: non sae no corpo."),
+		"agochado":    esqBool("O dato só serve para a plantilla ou a tubaxe: non sae no corpo."),
 		"opcions":     map[string]any{"type": "array", "items": map[string]any{"type": "string"}, "description": "Só para escolla: as opcións."},
 		"columnas":    map[string]any{"type": "array", "items": col, "description": "Só para táboa: as súas columnas."},
 	}, "required": []string{"id", "tipo", "etiqueta"}}
@@ -48,11 +48,11 @@ func esqCampoFormulario() map[string]any {
 var ferramentasFormularioEditor = []IAFerramenta{
 	{
 		Nome: "formulario_ler", Tipo: tipoLectura, Onde: "frontend",
-		Descricion: "Le o formulario que está aberto no deseñador, tal como está agora (o borrador con cambios sen gardar): nome, descrición, icona, portada/sinatura, campos e tubería. Se non ten tubería propia (automatico=true), devolve tamén a que resultaría do cableado automático. Chámaa sempre antes de cambiar nada.",
+		Descricion: "Le o formulario que está aberto no deseñador, tal como está agora (o borrador con cambios sen gardar): nome, descrición, icona, portada/sinatura, campos e tubaxe. Se non ten tubaxe propia (automatico=true), devolve tamén a que resultaría do cableado automático. Chámaa sempre antes de cambiar nada.",
 	},
 	{
 		Nome: "formulario_cambiar", Tipo: tipoEscritura, Onde: "frontend",
-		Descricion: "Cambia o borrador do formulario no deseñador: só o que indiques. 'campos' e 'fluxo' substitúense ENTEIROS (manda a lista completa). Lúa valida o resultado e, se hai un erro, non cambia nada e dío: le a mensaxe e corrixe. Se cambias 'campos' e o formulario xa ten tubería propia, Lúa engade/quita os nodos dos campos novos/eliminados (e avísate). O cambio non se garda ata que o usuario prema Gardar formulario, e pode desfacelo co botón «Desfacer cambio da IA». Despois proba co formulario_probar.",
+		Descricion: "Cambia o borrador do formulario no deseñador: só o que indiques. 'campos' e 'fluxo' substitúense ENTEIROS (manda a lista completa). Lúa valida o resultado e, se hai un erro, non cambia nada e dío: le a mensaxe e corrixe. Se cambias 'campos' e o formulario xa ten tubaxe propia, Lúa engade/quita os nodos dos campos novos/eliminados (e avísate). O cambio non se garda ata que o usuario prema Gardar formulario, e pode desfacelo co botón «Desfacer cambio da IA». Despois proba co formulario_probar.",
 		Parametros: esqObx(map[string]any{
 			"nome":       esqTxt("Nome do formulario."),
 			"descricion": esqTxt("Descrición curta (sae baixo o título)."),
@@ -62,7 +62,7 @@ var ferramentasFormularioEditor = []IAFerramenta{
 			"sinatura":   esqBool("Leva o peche con lugar, data e sinatura."),
 			"campos":     map[string]any{"type": "array", "items": esqCampoFormulario(), "description": "TODOS os campos, na orde en que se piden."},
 			"fluxo": map[string]any{
-				"description": "A tubería completa: {nodos:[{id,tipo,config,entradas,campo}], documento:[ids dos destinos, en orde]}. Usa a cadea \"automatico\" (ou null) para volver ao cableado automático. Le a estrutura e os tipos de nodo con formulario_axuda.",
+				"description": "A tubaxe completa: {nodos:[{id,tipo,config,entradas,campo}], documento:[ids dos destinos, en orde]}. Usa a cadea \"automatico\" (ou null) para volver ao cableado automático. Le a estrutura e os tipos de nodo con formulario_axuda.",
 			},
 		}),
 	},
@@ -86,17 +86,17 @@ var ferramentasFormularioBackend = []ferramentaBackend{
 	{
 		def: IAFerramenta{
 			Nome: "formulario_axuda", Tipo: tipoLectura, Onde: "backend",
-			Descricion: "Explica como se define un formulario en Lúa: tipos de campo, tipos de nodo da tubería (con entradas, parámetros e exemplos), regras e o método recomendado para deseñar un formulario a partir dun documento. Léea unha vez ANTES de deseñar.",
+			Descricion: "Explica como se define un formulario en Lúa: tipos de campo, tipos de nodo da tubaxe (con entradas, parámetros e exemplos), regras e o método recomendado para deseñar un formulario a partir dun documento. Léea unha vez ANTES de deseñar.",
 		},
 		exec: func(a *App, _ map[string]any) (any, error) { return axudaFormulario(), nil },
 	},
 	{
 		def: IAFerramenta{
 			Nome: "formulario_validar", Tipo: tipoLectura, Onde: "backend",
-			Descricion: "Normaliza e valida un formulario (campos e tubería) sen gardalo. Devolve o formulario normalizado (ids completados, destinos engadidos ao documento) ou o primeiro erro, máis os problemas dos nodos.",
+			Descricion: "Normaliza e valida un formulario (campos e tubaxe) sen gardalo. Devolve o formulario normalizado (ids completados, destinos engadidos ao documento) ou o primeiro erro, máis os problemas dos nodos.",
 			Parametros: esqObx(map[string]any{
 				"formulario":  map[string]any{"type": "object", "description": "O formulario completo."},
-				"sincronizar": esqBool("Se ten tubería propia, axústaa aos campos (engade/quita os nodos campo)."),
+				"sincronizar": esqBool("Se ten tubaxe propia, axústaa aos campos (engade/quita os nodos campo)."),
 			}, "formulario"),
 		},
 		exec: func(a *App, args map[string]any) (any, error) { return validarFormularioIA(args) },
@@ -104,7 +104,7 @@ var ferramentasFormularioBackend = []ferramentaBackend{
 	{
 		def: IAFerramenta{
 			Nome: "formulario_probar", Tipo: tipoLectura, Onde: "backend",
-			Descricion: "Proba o formulario con datos de mostra: avalía a tubería (valor de cada nodo, erros) e devolve os bloques do documento e unha páxina do PDF renderizada coa plantilla activa. Inventa datos de mostra realistas (en 'datos.valores', clave = id do campo; unha táboa é unha lista de filas {id_columna: valor}). O borrador do deseñador engádeo Lúa automaticamente.",
+			Descricion: "Proba o formulario con datos de mostra: avalía a tubaxe (valor de cada nodo, erros) e devolve os bloques do documento e unha páxina do PDF renderizada coa plantilla activa. Inventa datos de mostra realistas (en 'datos.valores', clave = id do campo; unha táboa é unha lista de filas {id_columna: valor}). O borrador do deseñador engádeo Lúa automaticamente.",
 			Parametros: esqObx(map[string]any{
 				"datos":   map[string]any{"type": "object", "description": "{valores:{id_campo: valor}, contexto:{centro, localidade, curso, departamento, responsable, cargo}}. Sen datos, proba en baleiro."},
 				"paxina":  esqNum("Páxina do PDF que queres ver (1 por defecto)."),

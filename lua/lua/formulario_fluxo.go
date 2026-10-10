@@ -577,7 +577,7 @@ func validarFluxo(f Formulario) error {
 		return nil
 	}
 	if len(fl.Nodos) > maxNodosFluxo {
-		return fmt.Errorf("a tubería ten máis de %d nodos", maxNodosFluxo)
+		return fmt.Errorf("a tubaxe ten máis de %d nodos", maxNodosFluxo)
 	}
 	vistos := map[string]bool{}
 	for i, n := range fl.Nodos {
@@ -1252,7 +1252,7 @@ func resumoValor(v valorFluxo) string {
 func avaliarFluxoDoc(f Formulario, d DatosFormulario, tx textosDocumento) ([]bloqueDoc, AvaliacionFluxo) {
 	res := AvaliacionFluxo{Nodos: map[string]NodoAvaliado{}}
 	if f.Fluxo == nil {
-		res.Erro = "o formulario non ten tubería"
+		res.Erro = "o formulario non ten tubaxe"
 		return nil, res
 	}
 	if err := validarFluxo(f); err != nil {
@@ -1496,7 +1496,7 @@ func bloquesDoFluxo(f Formulario, d DatosFormulario, tx textosDocumento) ([]bloq
 	avisos := avisosDatos(f, d, tx)
 	bloques, res := avaliarFluxoDoc(f, d, tx)
 	if res.Erro != "" {
-		avisos = append(avisos, "a tubería non é válida: "+res.Erro)
+		avisos = append(avisos, "a tubaxe non é válida: "+res.Erro)
 		if t := strings.TrimSpace(tx.T("FORM_SEN_CONTIDO")); t != "" {
 			return []bloqueDoc{{Tipo: bloqueMarkdown, Texto: t}}, avisos
 		}

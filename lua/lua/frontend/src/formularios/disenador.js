@@ -7,7 +7,7 @@
 // tarxeta ten botóns para subir, baixar, duplicar e quitar.
 import { el } from '../informes/dom.js'
 import { iniciarArrastre } from './arrastrar.js'
-import { CLAVES_ICONA, NOME_ICONA, svgIcona, svgTipo } from './iconas.js'
+import { svgTipo } from './iconas.js'
 import {
   TIPOS, TIPOS_COLUMNA, NOME_TIPO, novoEsquema, novoCampo, inserirCampo, moverCampo, eliminarCampo, cambiarCampo,
   duplicarCampo, problemasEsquema, completarIds,
@@ -84,29 +84,19 @@ export function abrirDisenador({ t: tIn, esquema, api, confirmar, obterDatos = (
       marcas[clave] = i
       return el('label', { class: 'dis-opcion', title: axuda }, i, el('span', { text: etiqueta }))
     }
-    const iconasCaixa = el('div', { class: 'dis-iconas', role: 'radiogroup', 'aria-label': t('formularios.dis.icona', 'Icona na columna esquerda') })
-    const pintarIconas = () => {
-      iconasCaixa.replaceChildren(...CLAVES_ICONA.map((k) => el('button', {
-        type: 'button', class: 'dis-icona' + ((est.icona || 'formulario') === k ? ' dis-icona--sel' : ''), role: 'radio',
-        'aria-checked': String((est.icona || 'formulario') === k), title: t('formularios.icona.' + k, NOME_ICONA[k]), html: svgIcona(k),
-        onclick: () => { est.icona = k; marcar(); pintarIconas() },
-      })))
-    }
-    pintarIconas()
 
     // Pestanas (Campos | Tuberías) e botóns do asistente.
     const tabCampos = el('button', { type: 'button', class: 'dis-tab dis-tab--sel', role: 'tab', 'aria-selected': 'true', onclick: () => cambiarPestana('campos') }, t('formularios.dis.tab.campos', 'Campos'))
-    const tabFluxo = el('button', { type: 'button', class: 'dis-tab', role: 'tab', 'aria-selected': 'false', onclick: () => cambiarPestana('fluxo'), title: t('formularios.dis.tab.tuberias.title', 'Cálculos, filtros e a orde do documento') }, t('formularios.dis.tab.tuberias', 'Tuberías'))
+    const tabFluxo = el('button', { type: 'button', class: 'dis-tab', role: 'tab', 'aria-selected': 'false', onclick: () => cambiarPestana('fluxo'), title: t('formularios.dis.tab.tuberias.title', 'Cálculos, filtros e a orde do documento') }, t('formularios.dis.tab.tuberias', 'Tubaxes'))
     const btnDesfacerIA = el('button', { type: 'button', class: 'dis-desfacer-ia', hidden: true, onclick: () => desfacerIA(), title: t('formularios.dis.desfacerIA.title', 'Desfai o último cambio que fixo o asistente') }, t('formularios.dis.desfacerIA', 'Desfacer cambio da IA'))
     const logoAsistente = el('span', { class: 'tarefa-asistente__logo' })
-    const btnAsistente = opcAsist ? el('button', { type: 'button', class: 'tarefa-asistente', onclick: () => alternarAsistente(), title: t('formularios.dis.asistente.title', 'Asistente de IA: deseña o formulario e as tuberías desde unha descrición ou un documento xa feito') },
+    const btnAsistente = opcAsist ? el('button', { type: 'button', class: 'tarefa-asistente', onclick: () => alternarAsistente(), title: t('formularios.dis.asistente.title', 'Asistente de IA: deseña o formulario e as tubaxes desde unha descrición ou un documento xa feito') },
       logoAsistente, el('span', { text: t('formularios.dis.asistente.label', 'Asistente deseño') })) : null
     const cabeceira = el('div', { class: 'dis-cab' },
       el('div', { class: 'dis-cab__fila' },
         el('div', { class: 'dis-cab__nome' }, inNome, inDescricion),
         el('button', { type: 'button', class: 'dis-x', 'aria-label': t('dialog.cancel', 'Cancelar'), title: t('dialog.cancel', 'Cancelar'), html: ICONA_X, onclick: () => pedirPechar() })),
       el('div', { class: 'dis-cab__fila dis-cab__fila--opcions' },
-        iconasCaixa,
         el('div', { class: 'dis-opcions' },
           marca('portada', t('formularios.dis.portada', 'Con portada'), t('formularios.dis.portada.title', 'Engade a portada da plantilla ao documento')),
           marca('sinatura', t('formularios.dis.sinatura', 'Con sinatura'), t('formularios.dis.sinatura.title', 'Engade ao final o lugar, a data e a sinatura de quen asina')))),
@@ -361,44 +351,42 @@ export function abrirDisenador({ t: tIn, esquema, api, confirmar, obterDatos = (
           if (!fluxoIgual(sinc, est.fluxo)) { est.fluxo = sinc; marcar() }
           montarEditorFluxo()
         } else {
-          pintarIntroFluxo()
+          await mostrarFluxoAutomatico()
         }
       } catch (err) {
         mostrarErro(String(err?.message || err))
       }
     }
 
-    function montarEditorFluxo() {
+    // montarEditorFluxo pinta o deseño das tubaxes. Con `previa` (a tubaxe do
+    // cableado automático), o formulario segue en automático: amósase o deseño
+    // pero non se garda ata o primeiro cambio, que o personaliza.
+    function montarEditorFluxo(previa) {
       fluxoEd?.destroy()
       fluxoEd = montarFluxoEditor(vistaFluxo, {
         t, api, catalogo,
-        obterEsquema: () => est,
+        obterEsquema: () => (est.fluxo || !previa ? est : { ...est, fluxo: previa }),
+        personalizado: () => !!est.fluxo,
         obterDatos: () => obterDatos() || {},
         aoCambiar: (f) => { est.fluxo = f; marcar(); mostrarErro('') },
         aoAutomatico: async () => {
-          if (confirmar && !await confirmar(t('formularios.flx.automatico.confirmar', 'Vanse descartar as tuberías que fixeches e o documento volverá ao cableado automático. Continuar?'))) return
+          if (confirmar && !await confirmar(t('formularios.flx.automatico.confirmar', 'Vanse descartar as tubaxes que fixeches e o documento volverá ao cableado automático. Continuar?'))) return
           fluxoEd?.destroy()
           fluxoEd = null
           delete est.fluxo
           marcar()
-          pintarIntroFluxo()
+          await mostrarFluxoAutomatico()
         },
       })
     }
 
-    function pintarIntroFluxo() {
-      vistaFluxo.replaceChildren(el('div', { class: 'dis-fluxo__intro' },
-        el('h3', { text: t('formularios.flx.intro.titulo', 'Este formulario usa o cableado automático') }),
-        el('p', { text: t('formularios.flx.intro.texto', 'Cada campo sae no documento segundo o seu tipo: as seccións son títulos, os datos sinxelos van nunha ficha, os textos longos e as táboas levan o seu título. Abonda para a maioría dos formularios.') }),
-        el('p', { text: t('formularios.flx.intro.texto2', 'Personaliza as tuberías se queres calcular algo (medias, notas ponderadas, porcentaxes), filtrar ou ordenar unha táboa, compor frases, amosar un bloque só nalgún caso ou cambiar a orde do documento.') }),
-        el('button', { type: 'button', class: 'dis-gardar dis-fluxo__boton', onclick: async () => {
-          try {
-            est.campos = completarIds(est.campos)
-            est.fluxo = await api.FluxoAutomaticoDe(limpar(est))
-            marcar()
-            montarEditorFluxo()
-          } catch (err) { mostrarErro(String(err?.message || err)) }
-        } }, t('formularios.flx.intro.boton', 'Personalizar as tuberías'))))
+    // mostrarFluxoAutomatico amosa directamente o deseño que corresponde ao
+    // cableado automático (sen texto explicativo nin botón).
+    async function mostrarFluxoAutomatico() {
+      try {
+        est.campos = completarIds(est.campos)
+        montarEditorFluxo(await api.FluxoAutomaticoDe(limpar(est)))
+      } catch (err) { mostrarErro(String(err?.message || err)) }
     }
 
     // ---------- Asistente de IA ----------
@@ -425,13 +413,12 @@ export function abrirDisenador({ t: tIn, esquema, api, confirmar, obterDatos = (
       inNome.value = est.nome || ''
       inDescricion.value = est.descricion || ''
       for (const k of ['portada', 'sinatura']) if (marcas[k]) marcas[k].checked = !!est[k]
-      pintarIconas()
       sel = est.campos.length ? Math.min(Math.max(sel, 0), est.campos.length - 1) : -1
       marcar()
       mostrarErro('')
       pintar()
       if (pestana === 'fluxo') {
-        if (est.fluxo) { if (fluxoEd) fluxoEd.setFluxo(est.fluxo); else montarEditorFluxo() } else { fluxoEd?.destroy(); fluxoEd = null; pintarIntroFluxo() }
+        if (est.fluxo) { if (fluxoEd) fluxoEd.setFluxo(est.fluxo); else montarEditorFluxo() } else { fluxoEd?.destroy(); fluxoEd = null; mostrarFluxoAutomatico() }
       }
     }
 
@@ -448,7 +435,7 @@ export function abrirDisenador({ t: tIn, esquema, api, confirmar, obterDatos = (
       const datos = obterDatos() || {}
       return [
         `- Formulario «${b.nome || '(sen nome)'}» ${existente ? `(gardado, id ${est.id})` : '(novo, aínda sen gardar)'}; ${b.campos.length} campo(s); portada: ${b.portada ? 'si' : 'non'}; sinatura: ${b.sinatura ? 'si' : 'non'}.`,
-        `- Tubería: ${b.fluxo ? `propia (${nodos} nodos, ${b.fluxo.documento.length} bloques no documento)` : 'automática (sen tubería propia)'}.`,
+        `- Tubaxe: ${b.fluxo ? `propia (${nodos} nodos, ${b.fluxo.documento.length} bloques no documento)` : 'automática (sen tubaxe propia)'}.`,
         `- ${sucio ? 'Hai cambios sen gardar no deseñador.' : 'Sen cambios pendentes.'} Datos do documento aberto: ${Object.keys(datos.valores || {}).length ? 'si (formulario_ler ensínaos)' : 'non hai'}.`,
       ].join('\n')
     }
@@ -475,7 +462,7 @@ export function abrirDisenador({ t: tIn, esquema, api, confirmar, obterDatos = (
         montarEn: zonaAsist,
         textos: {
           titulo: t('asistente.tf.titulo', 'Asistente deseño'),
-          benvida: t('asistente.tf.benvida', 'Deseño formularios e tuberías. Xunta cun clip un documento que xa teñas feito (un informe, unha acta, unha folla de notas…) e deduzo del os campos, as táboas e os cálculos; ou descríbeme o que necesitas. Os cambios entran no borrador do deseñador e ti decides se os gardas.'),
+          benvida: t('asistente.tf.benvida', 'Deseño formularios e tubaxes. Xunta cun clip un documento que xa teñas feito (un informe, unha acta, unha folla de notas…) e deduzo del os campos, as táboas e os cálculos; ou descríbeme o que necesitas. Os cambios entran no borrador do deseñador e ti decides se os gardas.'),
           benvidaNota: t('asistente.tf.nota', 'Podes desfacer o último cambio co botón «Desfacer cambio da IA». Se o documento ten cálculos, mírao ben: proba sempre co que che dea o asistente.'),
           caixaPh: t('asistente.tf.ph', 'Describe o formulario que queres, ou pídeme cambios: «engade unha táboa de alumnado», «calcula a nota media»… Se premes unha ficha, isto engádese como instrución adicional.'),
         },

@@ -24,6 +24,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 )
 
@@ -285,6 +286,24 @@ func estaFixadoNaBiblioteca(id string) bool {
 
 // actualizarDescricionFormulario cambia SÓ a descrición dun formulario. É un
 // dato da biblioteca, non do esquema: vale en calquera modo (tamén en produción).
+// reClaveIcona: as claves de icona do frontend (formulario, estrela, reloxo...).
+var reClaveIcona = regexp.MustCompile(`^[a-z0-9_-]{1,40}$`)
+
+// actualizarIconaFormulario cambia só a icona da columna esquerda: vale en
+// calquera modo, porque non toca os campos.
+func actualizarIconaFormulario(id, icona string) (Formulario, error) {
+	icona = strings.TrimSpace(icona)
+	if !reClaveIcona.MatchString(icona) {
+		return Formulario{}, fmt.Errorf("icona non válida: %q", icona)
+	}
+	f, err := lerFormulario(id)
+	if err != nil {
+		return Formulario{}, err
+	}
+	f.Icona = icona
+	return f, escribirFormulario(f)
+}
+
 func actualizarDescricionFormulario(id, descricion string) (Formulario, error) {
 	f, err := lerFormulario(id)
 	if err != nil {

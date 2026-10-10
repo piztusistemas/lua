@@ -1132,5 +1132,8 @@
   "go.ia.sen_resultado": "la IA no devolvió resultado (HTTP %d)",
   "go.ia.resposta_non_valida": "respuesta no válida de la IA: %w",
   "go.ia.erro": "error de la IA: %s",
-  "go.ia.sen_provedor": "no hay ningún proveedor de IA configurado"
+  "go.ia.sen_provedor": "no hay ningún proveedor de IA configurado",
+  "formularios.menu.icona": "Cambiar icono…",
+  "formularios.menu.icona.title": "Elige el icono con el que aparece el formulario en la columna izquierda",
+  "formularios.icona.escoller": "Icono de «{nome}» en la columna izquierda"
 }

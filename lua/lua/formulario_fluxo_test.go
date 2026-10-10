@@ -427,7 +427,7 @@ func TestFluxoInvalidoNonRompeOXerar(t *testing.T) {
 		t.Errorf("normalizar e validar deberían rexeitar o formulario (avisos %v)", avisos)
 	}
 	bloques, av := bloquesFormulario(f, datosNotas(), txProba())
-	if len(bloques) != 0 || !strings.Contains(strings.Join(av, "|"), "tubería non é válida") {
+	if len(bloques) != 0 || !strings.Contains(strings.Join(av, "|"), "tubaxe non é válida") {
 		t.Errorf("bloques=%+v avisos=%v", bloques, av)
 	}
 }

@@ -136,3 +136,57 @@ describe('deseñador de formularios', () => {
     expect(alvo.querySelector('.dis')).toBeNull()
   })
 })
+
+describe('pestana de tubaxes', () => {
+  const CAT = [
+    { tipo: 'campo', nome: 'Campo', categoria: 'orixe' },
+    { tipo: 'titulo', nome: 'Título', categoria: 'destino' },
+  ]
+  const automatico = () => ({
+    nodos: [{ id: 'c_a', tipo: 'campo', campo: 'a' }, { id: 't1', tipo: 'titulo', config: { texto: 'Informe' } }],
+    documento: ['t1'],
+  })
+  let api
+  beforeEach(() => {
+    document.body.innerHTML = ''
+    api = {
+      GardarFormulario: vi.fn(async (e) => ({ ...e, id: 'informe' })),
+      EliminarFormulario: vi.fn(async () => {}),
+      CatalogoFluxo: vi.fn(async () => CAT),
+      FluxoAutomaticoDe: vi.fn(async () => automatico()),
+      SincronizarFluxoFormulario: vi.fn(async (e) => e.fluxo),
+      AvaliarFluxoFormulario: vi.fn(async () => ({ nodos: {}, bloques: [] })),
+    }
+  })
+  afterEach(() => { document.body.innerHTML = '' })
+
+  const abrirTubaxes = async () => {
+    const p = abrirDisenador({ esquema: null, api })
+    escribir(q('.dis-cab__nome input'), 'Informe')
+    tipo('texto').click()
+    qa('.dis-tab')[1].click()
+    await vi.waitFor(() => expect(q('.flx__barra')).not.toBeNull())
+    return { p } // nun obxecto: un await sobre a promesa agardaría a pechar o deseñador
+  }
+
+  it('amosa o deseño de inmediato, sen texto explicativo nin botón, e segue en automático', async () => {
+    const { p } = await abrirTubaxes()
+    expect(q('.dis-fluxo__intro')).toBeNull()
+    expect(qa('button').some((b) => /Personalizar/.test(b.textContent))).toBe(false)
+    expect(qa('button').some((b) => /cableado automático/.test(b.textContent))).toBe(false)
+    q('.dis-gardar').click()
+    await p
+    expect(api.GardarFormulario.mock.calls[0][0].fluxo).toBeUndefined()
+  })
+
+  it('o primeiro cambio no deseño personaliza a tubaxe', async () => {
+    const { p } = await abrirTubaxes()
+    q('button[aria-label="Quitar o nodo"]').click()
+    await vi.waitFor(() => expect(qa('button').some((b) => /cableado automático/.test(b.textContent))).toBe(true))
+    q('.dis-gardar').click()
+    await p
+    const enviado = api.GardarFormulario.mock.calls[0][0]
+    expect(enviado.fluxo).toBeDefined()
+    expect(enviado.fluxo.nodos.map((n) => n.id)).toEqual(['c_a'])
+  })
+})

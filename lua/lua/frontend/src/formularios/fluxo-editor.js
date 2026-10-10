@@ -29,7 +29,7 @@ const COR = { orixe: 'var(--primary)', transformacion: 'var(--amber)', destino: 
 // api: {AvaliarFluxoFormulario}; catalogo: lista de tipos de Go.
 //   obterEsquema() -> o formulario (co fluxo actual dentro), obterDatos() -> {valores}.
 //   aoCambiar(fluxo): o editor mudou o grafo.
-export function montarFluxoEditor(container, { t: tIn, api, catalogo, obterEsquema, obterDatos = () => ({}), aoCambiar, aoAutomatico }) {
+export function montarFluxoEditor(container, { t: tIn, api, catalogo, obterEsquema, obterDatos = () => ({}), aoCambiar, aoAutomatico, personalizado = () => true }) {
   const t = tIn || ((clave, fallback, vars) => {
     let val = fallback ?? clave
     if (vars) for (const k in vars) val = val.replaceAll(`{${k}}`, vars[k])
@@ -136,9 +136,10 @@ export function montarFluxoEditor(container, { t: tIn, api, catalogo, obterEsque
       menu(t('formularios.flx.mais.transformacion', '＋ Transformación'), TRANSFORMACIONS),
       menu(t('formularios.flx.mais.bloque', '＋ Bloque do documento'), BLOQUES),
       el('span', { class: 'flx__barra-espazo' }),
-      boton(t('formularios.flx.automatico', 'Volver ao cableado automático'), () => aoAutomatico?.(), {
-        title: t('formularios.flx.automatico.title', 'Descarta as tuberías propias: cada campo sae segundo o seu tipo, coma ao principio'),
-      }),
+      // Só ten sentido volver ao automático se a tubaxe xa está personalizada.
+      ...(personalizado() ? [boton(t('formularios.flx.automatico', 'Volver ao cableado automático'), () => aoAutomatico?.(), {
+        title: t('formularios.flx.automatico.title', 'Descarta as tubaxes propias: cada campo sae segundo o seu tipo, coma ao principio'),
+      })] : []),
     )
   }
 

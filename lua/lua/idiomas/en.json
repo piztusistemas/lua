@@ -1132,5 +1132,8 @@
   "go.ia.sen_resultado": "the AI returned no result (HTTP %d)",
   "go.ia.resposta_non_valida": "invalid response from the AI: %w",
   "go.ia.erro": "AI error: %s",
-  "go.ia.sen_provedor": "no AI provider is configured"
+  "go.ia.sen_provedor": "no AI provider is configured",
+  "formularios.menu.icona": "Change icon…",
+  "formularios.menu.icona.title": "Choose the icon the form shows in the left column",
+  "formularios.icona.escoller": "Icon for “{nome}” in the left column"
 }

@@ -60,6 +60,7 @@ export function abrirBibliotecaFormularios({ t, accions }) {
       gardar: (nova) => executar(() => accions.gardar(nova)),
       eliminar: (fid) => executar(() => accions.eliminar(fid)),
       exportar: accions.exportar ? (fid) => executar(() => accions.exportar(fid)) : undefined,
+      cambiarIcona: accions.cambiarIcona ? (fid) => executar(() => accions.cambiarIcona(fid)) : undefined,
     })
 
     // ---------- Cartafoles ----------

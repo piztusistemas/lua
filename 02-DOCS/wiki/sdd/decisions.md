@@ -73,3 +73,8 @@ Why        — Non se debilita un test para avanzar, e cada commit queda verde.
 - Decisión do usuario: corrixe a entrada anterior. Os accesos directos levan o nome visible «Lúa» (`Lúa.lnk` en Windows, `Name=Lúa` no .desktop de Linux) e o nome que ve Piztu no selector de módulos (`modulo.json` → "nome") tamén. A documentación viva (README, wiki, blog, constitución v1.2.1) di «Lúa».
 - Seguen «lua»: rutas, cartafoles, executables, `lua.desktop`, `"id": "lua"` e os rexistros históricos do método SDD (specs, plans, análises, progreso, decisións), que describen o traballo tal como se fixo.
 - Detalle técnico: ao instalar e desinstalar bórranse tamén os `Lua.lnk` de instalacións anteriores; o atallo créase con PowerShell `-EncodedCommand` (UTF-16) para que o til chegue intacto.
+
+## 2026-10-10 — Deseñador de formularios: tubaxes e iconas
+- «Tuberías» pasa a «Tubaxes» en galego (interface, textos para a IA e documentación viva). Claves e identificadores (`fluxo`, `tuberias`) non cambian; castelán, inglés e portugués seguen igual.
+- A pestana Tubaxes amosa directamente o deseño, sen texto explicativo nin botón. O deseño do cableado automático é unha vista previa: o formulario segue en automático ata o primeiro cambio, que o personaliza. Por que: se se personalizase só por abrir a pestana, todo formulario que se mirase deixaría de seguir os campos novos sen que a persoa o decidise. «Volver ao cableado automático» só sae cando xa está personalizado.
+- As iconas saen do deseñador. Cámbianse co botón dereito sobre o formulario na columna esquerda (ou no «⋯» da biblioteca) → «Cambiar icona…», nunha xanela propia. Novo método Go `GardarIconaFormulario(id, icona)`, que só toca a icona e vale tamén en produción (coma a descrición).

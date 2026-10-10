@@ -212,3 +212,30 @@ func TestDescricionDeFormularioVaiEnCalqueraModo(t *testing.T) {
 		t.Error("un formulario que non existe debería fallar")
 	}
 }
+
+// A icona da columna esquerda cámbiase desde o menú do botón dereito, sen
+// abrir o deseñador: vale en calquera modo e non toca os campos.
+func TestIconaDeFormularioVaiEnCalqueraModo(t *testing.T) {
+	bibliotecaTemporal(t)
+	a := formularioDeProba(t, "Alfa")
+	f, err := actualizarIconaFormulario(a.ID, "  estrela ")
+	if err != nil || f.Icona != "estrela" {
+		t.Fatalf("icona: %+v, %v", f, err)
+	}
+	if _, err := cambiarModoFormulario(a.ID, modoProduccion); err != nil {
+		t.Fatal(err)
+	}
+	f, err = actualizarIconaFormulario(a.ID, "reloxo")
+	if err != nil || f.Icona != "reloxo" || !f.enProduccion() || len(f.Campos) != 1 {
+		t.Fatalf("en produción: %+v, %v", f, err)
+	}
+	if g, _ := lerFormulario(a.ID); g.Icona != "reloxo" {
+		t.Errorf("non quedou gardada: %q", g.Icona)
+	}
+	if _, err := actualizarIconaFormulario(a.ID, "<script>"); err == nil {
+		t.Error("unha clave de icona con caracteres raros debería rexeitarse")
+	}
+	if _, err := actualizarIconaFormulario("non_existe", "estrela"); err == nil {
+		t.Error("un formulario que non existe debería fallar")
+	}
+}

@@ -21,7 +21,7 @@ import {
   XerarInformeCronograma, ExportarInformeTex, ExportarInformeMarkdown, ExportarInformeDocx, ExportarInformeOdt,
   AbrirInformeDialog, GardarInformeDialog, GardarBorradorInforme, LerBorradorInforme,
   ListarFormularios, GardarFormulario, EliminarFormulario, CambiarModoFormulario,
-  LerBibliotecaFormularios, GardarBibliotecaFormularios, CrearCarpetaFormularios, GardarDescricionFormulario,
+  LerBibliotecaFormularios, GardarBibliotecaFormularios, CrearCarpetaFormularios, GardarDescricionFormulario, GardarIconaFormulario,
   ExportarFormulario, ImportarFormulario,
   BuxoEstadoActual, BuxoActivar, BuxoActualizar,
   ListarCarpetasProxectos, CrearCarpetaProxectos, RenomearCarpetaProxectos, EliminarCarpetaProxectos, MoverProxecto,
@@ -47,6 +47,7 @@ import { haiContidoFormulario, datosParaExportar } from './formularios/modelo.js
 import { abrirBibliotecaFormularios } from './formularios/biblioteca.js'
 import { abrirProxectos } from './formularios/proxectos.js'
 import { crearColumna } from './formularios/columna.js'
+import { escollerIcona } from './formularios/escoller-icona.js'
 import { bibliotecaBaleira, completar, columna as columnaDe, agochar, podeBorrar } from './formularios/biblioteca-modelo.js'
 import { montarEditorTarefa, normalizarImaxe } from './informes/tarefa-editor.js'
 import { calendario, totalTarefas } from './informes/cronograma-modelo.js'
@@ -728,6 +729,7 @@ function crearInformes() {
     nav: ferramentasNav, zonaFixa: zonaFixaColumna, zonaResto: zonaRestoColumna, separador: document.getElementById('ferramentasSeparador'),
     t, biblioteca: () => biblioteca, existentes: idsExistentes, nomeDe: nomeDeFerramenta,
     gardar: gardarBibliotecaColumna, eliminar: eliminarFormularioDaColumna, exportar: exportarFormulario,
+    cambiarIcona: cambiarIconaFormulario,
   })
   pintarColumna()
   informesCrono.iniciar()
@@ -842,6 +844,25 @@ function pintarBotonFormulario(boton, esquema) {
   boton.classList.toggle('ferramenta-btn--deseno', !produccion)
   boton.title = `${esquema.nome} · ${modo}`
   boton.setAttribute('aria-label', `${esquema.nome}, ${t('formularios.modo.etq', 'modo')} ${modo}`)
+}
+
+// cambiarIconaFormulario abre a xanela «Cambiar icona» (menú do botón dereito
+// ou «⋯» da biblioteca) e garda a icona escollida, sen abrir o deseñador.
+async function cambiarIconaFormulario(id) {
+  const c = controladores.get(id)
+  if (!c) return
+  const esquema = c.ferramenta.esquema
+  const clave = await escollerIcona({ t, nome: esquema.nome, actual: esquema.icona })
+  if (!clave || clave === (esquema.icona || 'formulario')) return
+  try {
+    const novo = await GardarIconaFormulario(esquema.id, clave)
+    c.ferramenta.actualizarEsquema(novo)
+    const boton = formularioNav.querySelector(`.ferramenta-btn[data-ferramenta="${CSS.escape(id)}"]`)
+    if (boton) pintarBotonFormulario(boton, novo)
+    pintarColumna()
+  } catch (err) {
+    showWarnings([mensaxeErro(err)])
+  }
 }
 
 function engadirFormulario(esquema) {
@@ -1100,6 +1121,7 @@ function verBibliotecaFormularios() {
       abrir: (tid) => cambiarFerramenta(tid),
       eliminar: eliminarFormularioDaColumna,
       exportar: exportarFormulario,
+      cambiarIcona: cambiarIconaFormulario,
       importar: importarFormulario,
       confirmar,
       preguntar,

@@ -36,7 +36,7 @@ export function crearFerramentasFormulario({ editor, api, ui }) {
       if (!b.fluxo && api.FluxoAutomaticoDe) {
         try {
           saida.fluxoAutomatico = await api.FluxoAutomaticoDe(b)
-          saida.nota = 'Sen tubería propia: o documento sae co cableado automático (fluxoAutomatico, só de referencia). Se queres cambiar algo que non sexa o tipo dos campos, pon un fluxo propio.'
+          saida.nota = 'Sen tubaxe propia: o documento sae co cableado automático (fluxoAutomatico, só de referencia). Se queres cambiar algo que non sexa o tipo dos campos, pon un fluxo propio.'
         } catch { /* só é de axuda */ }
       }
       const d = editor.datos?.()
@@ -73,7 +73,7 @@ export function crearFerramentasFormulario({ editor, api, ui }) {
       if (!r.ok) erro(`o formulario non valida, non se cambiou nada: ${r.erro}`)
       editor.cambiar(r.formulario)
       const saida = { cambiados: dados, campos: r.formulario.campos.length, automatico: r.automatico }
-      if (sincronizar) saida.nota = 'A tubería axustouse aos campos: revisa que os campos novos saian onde queres.'
+      if (sincronizar) saida.nota = 'A tubaxe axustouse aos campos: revisa que os campos novos saian onde queres.'
       if (r.problemas?.length) saida.problemas = r.problemas
       if (descoñecidos.length) saida.ignorados = descoñecidos
       return saida

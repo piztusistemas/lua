@@ -6,9 +6,10 @@
 //   gardar(nova)      persiste un novo estado (Promise)
 //   eliminar(id)      borra un formulario, con confirmación (Promise)
 //   exportar(id)      (opcional) garda o formulario nun ficheiro para compartilo (Promise)
+//   cambiarIcona(id)  (opcional) abre a xanela para escoller a icona da columna (Promise)
 import { esIntegrada, estaFixa, estaAgochada, podeBorrar, fixar, desfixar, agochar } from './biblioteca-modelo.js'
 
-export function itemsDeFerramenta(id, { t, biblioteca, gardar, eliminar, exportar }) {
+export function itemsDeFerramenta(id, { t, biblioteca, gardar, eliminar, exportar, cambiarIcona }) {
   const b = biblioteca()
   const items = []
   const agochada = estaAgochada(b, id)
@@ -22,6 +23,13 @@ export function itemsDeFerramenta(id, { t, biblioteca, gardar, eliminar, exporta
   items.unshift(estaFixa(b, id)
     ? { texto: t('formularios.menu.desfixar', 'Quitar da zona fixa'), titulo: t('formularios.menu.desfixar.title', 'Pasa á zona de abaixo (onde si se pode borrar)'), aoPremer: () => gardar(desfixar(b, id)) }
     : { texto: t('formularios.menu.fixar', 'Fixar na zona superior'), titulo: t('formularios.menu.fixar.title', 'Xunto ao cronograma e ás actas. Os fixos non se poden borrar, só ocultar'), aoPremer: () => gardar(fixar(b, id)) })
+  if (cambiarIcona) {
+    items.push({
+      texto: t('formularios.menu.icona', 'Cambiar icona…'),
+      titulo: t('formularios.menu.icona.title', 'Escolle a icona coa que sae o formulario na columna esquerda'),
+      aoPremer: () => cambiarIcona(id),
+    })
+  }
   if (exportar) {
     items.push({
       texto: t('formularios.menu.exportar', 'Exportar formulario…'),

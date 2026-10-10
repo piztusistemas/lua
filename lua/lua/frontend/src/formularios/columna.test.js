@@ -10,7 +10,7 @@ const IDS = ['cronograma', 'actas', 'form:a', 'form:b', 'form:c']
 const NOMES = { cronograma: 'Cronograma', actas: 'Actas', 'form:a': 'Alfa', 'form:b': 'Beta', 'form:c': 'Gamma' }
 const t = (k, f) => f ?? k
 
-let nav, zonaFixa, zonaResto, separador, bib, gardar, eliminar, col
+let nav, zonaFixa, zonaResto, separador, bib, gardar, eliminar, cambiarIcona, col
 
 function montar(inicial = bibliotecaBaleira()) {
   document.body.innerHTML = ''
@@ -29,7 +29,8 @@ function montar(inicial = bibliotecaBaleira()) {
   bib = inicial
   gardar = vi.fn(async (nova) => { bib = nova; col.pintar() })
   eliminar = vi.fn(async () => {})
-  col = crearColumna({ nav, zonaFixa, zonaResto, separador, t, biblioteca: () => bib, existentes: () => IDS, nomeDe: (id) => NOMES[id], gardar, eliminar })
+  cambiarIcona = vi.fn(async () => {})
+  col = crearColumna({ nav, zonaFixa, zonaResto, separador, t, biblioteca: () => bib, existentes: () => IDS, nomeDe: (id) => NOMES[id], gardar, eliminar, cambiarIcona })
   col.pintar()
 }
 
@@ -64,14 +65,14 @@ describe('pintar', () => {
 })
 
 describe('menú do botón dereito', () => {
-  it('nun formulario de abaixo: fixar, ocultar e eliminar', () => {
+  it('nun formulario de abaixo: fixar, ocultar, cambiar icona e eliminar', () => {
     dereito('form:b')
-    expect(itensMenu().map((i) => i.textContent)).toEqual(['Fixar na zona superior', 'Ocultar da columna', 'Eliminar formulario…'])
-    expect(itensMenu()[2].getAttribute('aria-disabled')).toBeNull()
+    expect(itensMenu().map((i) => i.textContent)).toEqual(['Fixar na zona superior', 'Ocultar da columna', 'Cambiar icona…', 'Eliminar formulario…'])
+    expect(itensMenu()[3].getAttribute('aria-disabled')).toBeNull()
   })
   it('Eliminar chama a eliminar co id (a confirmación é de quen o implementa) e pecha o menú', () => {
     dereito('form:b')
-    itensMenu()[2].click()
+    itensMenu()[3].click()
     expect(eliminar).toHaveBeenCalledWith('form:b')
     expect(menu()).toBeNull()
   })
@@ -86,8 +87,8 @@ describe('menú do botón dereito', () => {
   it('nun formulario FIXO: quitar da zona fixa, e Eliminar desactivado (non fai nada)', () => {
     bib = fixar(bib, 'form:a'); col.pintar()
     dereito('form:a')
-    expect(itensMenu().map((i) => i.textContent)).toEqual(['Quitar da zona fixa', 'Ocultar da columna', 'Eliminar formulario…'])
-    const borrar = itensMenu()[2]
+    expect(itensMenu().map((i) => i.textContent)).toEqual(['Quitar da zona fixa', 'Ocultar da columna', 'Cambiar icona…', 'Eliminar formulario…'])
+    const borrar = itensMenu()[3]
     expect(borrar.getAttribute('aria-disabled')).toBe('true')
     expect(borrar.title).toMatch(/zona fixa/)
     borrar.click()
@@ -124,7 +125,7 @@ describe('menú do botón dereito', () => {
     expect(document.activeElement).toBe(itensMenu()[1])
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true }))
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true }))
-    expect(document.activeElement).toBe(itensMenu()[2]) // dá a volta
+    expect(document.activeElement).toBe(itensMenu().at(-1)) // dá a volta á última
   })
 })
 
@@ -194,5 +195,21 @@ describe('arrastre entre zonas', () => {
     punteiro('pointerup', 20, 60)
     expect(nav.querySelector('.ferramenta-btn--soltar-antes')).toBeNull()
     expect(nav.classList.contains('ferramentas-nav--arrastrando')).toBe(false)
+  })
+})
+
+describe('cambiar icona', () => {
+  it('o botón dereito dun formulario ofrece «Cambiar icona…» e chama con ese formulario', async () => {
+    // Un arrastre dun test anterior engule o clic seguinte ata o próximo ciclo (arrastrar.js).
+    await new Promise((r) => setTimeout(r, 0))
+    dereito('form:b')
+    const item = itensMenu().find((i) => /Cambiar icona/.test(i.textContent))
+    expect(item).toBeTruthy()
+    item.click()
+    expect(cambiarIcona).toHaveBeenCalledWith('form:b')
+  })
+  it('o cronograma e as actas non teñen esa opción (a súa icona é fixa)', () => {
+    dereito('cronograma')
+    expect(itensMenu().some((i) => /Cambiar icona/.test(i.textContent))).toBe(false)
   })
 })

@@ -197,22 +197,22 @@ export const TAREFAS_FORMULARIO = [
   {
     id: 'documento', icona: '📄', clave: 'asistente.tf.documento',
     titulo: 'Deseñar a partir dun documento adxunto',
-    instrucion: 'Deseña o formulario e as tuberías a partir do DOCUMENTO XA FEITO que che adxuntei (un informe, unha acta, unha folla de notas, unha ficha...). Sigue o método de formulario_axuda: le o documento (adxunto_ler) e mira as súas páxinas (adxunto_ver); separa o FIXO (cabeceira, textos legais: son da plantilla, non campos) do VARIABLE (datas, nomes, números, observacións, listas: campos); as listas en filas son UNHA táboa; o que o documento CALCULA (totais, medias, porcentaxes, aprobado/suspenso) vai nunha tubería, e se non hai nada calculado, filtrado ou condicional NON fagas tubería. Respecta a orde e os títulos das seccións. Constrúe con formulario_cambiar, proba con formulario_probar usando datos de mostra tirados do propio documento, COMPARA a páxina renderizada co orixinal e corrixe as diferenzas. Se hai algo ambiguo, pregúntame unha soa cousa clara (usuario_preguntar). Se non adxuntei ningún documento, pídemo (usuario_preguntar).',
+    instrucion: 'Deseña o formulario e as tubaxes a partir do DOCUMENTO XA FEITO que che adxuntei (un informe, unha acta, unha folla de notas, unha ficha...). Sigue o método de formulario_axuda: le o documento (adxunto_ler) e mira as súas páxinas (adxunto_ver); separa o FIXO (cabeceira, textos legais: son da plantilla, non campos) do VARIABLE (datas, nomes, números, observacións, listas: campos); as listas en filas son UNHA táboa; o que o documento CALCULA (totais, medias, porcentaxes, aprobado/suspenso) vai nunha tubaxe, e se non hai nada calculado, filtrado ou condicional NON fagas tubaxe. Respecta a orde e os títulos das seccións. Constrúe con formulario_cambiar, proba con formulario_probar usando datos de mostra tirados do propio documento, COMPARA a páxina renderizada co orixinal e corrixe as diferenzas. Se hai algo ambiguo, pregúntame unha soa cousa clara (usuario_preguntar). Se non adxuntei ningún documento, pídemo (usuario_preguntar).',
   },
   {
     id: 'crear', icona: '✨', clave: 'asistente.tf.crear',
     titulo: 'Crear un formulario desde unha descrición',
-    instrucion: 'Deseña o formulario que che describa na caixa (que datos hai que recoller e que documento debe saír). Le antes formulario_axuda e o borrador (formulario_ler): se xa ten campos, parte deles. Elixe o tipo axeitado de cada campo (data, numero, escolla, verificacion, textolongo, taboa), dálles ids claros e etiquetas en galego, agrupa con seccións e engade tubería só se hai cálculos, filtros ou condicións. Proba con formulario_probar e ensínamo. Se non me deron ningunha descrición, pregúntame que formulario quero (usuario_preguntar).',
+    instrucion: 'Deseña o formulario que che describa na caixa (que datos hai que recoller e que documento debe saír). Le antes formulario_axuda e o borrador (formulario_ler): se xa ten campos, parte deles. Elixe o tipo axeitado de cada campo (data, numero, escolla, verificacion, textolongo, taboa), dálles ids claros e etiquetas en galego, agrupa con seccións e engade tubaxe só se hai cálculos, filtros ou condicións. Proba con formulario_probar e ensínamo. Se non me deron ningunha descrición, pregúntame que formulario quero (usuario_preguntar).',
   },
   {
     id: 'tuberias', icona: '⚙', clave: 'asistente.tf.tuberias',
-    titulo: 'Engadir tuberías (cálculos, filtros, táboas)',
+    titulo: 'Engadir tubaxes (cálculos, filtros, táboas)',
     instrucion: 'Le o formulario aberto (formulario_ler) e engade as TUBERÍAS que fagan falta: o que se poida CALCULAR (medias, notas ponderadas, porcentaxes, contas de filas), FILTRAR ou ORDENAR nunha táboa, compor nunha frase ou amosar só se se cumpre algo. Se me dixeron que quero, faino; se non, propóñeme o que ten sentido para estes campos (usuario_preguntar cunha lista curta). Le antes formulario_axuda para usar ben os tipos de nodo. Non quites campos nin bloques que xa había e conserva a orde do documento. Proba con formulario_probar con datos de mostra que dean números comprobables a man e dime as contas.',
   },
   {
     id: 'probar', icona: '🔍', clave: 'asistente.tf.probar',
     titulo: 'Revisar e probar o formulario',
-    instrucion: 'Revisa o formulario aberto (formulario_ler): tipos de campo axeitados, etiquetas claras, campos obrigatorios, táboas ben definidas e, se hai tubería, que non haxa nodos con erro nin bloques que non saian. Proba con formulario_probar cunhas filas de mostra realistas e mira a páxina renderizada. Di o que atopes e corrixe o que sexa claramente un fallo; o que sexa unha preferencia, pregúntamo antes.',
+    instrucion: 'Revisa o formulario aberto (formulario_ler): tipos de campo axeitados, etiquetas claras, campos obrigatorios, táboas ben definidas e, se hai tubaxe, que non haxa nodos con erro nin bloques que non saian. Proba con formulario_probar cunhas filas de mostra realistas e mira a páxina renderizada. Di o que atopes e corrixe o que sexa claramente un fallo; o que sexa unha preferencia, pregúntamo antes.',
   },
 ]
 
