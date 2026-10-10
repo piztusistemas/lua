@@ -46,3 +46,8 @@ topic: sdd
 - Opcións: submódulo git de microsoft/markitdown · copia dentro do repositorio.
 - Decisión: copia dentro do repositorio, desde o commit `d9cae89`.
 - Porqué: o submódulo perdería o plugin propio `markitdown-math` e obrigaría a un paso extra ao clonar. A historia anterior está en `../markitdown-git-respaldo`.
+
+## 2026-10-10 — Alcance das traducións pendentes
+- Opcións: traducir os 341 erros do Go · só os frecuentes · ningún; Buxo co idioma de Lua · con selector propio.
+- Decisión: dúas specs (`buxo-idiomas`, `mensaxes-go-idiomas`). Só as mensaxes frecuentes do Go; Buxo segue o idioma de Lua; as respostas para a IA e os rexistros quedan en galego.
+- Porqué: o custo de traducir erros raros que case ninguén ve non compensa; os frecuentes din como arranxar un problema.
