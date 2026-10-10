@@ -94,10 +94,10 @@ func (m *Mestre) Construir(ctx context.Context, ia *ClienteIA) error {
 		return fmt.Errorf("non se puido consultar a bóveda: %w", err)
 	}
 	if len(pend) == 0 {
-		m.log.Info("A wiki xa cita todas as fontes de raw/: nada que construír.")
+		m.log.Info("rex.wiki_ao_dia", "A wiki xa cita todas as fontes de raw/: nada que construír.")
 		return nil
 	}
-	m.log.Info("Construíndo a wiki: %d fonte(s) por procesar.", len(pend))
+	m.log.Info("rex.construindo", "Construíndo a wiki: %d fonte(s) por procesar.", len(pend))
 	nomes := make([]string, 0, len(pend)+1)
 	for _, rel := range pend {
 		nomes = append(nomes, strings.TrimPrefix(rel, dirRaw+"/"))
@@ -108,39 +108,39 @@ func (m *Mestre) Construir(ctx context.Context, ia *ClienteIA) error {
 	for i, rel := range pend {
 		tar := tarefas[i]
 		if ctx.Err() != nil {
-			m.log.Aviso("Construción cancelada.")
+			m.log.Aviso("rex.cancelada", "Construción cancelada.")
 			return ctx.Err()
 		}
-		m.log.Info("[%d/%d] %s", i+1, len(pend), rel)
+		m.log.Info("rex.progreso", "[%d/%d] %s", i+1, len(pend), rel)
 		m.mudarTarefa(tar, func(t *Tarefa) { t.Estado = tarExecutando })
-		resumo, err := ia.Axente(ctx, sistemaConstrutor(m.materia), pedidoIngest(rel), pasosPorFonte, func(s string) { m.log.Info("  · %s", s) },
+		resumo, err := ia.Axente(ctx, sistemaConstrutor(m.materia), pedidoIngest(rel), pasosPorFonte, func(s string) { m.log.Info("rex.paso", "  · %s", s) },
 			func() { m.mudarTarefa(tar, func(t *Tarefa) { t.Pasos++ }) })
 		if err != nil {
 			falladas++
 			m.mudarTarefa(tar, func(t *Tarefa) { t.Estado, t.Erro = tarErro, err.Error() })
-			m.log.Erro("%s: %v (sáltase)", rel, err)
+			m.log.Erro("rex.saltase", "%s: %v (sáltase)", rel, err)
 			continue
 		}
 		feitas++
 		m.mudarTarefa(tar, func(t *Tarefa) { t.Estado = tarFeita })
 		if t := strings.TrimSpace(resumo); t != "" {
-			m.log.Info("  %s", primeiraLinhas(t, 3))
+			m.log.Info("rex.resumo", "  %s", primeiraLinhas(t, 3))
 		}
 	}
-	m.log.Info("Revisando a wiki (enlaces, índice, páxinas orfas)…")
+	m.log.Info("rex.revisando", "Revisando a wiki (enlaces, índice, páxinas orfas)…")
 	rev := tarefas[len(tarefas)-1]
 	m.mudarTarefa(rev, func(t *Tarefa) { t.Estado = tarExecutando })
-	if _, err := ia.Axente(ctx, sistemaConstrutor(m.materia), pedidoRevision, pasosRevision, func(s string) { m.log.Info("  · %s", s) },
+	if _, err := ia.Axente(ctx, sistemaConstrutor(m.materia), pedidoRevision, pasosRevision, func(s string) { m.log.Info("rex.paso", "  · %s", s) },
 		func() { m.mudarTarefa(rev, func(t *Tarefa) { t.Pasos++ }) }); err != nil {
 		m.mudarTarefa(rev, func(t *Tarefa) { t.Estado, t.Erro = tarErro, err.Error() })
-		m.log.Aviso("A revisión final non se completou: %v", err)
+		m.log.Aviso("rex.revision_incompleta", "A revisión final non se completou: %v", err)
 	} else {
 		m.mudarTarefa(rev, func(t *Tarefa) { t.Estado = tarFeita })
 	}
 	if falladas > 0 {
-		m.log.Aviso("Rematado: %d fonte(s) procesada(s), %d con erro (volve premer «Construír a bóveda» para repetilas).", feitas, falladas)
+		m.log.Aviso("rex.rematado_con_erros", "Rematado: %d fonte(s) procesada(s), %d con erro (volve premer «Construír a bóveda» para repetilas).", feitas, falladas)
 	} else {
-		m.log.Info("Rematado: %d fonte(s) procesada(s). A bóveda está lista.", feitas)
+		m.log.Info("rex.rematado", "Rematado: %d fonte(s) procesada(s). A bóveda está lista.", feitas)
 	}
 	return nil
 }

@@ -170,21 +170,21 @@ func (m *Mestre) ProcurarPDFs(ctx context.Context, ia *ClienteIA, urls []string,
 func (m *Mestre) procurarUnha(ctx context.Context, ia *ClienteIA, entrada, instrucion string) {
 	instrucion = strings.TrimSpace(instrucion)
 	if instrucion != "" && ia == nil {
-		m.log.Aviso("Sen IA non se pode aplicar a instrución «%s»: engádense os PDF sen filtrar.", instrucion)
+		m.log.Aviso("rex.sen_ia_instrucion", "Sen IA non se pode aplicar a instrución «%s»: engádense os PDF sen filtrar.", instrucion)
 	}
 	base, err := url.Parse(entrada)
 	if err != nil || (base.Scheme != "http" && base.Scheme != "https") || base.Host == "" {
-		m.log.Erro("«%s» non é unha URL válida (http ou https)", entrada)
+		m.log.Erro("rex.url_non_valida", "«%s» non é unha URL válida (http ou https)", entrada)
 		return
 	}
 	if ePDFPorURL(base) {
 		m.EngadirURLs([]string{entrada})
 		return
 	}
-	m.log.Info("Procurando PDF en %s", entrada)
+	m.log.Info("rex.procurando", "Procurando PDF en %s", entrada)
 	corpo, ePdf, final, err := obterPaxina(ctx, m.cliente, entrada)
 	if err != nil {
-		m.log.Erro("%s: %v", entrada, err)
+		m.log.Erro("rex.erro_en", "%s: %v", entrada, err)
 		return
 	}
 	if ePdf {
@@ -196,10 +196,10 @@ func (m *Mestre) procurarUnha(ctx context.Context, ia *ClienteIA, entrada, instr
 		pdfs = m.explorar(ctx, ia, final, paxinas, instrucion)
 	}
 	if len(pdfs) == 0 {
-		m.log.Aviso("%s: non se atopou ningún PDF.", entrada)
+		m.log.Aviso("rex.sen_pdf", "%s: non se atopou ningún PDF.", entrada)
 		return
 	}
-	m.log.Info("%d PDF atopado(s).", len(pdfs))
+	m.log.Info("rex.pdf_atopados", "%d PDF atopado(s).", len(pdfs))
 	escollidos := pdfs
 	// Con instrución do usuario filtra aínda que haxa un só PDF.
 	if ia != nil && (len(pdfs) > 1 || instrucion != "") {
@@ -209,7 +209,7 @@ func (m *Mestre) procurarUnha(ctx context.Context, ia *ClienteIA, entrada, instr
 		}
 		idx, err := escollerIndices(ctx, ia, criterioPDF(m.materia, instrucion), cand, len(cand))
 		if err != nil {
-			m.log.Aviso("A IA non puido escoller (%v): engádense os primeiros %d.", err, min(len(pdfs), maxSenIA))
+			m.log.Aviso("rex.ia_non_escolle", "A IA non puido escoller (%v): engádense os primeiros %d.", err, min(len(pdfs), maxSenIA))
 			if len(escollidos) > maxSenIA {
 				escollidos = escollidos[:maxSenIA]
 			}
@@ -218,10 +218,10 @@ func (m *Mestre) procurarUnha(ctx context.Context, ia *ClienteIA, entrada, instr
 			for _, i := range idx {
 				escollidos = append(escollidos, cand[i])
 			}
-			m.log.Info("A IA escolleu %d de %d.", len(escollidos), len(pdfs))
+			m.log.Info("rex.ia_escolleu", "A IA escolleu %d de %d.", len(escollidos), len(pdfs))
 		}
 	} else if len(escollidos) > maxSenIA {
-		m.log.Aviso("Hai moitos PDF: engádense só os primeiros %d.", maxSenIA)
+		m.log.Aviso("rex.moitos_pdf", "Hai moitos PDF: engádense só os primeiros %d.", maxSenIA)
 		escollidos = escollidos[:maxSenIA]
 	}
 	var lista []string
@@ -248,16 +248,16 @@ func (m *Mestre) explorar(ctx context.Context, ia *ClienteIA, base *url.URL, pax
 	}
 	idx, err := escollerIndices(ctx, ia, fmt.Sprintf("A páxina non ten PDF directos. Escolle como máximo %d ligazóns con máis probabilidade de levar a documentos PDF útiles para unha wiki sobre: %s.%s", maxPaxinasExplor, m.materia, sufixoInstrucion(instrucion)), mesma, maxPaxinasExplor)
 	if err != nil {
-		m.log.Aviso("A IA non puido escoller páxinas que explorar: %v", err)
+		m.log.Aviso("rex.ia_non_explora", "A IA non puido escoller páxinas que explorar: %v", err)
 		return nil
 	}
 	var out []Ligazon
 	vistos := map[string]bool{}
 	for _, i := range idx {
-		m.log.Info("Explorando %s", mesma[i].URL)
+		m.log.Info("rex.explorando", "Explorando %s", mesma[i].URL)
 		corpo, ePdf, final, err := obterPaxina(ctx, m.cliente, mesma[i].URL)
 		if err != nil {
-			m.log.Aviso("%s: %v", mesma[i].URL, err)
+			m.log.Aviso("rex.erro_en", "%s: %v", mesma[i].URL, err)
 			continue
 		}
 		if ePdf {

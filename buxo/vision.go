@@ -274,7 +274,7 @@ func (m *Mestre) transcribirPaxinas(ctx context.Context, ia *ClienteIA, paxinas 
 			return "", fmt.Errorf("%s: %w", desc, err)
 		}
 		if t.Truncado {
-			m.log.Aviso("%s: a resposta da IA cortouse polo límite de tokens (auméntao nas Opcións de Lua)", desc)
+			m.log.Aviso("rex.tokens", "%s: a resposta da IA cortouse polo límite de tokens (auméntao nas Opcións de Lua)", desc)
 		}
 		texto := limparValado(t.Texto)
 		texto = figuraRe.ReplaceAllStringFunc(texto, func(f string) string {
@@ -294,7 +294,7 @@ func (m *Mestre) transcribirPaxinas(ctx context.Context, ia *ClienteIA, paxinas 
 			nFig++
 			nome := fmt.Sprintf("%s-p%d-%d.png", base, p.Numero, nFig)
 			if err := m.recortarFigura(p.Ruta, caixa, nome); err != nil {
-				m.log.Aviso("%s: non se puido recortar unha figura (%v): vai a páxina enteira", desc, err)
+				m.log.Aviso("rex.figura", "%s: non se puido recortar unha figura (%v): vai a páxina enteira", desc, err)
 				nome = fmt.Sprintf("%s-p%d.png", base, p.Numero)
 				if err := copiarImaxe(p.Ruta, filepath.Join(m.raiz, dirRaw, dirImaxes, nome)); err != nil {
 					return "*[Figura: " + g[1] + "]*"
@@ -386,7 +386,7 @@ func (m *Mestre) converterConVision(ctx context.Context, it *Item, motivo string
 	} else if paxinas, err = renderizarPDF(ctx, orixe, tmp); err != nil {
 		return err
 	}
-	m.log.Info("%s: %s; a IA le %d páxina(s)…", it.Nome, motivo, len(paxinas))
+	m.log.Info("rex.ia_le", "%s: %s; a IA le %d páxina(s)…", it.Nome, motivo, len(paxinas))
 	md, err := m.transcribirPaxinas(ctx, ia, paxinas, base, func(s string) {
 		m.poñer(it, func(i *Item) { i.Detalle = s })
 	})

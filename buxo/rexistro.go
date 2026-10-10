@@ -9,6 +9,8 @@ import (
 	"path/filepath"
 	"sync"
 	"time"
+
+	"edicion/idioma"
 )
 
 // Liña é unha liña do rexistro tal e como a recibe o frontend.
@@ -34,8 +36,9 @@ func NovoRexistro(ficheiro string, emitir func(Liña)) *Rexistro {
 	return &Rexistro{ficheiro: ficheiro, emitir: emitir}
 }
 
-func (r *Rexistro) escribir(nivel, formato string, a ...any) {
-	l := Liña{Hora: time.Now().Format("15:04:05"), Nivel: nivel, Texto: fmt.Sprintf(formato, a...)}
+func (r *Rexistro) escribir(nivel, clave, galego string, a ...any) {
+	// O panel vai no idioma de Lua; buxo.log, sempre en galego.
+	l := Liña{Hora: time.Now().Format("15:04:05"), Nivel: nivel, Texto: idioma.T(clave, galego, a...)}
 	r.mu.Lock()
 	r.historial = append(r.historial, l)
 	if len(r.historial) > maxHistorialRexistro {
@@ -46,7 +49,7 @@ func (r *Rexistro) escribir(nivel, formato string, a ...any) {
 	if ficheiro != "" {
 		_ = os.MkdirAll(filepath.Dir(ficheiro), 0o755)
 		if f, err := os.OpenFile(ficheiro, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644); err == nil {
-			fmt.Fprintf(f, "%s %-5s %s\n", time.Now().Format("2006-01-02 15:04:05"), nivel, l.Texto)
+			fmt.Fprintf(f, "%s %-5s %s\n", time.Now().Format("2006-01-02 15:04:05"), nivel, fmt.Sprintf(galego, enGalego(a)...))
 			f.Close()
 		}
 	}
@@ -55,9 +58,24 @@ func (r *Rexistro) escribir(nivel, formato string, a ...any) {
 	}
 }
 
-func (r *Rexistro) Info(formato string, a ...any)  { r.escribir("info", formato, a...) }
-func (r *Rexistro) Aviso(formato string, a ...any) { r.escribir("aviso", formato, a...) }
-func (r *Rexistro) Erro(formato string, a ...any)  { r.escribir("erro", formato, a...) }
+// enGalego substitúe os erros traducibles polo seu texto galego, para o log.
+func enGalego(args []any) []any {
+	out := make([]any, len(args))
+	for i, a := range args {
+		if err, ok := a.(error); ok {
+			out[i] = idioma.Galego(err)
+		} else {
+			out[i] = a
+		}
+	}
+	return out
+}
+
+// Info, Aviso e Erro escriben unha liña: clave do dicionario, formato galego
+// (o mesmo de gl.json) e argumentos, coma en fmt.Sprintf.
+func (r *Rexistro) Info(clave, galego string, a ...any)  { r.escribir("info", clave, galego, a...) }
+func (r *Rexistro) Aviso(clave, galego string, a ...any) { r.escribir("aviso", clave, galego, a...) }
+func (r *Rexistro) Erro(clave, galego string, a ...any)  { r.escribir("erro", clave, galego, a...) }
 
 // Historial devolve as liñas gardadas en memoria.
 func (r *Rexistro) Historial() []Liña {

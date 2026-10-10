@@ -232,7 +232,7 @@ func (a *App) Construir() error {
 	emitir(eventoEstado, a.Estado())
 	go func() {
 		if err := a.mestre.Construir(ctx, a.ia); err != nil && ctx.Err() == nil {
-			a.log.Erro("%v", err)
+			a.log.Erro("rex.erro", "%v", err)
 		}
 		a.mu.Lock()
 		a.construindo, a.cancelar = false, nil

@@ -120,10 +120,10 @@ func (m *Mestre) visorIA() {
 			switch {
 			case err == nil:
 				m.poñer(t.it, func(i *Item) { i.Estado, i.Detalle = estFeito, "" })
-				m.log.Info("Convertido coa IA raw/%s", nomeMD(t.it.Nome))
+				m.log.Info("rex.convertido_ia", "Convertido coa IA raw/%s", nomeMD(t.it.Nome))
 			case t.textoPrevio:
 				m.poñer(t.it, func(i *Item) { i.Estado, i.Detalle, i.Vision = estFeito, "", "" })
-				m.log.Aviso("%s: a IA non o puido ler (%v); queda o texto de markitdown (sen fórmulas nin debuxos)", t.it.Nome, err)
+				m.log.Aviso("rex.ia_non_le", "%s: a IA non o puido ler (%v); queda o texto de markitdown (sen fórmulas nin debuxos)", t.it.Nome, err)
 			default:
 				m.fallar(t.it, err.Error())
 			}
@@ -238,10 +238,10 @@ func (m *Mestre) obter(it *Item) {
 	var err error
 	if it.Orixe == "url" {
 		m.poñer(it, func(i *Item) { i.Estado = estDescargando })
-		m.log.Info("Descargando %s", it.Fonte)
+		m.log.Info("rex.descargando", "Descargando %s", it.Fonte)
 		nome, err = DescargarPDF(m.ctx, m.cliente, it.Fonte, dir)
 	} else {
-		m.log.Info("Copiando %s", it.Fonte)
+		m.log.Info("rex.copiando", "Copiando %s", it.Fonte)
 		nome, err = CopiarFicheiro(it.Fonte, dir)
 	}
 	if err != nil {
@@ -249,7 +249,7 @@ func (m *Mestre) obter(it *Item) {
 		return
 	}
 	m.poñer(it, func(i *Item) { i.Nome, i.Estado = nome, estConvertendo })
-	m.log.Info("Gardado pdf/%s", nome)
+	m.log.Info("rex.gardado", "Gardado pdf/%s", nome)
 	m.encamiñar(it)
 }
 
@@ -293,7 +293,7 @@ func (m *Mestre) converterMarkdown(it *Item) {
 			md, conversion = novo, "markdown (fórmulas pasadas a LaTeX coa IA)"
 			m.poñer(it, func(i *Item) { i.Vision = "fórmulas en texto plano" })
 		} else if err.Error() != "sen IA" {
-			m.log.Aviso("%s: non se puideron pasar as fórmulas a LaTeX (%v); queda tal cal", it.Nome, err)
+			m.log.Aviso("rex.formulas_fallan", "%s: non se puideron pasar as fórmulas a LaTeX (%v); queda tal cal", it.Nome, err)
 		}
 	}
 	if err := m.escribirRaw(it, md, conversion); err != nil {
@@ -301,12 +301,12 @@ func (m *Mestre) converterMarkdown(it *Item) {
 		return
 	}
 	m.poñer(it, func(i *Item) { i.Estado, i.Detalle = estFeito, "" })
-	m.log.Info("Engadido raw/%s", nomeMD(it.Nome))
+	m.log.Info("rex.engadido", "Engadido raw/%s", nomeMD(it.Nome))
 }
 
 func (m *Mestre) fallar(it *Item, motivo string) {
 	m.poñer(it, func(i *Item) { i.Estado, i.Erro = estErro, motivo })
-	m.log.Erro("%s: %s (sáltase)", nomeAmosable(it), motivo)
+	m.log.Erro("rex.saltase_motivo", "%s: %s (sáltase)", nomeAmosable(it), motivo)
 }
 
 func nomeAmosable(it *Item) string {
@@ -365,7 +365,7 @@ func (m *Mestre) converterLote(lote []*Item) {
 		porRuta[p] = it
 		rutas = append(rutas, p)
 	}
-	m.log.Info("Convertendo %d PDF a Markdown…", len(rutas))
+	m.log.Info("rex.convertendo", "Convertendo %d PDF a Markdown…", len(rutas))
 	raw := filepath.Join(m.raiz, dirRaw)
 	err := ConverterPDFs(m.ctx, sidecar, raw, rutas, func(r ResultadoConversion) {
 		it := porRuta[r.Entrada]
@@ -390,7 +390,7 @@ func (m *Mestre) converterLote(lote []*Item) {
 			}
 		}
 		m.poñer(it, func(i *Item) { i.Estado = estFeito })
-		m.log.Info("Convertido raw/%s", filepath.Base(r.Saida))
+		m.log.Info("rex.convertido", "Convertido raw/%s", filepath.Base(r.Saida))
 	})
 	if err != nil {
 		for _, it := range lote {
