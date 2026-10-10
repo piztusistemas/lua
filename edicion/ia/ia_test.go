@@ -77,3 +77,20 @@ func TestExtraerJSON(t *testing.T) {
 		}
 	}
 }
+
+// As imaxes que manda un módulo pola API local (Buxo: páxinas dun PDF) viaxan
+// no JSON da mensaxe coma "imaxes", igual ca no tipo que usaba Lúa.
+func TestIAMensaxeLevaImaxesEnJSON(t *testing.T) {
+	m := IAMensaxe{Rol: "user", Texto: "x", Imaxes: []string{"data:image/png;base64,QUJD"}}
+	b, err := json.Marshal(m)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var volta IAMensaxe
+	if err := json.Unmarshal(b, &volta); err != nil || len(volta.Imaxes) != 1 || volta.Imaxes[0] != m.Imaxes[0] {
+		t.Errorf("imaxes perdidas no JSON: %s", b)
+	}
+	if b2, _ := json.Marshal(IAMensaxe{Rol: "user"}); strings.Contains(string(b2), `"imaxes"`) {
+		t.Errorf("sen imaxes, o campo non debe saír: %s", b2)
+	}
+}

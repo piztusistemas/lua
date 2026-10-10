@@ -66,6 +66,10 @@ type IAMensaxe struct {
 	// (adxuntos.go). As imaxes van á vista da IA; dos documentos vai o
 	// contido se é curto, ou o aviso de que os lea con adxunto_ler.
 	Adxuntos []string `json:"adxuntos"`
+	// Imaxes: imaxes en data URI que manda un módulo pola API local (Buxo:
+	// as páxinas dun PDF para transcribilas). A aplicación resólveas a
+	// ImaxesIA antes de pedir o turno.
+	Imaxes []string `json:"imaxes,omitempty"`
 	// ImaxesIA: as imaxes que van con esta mensaxe.
 	ImaxesIA []Imaxe `json:"-"`
 }
