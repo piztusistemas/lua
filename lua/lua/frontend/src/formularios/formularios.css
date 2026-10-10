@@ -8,6 +8,16 @@
 .ferramenta-btn--novo { border: 1px dashed var(--border-strong); color: var(--text-faint); }
 .ferramenta-btn--novo:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-soft); }
 .ferramenta-btn--novo svg { width: 20px; height: 20px; }
+/* Proxectos: a porta de entrada ao traballo, destacada coa cor principal
+   (fondo cheo e icona branca), distinta das iconas de liña dos formularios. */
+.ferramenta-btn--proxectos {
+    color: #fff; background: var(--primary); border-color: var(--primary);
+    box-shadow: 0 1px 3px color-mix(in oklab, var(--primary) 40%, transparent);
+}
+.ferramenta-btn--proxectos:hover {
+    color: #fff; background: var(--primary-hover); border-color: var(--primary-hover);
+}
+.ferramenta-btn--proxectos svg { width: 22px; height: 22px; }
 
 /* ---------- Modo do formulario: DESEÑO (vermello) e PRODUCIÓN (verde) ----------
    Na columna esquerda a icona leva a cor PROPIA do formulario (iconas.js,
