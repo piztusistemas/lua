@@ -1,6 +1,7 @@
 package main
 
 import (
+	"edicion/latex"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -74,7 +75,7 @@ func TestPresetsFonteCompilanConXelatex(t *testing.T) {
 	if !commandExists("xelatex") {
 		t.Skip("xelatex non está instalado")
 	}
-	for id := range presetsFonte {
+	for _, id := range latex.PresetsFonte() {
 		dir := t.TempDir()
 		tex := "\\documentclass{article}\n\\usepackage{fontspec}\n" +
 			tipografiaPreambulo(&TipografiaOpts{Fonte: id}, "xelatex") +

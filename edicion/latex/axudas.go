@@ -328,3 +328,13 @@ func TrimFloat(f float64) string {
 	s = strings.TrimRight(s, "0")
 	return strings.TrimRight(s, ".")
 }
+
+// PresetsFonte devolve as claves das fontes predefinidas (serif, sans...), en orde.
+func PresetsFonte() []string {
+	out := make([]string, 0, len(presetsFonte))
+	for k := range presetsFonte {
+		out = append(out, k)
+	}
+	sort.Strings(out)
+	return out
+}
