@@ -48,3 +48,13 @@ Fallbacks: sen config.yaml (ordes da constitución); sen subaxentes.
 - green: 8/8 tests vitest; `npm run build` ok; `go test ./...` e `go vet` en buxo verdes; bindings rexenerados con `Idioma()`
 - files: frontend/src/{i18n.js,i18n.test.js,main.js,util.js}, frontend/index.html (24 data-i18n*), frontend/vitest.config.js, frontend/package.json (jsdom), app.go (Idioma(), título do diálogo), idiomas/*.json (48 claves ui.*/dialogo.*)
 - decision: i18n.js importa só es/en/pt; o galego vai no propio código (t(clave, galego)), coma en Lua
+
+## T007 — 2026-10-10
+- status: complete
+- red (mutacións): clave inexistente no JS, galego distinto no Go → «2 problemas en 135 textos»; `%s` en vez de `%d` en es → «verbos [%s], en galego [%d]»
+- green: sen mutacións, verde
+- files: buxo/i18n_test.go
+
+## T008 — 2026-10-10
+- status: complete
+- check: os catro dicionarios teñen as mesmas claves (TestIdiomasDeBuxoCoinciden verde); traducións feitas en T004-T006, coma no plan irmán
