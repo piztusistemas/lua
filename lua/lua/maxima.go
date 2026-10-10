@@ -7,7 +7,7 @@ package main
 
 import (
 	"bytes"
-	"fmt"
+	"edicion/idioma"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -106,7 +106,7 @@ func (a *App) InstallMaxima() InstallStatus {
 			return InstallStatus{Log: "Non se atopou un xestor de paquetes coñecido (apt/dnf/pacman/zypper). Instala Maxima manualmente."}
 		}
 		if !commandExists("pkexec") {
-			return InstallStatus{Log: fmt.Sprintf("Non se atopou 'pkexec' para pedir permisos de administrador. Instala manualmente nun terminal cos comandos de %s.", mgrName)}
+			return InstallStatus{Log: idioma.T("go.instalar.sen_pkexec", "Non se atopou 'pkexec' para pedir permisos de administrador. Instala manualmente nun terminal cos comandos de %s.", mgrName)}
 		}
 		cmd = exec.Command("pkexec", argv...)
 	case "windows":

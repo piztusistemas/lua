@@ -60,3 +60,8 @@ Fallbacks: sen `02-DOCS/wiki/sdd/config.yaml` (ordes da constitución: gofmt, go
 - claves: 6 (go.maxima.*, go.problemas.*), 7 sitios
 - F3 da análise: `edicion/xerar/problemas.go:301` busca «timeout»/«tempo»; a mensaxe de Maxima sen resposta non contén ningún, nin antes nin nas traducións (evitados a propósito) → comportamento igual
 - nota: `probas.go:154` («non se cumpre » + c, concatenado) non é da lista; queda en galego
+
+## T008 — 2026-10-10
+- status: complete
+- green: `go test ./...` e `go vet` en lua/lua verdes; `GOOS=windows go vet` limpo (linux non se pode comprobar desde macOS: Wails precisa cgo)
+- claves: 1 (go.instalar.sen_pkexec), 2 sitios (installer.go, maxima.go)

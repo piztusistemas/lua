@@ -1076,5 +1076,6 @@
   "go.problemas.condicion": "“%s” does not hold",
   "go.problemas.condicion_maxima": "“%s” does not hold (Maxima says %s)",
   "go.problemas.variable_inexistente": "%s: {%s} is in a formula but is not a variable",
-  "go.problemas.sen_solucion": "question %s: no solution yet"
+  "go.problemas.sen_solucion": "question %s: no solution yet",
+  "go.instalar.sen_pkexec": "'pkexec' was not found to request administrator permissions. Install manually in a terminal with the %s commands."
 }

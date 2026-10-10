@@ -1076,5 +1076,6 @@
   "go.problemas.condicion": "non se cumpre «%s»",
   "go.problemas.condicion_maxima": "non se cumpre «%s» (Maxima di %s)",
   "go.problemas.variable_inexistente": "%s: {%s} está nunha fórmula pero non é ningunha variable",
-  "go.problemas.sen_solucion": "pregunta %s: aínda non ten solución"
+  "go.problemas.sen_solucion": "pregunta %s: aínda non ten solución",
+  "go.instalar.sen_pkexec": "Non se atopou 'pkexec' para pedir permisos de administrador. Instala manualmente nun terminal cos comandos de %s."
 }
