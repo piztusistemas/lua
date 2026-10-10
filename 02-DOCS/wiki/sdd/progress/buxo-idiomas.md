@@ -64,3 +64,7 @@ Fallbacks: sen config.yaml (ordes da constitución); sen subaxentes.
 - red: TestBuxoIdioma → `a.entornoBuxo undefined`
 - green: verde; o lanzador usa `entornoBuxo`, que engade BUXO_IDIOMA co idioma efectivo e conserva a API local
 - files: lua/lua/buxo_modulo.go, lua/lua/idioma_go_test.go
+
+## T010 — 2026-10-10
+- status: complete (falta a revisión visual do usuario)
+- check: suites de Go e vitest verdes (ver mensaxes-go-idiomas T015); a xanela de Buxo con BUXO_IDIOMA=en non se pode ver desde este entorno (sen capturas): revísaa o usuario

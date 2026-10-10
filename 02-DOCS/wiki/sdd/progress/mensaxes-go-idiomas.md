@@ -97,3 +97,8 @@ Fallbacks: sen `02-DOCS/wiki/sdd/config.yaml` (ordes da constitución: gofmt, go
 ## T014 — 2026-10-10
 - status: complete
 - check: `cd yang/yang && go test ./...` dá os mesmos fallos ca a liña base (`matexe-wails [build failed]`, `TestSetDecimaisRoundsFloatingResults`); só cambian os tempos
+
+## T015 — 2026-10-10
+- status: complete
+- check: `gofmt -l`, `go vet ./...` e `go test ./...` limpos en edicion, lua/lua, buxo e lua/lua_installer; vitest de lua/lua/frontend 473/473 e de buxo/frontend 8/8, os dous desde `npm ci` limpo; Yang igual á liña base (T014)
+- arranxo: o frontend de Lua non declaraba jsdom (só en overrides) e o lock non tiña @csstools/css-parser-algorithms; un `npm ci` limpo deixaba 14 ficheiros de test sen executar. jsdom pasa a devDependency
