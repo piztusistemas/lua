@@ -37,3 +37,12 @@ Autopiloto (aprobación do usuario: «Autopiloto»). Rama `refactor-duplicados` 
 - status: complete
 - 13 funcións + 9 dependencias movidas de edicion/documento/latex.go a edicion/latex/axudas.go (exportadas); documento queda con adaptadores dunha liña
 - green: `go test ./...` en edicion verde; Yang (con -modfile apuntando a este edicion) igual á liña base
+
+## T006 — 2026-10-10
+- status: complete
+- Lúa: latexdoc.go deixa as 13 copias (22 bloques) e queda con GeneratePDFResult e adaptadores dunha liña a edicion/latex; novo `latex.PresetsFonte()` para o test que percorría o mapa
+- green: TestCaracterizacionLatex verde (141 entradas idénticas)
+
+## T007 — 2026-10-10
+- status: complete
+- check: go vet e go test verdes en edicion, lua/lua e buxo; vitest de Lúa 487/487; Yang igual á liña base (con -modfile cara a este edicion)
