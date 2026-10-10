@@ -32,3 +32,8 @@ Autopiloto (aprobación do usuario: «Autopiloto»). Rama `refactor-duplicados` 
 - cambios: Lúa usa edicion/ia (alias de tipos, configDe, chamarIA = 1 volta + limpeza de valados, chamarIAConversa = ia.Turno); `imaxeIA = ia.Imaxe`; novo `ia.Config.Validar()` para `comprobarIA`
 - tests: os que chamaban ás funcións internas borradas (formato de fío por provedor, imaxes, asistente) pasan agora pola entrada pública chamarIA/chamarIAConversa coas mesmas comprobacións; ningún eliminado
 - resultado: ia_client.go + ia_conversa.go de Lúa pasan de ~900 a 180 liñas, sen código de envío propio
+
+## T005 — 2026-10-10
+- status: complete
+- 13 funcións + 9 dependencias movidas de edicion/documento/latex.go a edicion/latex/axudas.go (exportadas); documento queda con adaptadores dunha liña
+- green: `go test ./...` en edicion verde; Yang (con -modfile apuntando a este edicion) igual á liña base
