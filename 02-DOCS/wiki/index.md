@@ -15,6 +15,8 @@ topic: index
 | Rexistro de decisións | [sdd/decisions.md](sdd/decisions.md) |
 | Spec: Buxo no idioma de Lua (clarified) | [sdd/specs/buxo-idiomas.md](sdd/specs/buxo-idiomas.md) |
 | Spec: mensaxes frecuentes de Lua no idioma activo (clarified) | [sdd/specs/mensaxes-go-idiomas.md](sdd/specs/mensaxes-go-idiomas.md) |
+| Plan: Buxo no idioma de Lua (draft) | [sdd/plans/buxo-idiomas.md](sdd/plans/buxo-idiomas.md) |
+| Plan: mensaxes frecuentes, coa lista de 74 (draft) | [sdd/plans/mensaxes-go-idiomas.md](sdd/plans/mensaxes-go-idiomas.md) |
 | Arquitectura: pezas, paquetes, ferramentas externas, versións | [arquitectura.md](arquitectura.md) |
 | Desenvolvemento: preparar, probar, compilar, publicar, trampas | [desenvolvemento.md](desenvolvemento.md) |
 | Que fai Lua, ferramenta a ferramenta | [../../lua/README.md](../../lua/README.md) |
