@@ -51,3 +51,9 @@ topic: sdd
 - Opcións: traducir os 341 erros do Go · só os frecuentes · ningún; Buxo co idioma de Lua · con selector propio.
 - Decisión: dúas specs (`buxo-idiomas`, `mensaxes-go-idiomas`). Só as mensaxes frecuentes do Go; Buxo segue o idioma de Lua; as respostas para a IA e os rexistros quedan en galego.
 - Porqué: o custo de traducir erros raros que case ninguén ve non compensa; os frecuentes din como arranxar un problema.
+
+## 2026-10-10 — Deseño das traducións do Go e de Buxo
+- Decisión: un tradutor común novo, `edicion/idioma`, que usan Lua e Buxo. Os erros tradúcense ao lelos (`Error()`), non no frontend.
+- Opcións descartadas: códigos de erro traducidos en JS (habería que tocar ~40 bindings); un tradutor propio en Buxo (duplicaría código, contra a regra 1.3).
+- Lua pásalle o idioma a Buxo coa variable de entorno `BUXO_IDIOMA`, non cun argumento: un Buxo vello péchase cun argumento descoñecido.
+- O rexistro de Buxo garda clave + argumentos: así o panel sae traducido e `buxo.log` en galego.
