@@ -173,7 +173,7 @@ func (a *App) abrirBuxo(raiz, materia, id string) error {
 
 	cmd := exec.Command(filepath.Join(dir, nomeExecutableBuxo()), "--boveda", raiz, "--materia", materia, "--id", id)
 	cmd.Dir = dir
-	cmd.Env = append(os.Environ(), api.EnvURL+"="+url, api.EnvToken+"="+token)
+	cmd.Env = a.entornoBuxo(url, token)
 	// Sen plataforma.OcultarConsola: buxo é unha GUI, e en Windows HideWindow
 	// pasaríalle SW_HIDE no STARTUPINFO, que a súa primeira ShowWindow obedece:
 	// a xanela creábase pero quedaba oculta para sempre.
@@ -190,4 +190,11 @@ func (a *App) abrirBuxo(raiz, materia, id string) error {
 		a.api.Revogar("buxo:" + id)
 	}()
 	return nil
+}
+
+// entornoBuxo é o entorno co que Lua lanza Buxo: a API local e o idioma
+// efectivo da interface. O idioma vai nunha variable e non nun argumento
+// para que un Buxo vello, que non a coñece, simplemente a ignore.
+func (a *App) entornoBuxo(url, token string) []string {
+	return append(os.Environ(), api.EnvURL+"="+url, api.EnvToken+"="+token, "BUXO_IDIOMA="+a.idiomaEfectivo())
 }

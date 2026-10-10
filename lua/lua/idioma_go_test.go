@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"slices"
 	"testing"
 
 	"edicion/idioma"
@@ -42,5 +43,24 @@ func TestIdiomaGoSegueOIdiomaEfectivo(t *testing.T) {
 	}
 	if got := idioma.Actual(); got != "es" {
 		t.Errorf("sen idioma propio: %q, quería o de Piztu (es)", got)
+	}
+}
+
+// Plan buxo-idiomas T009: Lua pásalle a Buxo o idioma efectivo en
+// BUXO_IDIOMA (variable de entorno: un Buxo vello ignóraa).
+func TestBuxoIdioma(t *testing.T) {
+	a := NewApp()
+	a.settings = Settings{Idioma: "pt"}
+	if env := a.entornoBuxo("http://127.0.0.1:1", "tok"); !slices.Contains(env, "BUXO_IDIOMA=pt") {
+		t.Errorf("con Opcións en pt, falta BUXO_IDIOMA=pt")
+	}
+	a.settings = Settings{}
+	a.idiomaPiztu = "es"
+	env := a.entornoBuxo("http://127.0.0.1:1", "tok")
+	if !slices.Contains(env, "BUXO_IDIOMA=es") {
+		t.Errorf("sen idioma propio, falta o de Piztu (BUXO_IDIOMA=es)")
+	}
+	if !slices.Contains(env, "PIZTU_API_TOKEN=tok") {
+		t.Errorf("o entorno perdeu o token da API")
 	}
 }

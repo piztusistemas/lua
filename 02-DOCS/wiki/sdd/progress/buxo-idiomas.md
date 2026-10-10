@@ -58,3 +58,9 @@ Fallbacks: sen config.yaml (ordes da constitución); sen subaxentes.
 ## T008 — 2026-10-10
 - status: complete
 - check: os catro dicionarios teñen as mesmas claves (TestIdiomasDeBuxoCoinciden verde); traducións feitas en T004-T006, coma no plan irmán
+
+## T009 — 2026-10-10
+- status: complete
+- red: TestBuxoIdioma → `a.entornoBuxo undefined`
+- green: verde; o lanzador usa `entornoBuxo`, que engade BUXO_IDIOMA co idioma efectivo e conserva a API local
+- files: lua/lua/buxo_modulo.go, lua/lua/idioma_go_test.go
