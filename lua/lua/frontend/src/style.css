@@ -125,17 +125,14 @@ html, body, #app {
     margin-right: 0.3rem;
 }
 
-/* Tile arredondada tras a mascota, para que a marca lea coma parte do
-   sistema visual. */
+/* A mascota vai solta (o PNG xa é transparente), sen recadro, e grande para
+   que teña presenza. A marxe negativa evita que a barra medre con ela. */
 
 #brandLogo {
-    width: 34px;
-    height: 34px;
+    width: 48px;
+    height: 48px;
     object-fit: contain;
-    padding: 4px;
-    border-radius: var(--radius-sm);
-    background: var(--primary-soft);
-    border: 1px solid var(--primary-soft-border);
+    margin: -7px 0;
 }
 
 #brandName {
