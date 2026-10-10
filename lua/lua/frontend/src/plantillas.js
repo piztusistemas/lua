@@ -108,7 +108,7 @@ export async function abrirBibliotecaPlantillas({ t, api, ficheiroActual, onEsco
     const lista = el('div', 'plantillas-lista')
     lista.appendChild(fila({
       nome: t('plantillas.none', 'Ningunha'),
-      descricion: t('plantillas.noneDesc', 'O informe sae coa maqueta por defecto de Lua.'),
+      descricion: t('plantillas.noneDesc', 'O informe sae coa maqueta por defecto de Lúa.'),
       activa: !estado.activa,
       accions: [],
       onUsar: () => escoller(''),

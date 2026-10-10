@@ -269,7 +269,7 @@ export function abrirDisenador({ t: tIn, esquema, api, confirmar, obterDatos = (
       props.append(texto(c.tipo === 'seccion' ? t('formularios.dis.titulo.seccion', 'Título da sección') : t('formularios.dis.etiqueta', 'Etiqueta'), c.etiqueta, (v) => cambiar({ etiqueta: v }), { maxlength: '120' }))
       if (c.tipo !== 'seccion') {
         props.append(texto(t('formularios.dis.axuda', 'Axuda (opcional)'), c.axuda, (v) => cambiar({ axuda: v }), { maxlength: '200' }))
-        props.append(marcaProp(t('formularios.dis.obrigatorio', 'Obrigatorio'), c.obrigatorio, (v) => cambiar({ obrigatorio: v }), t('formularios.dis.obrigatorio.title', 'Se falta, Lua avisa ao xerar (pero xera o documento igual)')))
+        props.append(marcaProp(t('formularios.dis.obrigatorio', 'Obrigatorio'), c.obrigatorio, (v) => cambiar({ obrigatorio: v }), t('formularios.dis.obrigatorio.title', 'Se falta, Lúa avisa ao xerar (pero xera o documento igual)')))
         props.append(marcaProp(t('formularios.dis.agochado.opcion', 'Non sacar no documento'), c.agochado, (v) => cambiar({ agochado: v }), t('formularios.dis.agochado.title', 'O dato só se usa na plantilla (cabeceira, pé…), non no corpo')))
       }
       if (c.tipo === 'escolla') {

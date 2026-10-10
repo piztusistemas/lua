@@ -405,17 +405,17 @@ var (
 func adaptarEsquema(orixe string, s Settings) string {
 	t := orixe
 	t = reClaudeMD.ReplaceAllString(t, "LUA.md")
-	t = reClaudeCode.ReplaceAllString(t, "o asistente de Lua")
-	t = reClaude.ReplaceAllString(t, "o asistente de Lua")
+	t = reClaudeCode.ReplaceAllString(t, "o asistente de Lúa")
+	t = reClaude.ReplaceAllString(t, "o asistente de Lúa")
 	sha := sha256.Sum256([]byte(orixe))
 	ia := "a IA configurada en Opcións"
 	if m := strings.TrimSpace(s.IAModel); m != "" {
-		ia = "a IA configurada en Opcións de Lua (modelo " + m + ")"
+		ia = "a IA configurada en Opcións de Lúa (modelo " + m + ")"
 	}
 	var b strings.Builder
 	fmt.Fprintf(&b, "%s%s -->\n", marcaLuaMD, hex.EncodeToString(sha[:]))
-	b.WriteString("# LUA.md · esquema da wiki adaptado ao asistente de Lua\n\n")
-	b.WriteString("> Copia xerada automaticamente por Lua a partir de CLAUDE.md (que non se modifica) e adaptada a " + ia + ".\n")
+	b.WriteString("# LUA.md · esquema da wiki adaptado ao asistente de Lúa\n\n")
+	b.WriteString("> Copia xerada automaticamente por Lúa a partir de CLAUDE.md (que non se modifica) e adaptada a " + ia + ".\n")
 	b.WriteString("> Regenérase cando CLAUDE.md cambia: non edites este ficheiro, edita CLAUDE.md.\n\n")
 	b.WriteString(strings.TrimSpace(t))
 	b.WriteString(`
@@ -520,7 +520,7 @@ func (a *App) estadoBovedaRuta(documento, ruta string) BovedaEstado {
 		}
 	}
 	if !e.Esquema {
-		e.Avisos = append(e.Avisos, "Non hai CLAUDE.md nin buxo.md: Lua usa un esquema por defecto.")
+		e.Avisos = append(e.Avisos, "Non hai CLAUDE.md nin buxo.md: Lúa usa un esquema por defecto.")
 	}
 	if e.Wiki == 0 {
 		e.Avisos = append(e.Avisos, "A wiki aínda non ten páxinas.")

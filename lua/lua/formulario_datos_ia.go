@@ -41,7 +41,7 @@ var ferramentasFormularioDatos = []IAFerramenta{
 	},
 	{
 		Nome: "formulario_datos_cambiar", Tipo: tipoEscritura, Onde: "frontend",
-		Descricion: "Escribe datos no formulario aberto. Só toca o que indiques: 'valores' fusiona por id de campo (unha táboa substitúese ENTEIRA: manda a lista completa de filas); un valor null baleira o campo. Lua valida cada valor contra o tipo do campo e, se algún falla, non cambia nada e dí cal. Para CORRIXIR ou QUITAR información dunha táboa sen remandala enteira usa 'celas' (cambia ou baleira unha cela) e 'quitar_filas'. Podes desfacer co historial do programa (Ctrl+Z).",
+		Descricion: "Escribe datos no formulario aberto. Só toca o que indiques: 'valores' fusiona por id de campo (unha táboa substitúese ENTEIRA: manda a lista completa de filas); un valor null baleira o campo. Lúa valida cada valor contra o tipo do campo e, se algún falla, non cambia nada e dí cal. Para CORRIXIR ou QUITAR información dunha táboa sen remandala enteira usa 'celas' (cambia ou baleira unha cela) e 'quitar_filas'. Podes desfacer co historial do programa (Ctrl+Z).",
 		Parametros: esqObx(map[string]any{
 			"celas":        map[string]any{"type": "array", "description": "Cambios en celas soltas de táboas: [{campo, fila, columna, valor}]. 'fila' vai desde 1 (a numeración de formulario_datos_ler); valor null baleira a cela. Aplícanse sobre a táboa tal e como queda tras 'valores'.", "items": map[string]any{"type": "object"}},
 			"quitar_filas": map[string]any{"type": "object", "description": "Filas a quitar de táboas: {id_da_taboa: [números de fila desde 1]}. Aplícase o último, polo que os números son os da táboa antes de quitar nada."},

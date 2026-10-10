@@ -231,7 +231,7 @@ var ferramentasRexistro = []ferramentaBackend{
 	{
 		def: IAFerramenta{
 			Nome: "rexistro_listar", Tipo: tipoLectura, Onde: "backend",
-			Descricion: "Lista as últimas compilacións do documento que fixo Lua (e os debuxos TikZ que non compilaron), da máis recente á máis antiga: id, hora, documento, se saíron ben, o erro e os avisos. Úsaa SEMPRE que xerar falle ou haxa avisos, antes de cambiar nada.",
+			Descricion: "Lista as últimas compilacións do documento que fixo Lúa (e os debuxos TikZ que non compilaron), da máis recente á máis antiga: id, hora, documento, se saíron ben, o erro e os avisos. Úsaa SEMPRE que xerar falle ou haxa avisos, antes de cambiar nada.",
 		},
 		exec: func(_ *App, _ map[string]any) (any, error) {
 			rexistroInterno.Lock()

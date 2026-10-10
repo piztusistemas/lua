@@ -2,7 +2,7 @@
 import { t } from './i18n.js'
 
 export function textoEstado(e) {
-  if (!e.iaConfigurada) return t('ui.estado.sen_ia', 'Configura unha clave de IA en Lua (Opcións) para construír a bóveda.')
+  if (!e.iaConfigurada) return t('ui.estado.sen_ia', 'Configura unha clave de IA en Lúa (Opcións) para construír a bóveda.')
   if (e.fontes === 0) return t('ui.estado.sen_fontes', 'Aínda non hai PDF convertidos: engade ficheiros primeiro.')
   return t('ui.estado.listo', 'A IA le os documentos convertidos e constrúe a wiki')
 }

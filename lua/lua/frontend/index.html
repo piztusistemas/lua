@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Lua</title>
+    <title>Lúa</title>
     <link rel="icon" type="image/png" href="./src/assets/images/logo.png"/>
     <link rel="preconnect" href="https://fonts.googleapis.com"/>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
@@ -23,8 +23,8 @@
     </div>
     <div id="toolbar">
         <div id="brand">
-            <img id="brandLogo" src="./src/assets/images/logo.png" alt="Lua"/>
-            <span id="brandName">Lua</span>
+            <img id="brandLogo" src="./src/assets/images/logo.png" alt="Lúa"/>
+            <span id="brandName">Lúa</span>
             <span id="proxectoActivo" class="proxecto-activo" hidden></span>
         </div>
         <div class="toolbar-group">
@@ -89,7 +89,7 @@
                 <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="2.4"/><path d="M10 3v1.6M10 15.4V17M17 10h-1.6M4.6 10H3M14.9 5.1l-1.13 1.13M6.23 13.67 5.1 14.9M14.9 14.9l-1.13-1.13M6.23 6.23 5.1 5.1"/></svg>
                 <span data-i18n="toolbar.options.label">Opcións</span>
             </button>
-            <button id="btnAbout" data-i18n-title="toolbar.about.title" title="Sobre Lua">ℹ</button>
+            <button id="btnAbout" data-i18n-title="toolbar.about.title" title="Sobre Lúa">ℹ</button>
         </div>
         <!-- Progreso da compilación (ver progreso.js): só a barra, á dereita coma o estado. -->
         <div id="progresoXerar" class="progreso-xerar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" hidden>
@@ -149,7 +149,7 @@
         <div id="paneSplitter" role="separator" aria-orientation="vertical" data-i18n-aria-label="panes.splitter.aria" aria-label="Redimensionar editor/resultado"></div>
         <div class="pane pane-preview">
             <div class="pane-header pane-header-preview">
-                <label id="plantillaWrap" data-i18n-title="toolbar.plantilla.title" title="Plantilla (estilo): a cabeceira, o pé e a maqueta do centro que se aplican ao xerar e ao exportar. Lua lembra a que usa cada curso."><span data-i18n="toolbar.plantilla.label">Plantilla</span> <select id="plantillaSelect"></select></label>
+                <label id="plantillaWrap" data-i18n-title="toolbar.plantilla.title" title="Plantilla (estilo): a cabeceira, o pé e a maqueta do centro que se aplican ao xerar e ao exportar. Lúa lembra a que usa cada curso."><span data-i18n="toolbar.plantilla.label">Plantilla</span> <select id="plantillaSelect"></select></label>
                 <!-- Que se xera e imprime: só na ferramenta de actas (o curso enteiro ou unha acta). -->
                 <label id="ambitoWrap" hidden data-i18n-title="actas.ambito.title" title="Que documento se xera e se imprime: todas as actas do curso ou só unha"><select id="ambitoSelect" data-i18n-aria-label="actas.ambito.label" aria-label="Ámbito"></select></label>
                 <button id="btnPlantillas" data-i18n-title="toolbar.plantillas.title" title="Biblioteca de plantillas: crear, editar, importar ou exportar os estilos dos centros">
@@ -220,7 +220,7 @@
     <div id="warnings"></div>
     <!-- Panel de rexistro: mesmo deseño ca #log-panel de Piztu (ver
          DESIGN.md), pero MINIMIZADO por defecto (class="collapsed") - en
-         Lua é só unha axuda para depurar a compilación do informe, non o
+         Lúa é só unha axuda para depurar a compilación do informe, non o
          centro de atención da app. -->
     <div id="log-panel" class="collapsed">
         <div class="log-header">
@@ -271,12 +271,12 @@
                         <option value="lualatex" data-i18n="options.latexEngine.lualatex">lualatex (Unicode/fontes do sistema)</option>
                     </select>
                 </label>
-                <p class="modal-hint" data-i18n="options.latexEngine.hint">Se o compilador escollido non consegue xerar o informe, Lua proba os outros que teñas instalados. Unha plantilla pode esixir o seu propio compilador.</p>
+                <p class="modal-hint" data-i18n="options.latexEngine.hint">Se o compilador escollido non consegue xerar o informe, Lúa proba os outros que teñas instalados. Unha plantilla pode esixir o seu propio compilador.</p>
             </div>
 
             <div class="options-block options-block--maxima">
                 <h3 data-i18n="options.section.maxima">Maxima (cálculo dos problemas)</h3>
-                <p class="modal-hint" data-i18n="options.maxima.hint">Maxima calcula as fórmulas dos problemas (coma en Yang) e comproba as solucións da IA. Sen Maxima, Lua só calcula números e fórmulas simples.</p>
+                <p class="modal-hint" data-i18n="options.maxima.hint">Maxima calcula as fórmulas dos problemas (coma en Yang) e comproba as solucións da IA. Sen Maxima, Lúa só calcula números e fórmulas simples.</p>
                 <label class="modal-label">
                     <span data-i18n="options.maxima.ruta">Ruta de Maxima (baleiro = buscala)</span>
                     <input id="optMaximaPath" type="text" spellcheck="false" placeholder="/opt/homebrew/bin/maxima">
@@ -319,7 +319,7 @@
 
             <div class="options-block options-block--ia">
                 <h3 data-i18n="options.ia.title">Asistente de IA (opcional)</h3>
-                <p class="modal-hint" data-i18n="options.ia.hint">Só se usa para crear plantillas (estilos) a partir dunha descrición, un documento de mostra ou unha páxina web. Sen clave, o resto de Lua funciona igual.</p>
+                <p class="modal-hint" data-i18n="options.ia.hint">Só se usa para crear plantillas (estilos) a partir dunha descrición, un documento de mostra ou unha páxina web. Sen clave, o resto de Lúa funciona igual.</p>
                 <label class="modal-label">
                     <span data-i18n="options.iaProvider.label">Provedor de IA</span>
                     <select id="optIAPreset">
@@ -360,7 +360,7 @@
                     <input id="optBuxoActivo" type="checkbox">
                     <span data-i18n="options.buxo.activo">Activar Buxo (bóveda de coñecemento a partir de PDF)</span>
                 </label>
-                <p class="modal-hint" data-i18n="options.buxo.hint">Lua descarga e actualiza Buxo automaticamente desde GitHub. Só se ofrece ao usuario cando hai unha clave de IA configurada.</p>
+                <p class="modal-hint" data-i18n="options.buxo.hint">Lúa descarga e actualiza Buxo automaticamente desde GitHub. Só se ofrece ao usuario cando hai unha clave de IA configurada.</p>
                 <p id="buxoEstado" class="modal-hint"></p>
                 <button id="btnBuxoActualizar" type="button" data-i18n="options.buxo.actualizar">Comprobar actualizacións</button>
             </div>
@@ -374,10 +374,10 @@
 
 <div id="sobreOverlay" class="overlay hidden">
     <div class="modal">
-        <h2 data-i18n="about.title">Sobre Lua</h2>
-        <p class="sobre-nome" data-i18n="about.nome">Piztu Lua</p>
+        <h2 data-i18n="about.title">Sobre Lúa</h2>
+        <p class="sobre-nome" data-i18n="about.nome">Piztu Lúa</p>
         <div class="sobre-corpo">
-            <img src="./src/assets/images/logo.png" alt="Lua" class="sobre-logo">
+            <img src="./src/assets/images/logo.png" alt="Lúa" class="sobre-logo">
             <p id="sobreVersion" class="modal-hint"></p>
             <p id="sobreActualizacion" class="modal-hint actualizacion-aviso hidden"></p>
             <button id="btnActualizarLua" class="primary actualizacion-btn hidden"></button>
@@ -407,7 +407,7 @@
         <p data-i18n="latexManual.arch">Arch:</p>
         <pre>sudo pacman -S texlive-core texlive-pictures poppler</pre>
         <p data-i18n-html="latexManual.other.html">Windows: <a href="https://miktex.org" target="_blank">MiKTeX</a> · macOS: <a href="https://www.tug.org/mactex/" target="_blank">MacTeX</a></p>
-        <p data-i18n="latexManual.afterInstall">Despois de instalar, peche e volva abrir Lua para que o aviso desapareza.</p>
+        <p data-i18n="latexManual.afterInstall">Despois de instalar, peche e volva abrir Lúa para que o aviso desapareza.</p>
         <div class="modal-actions">
             <button id="btnLatexManualClose" class="primary" data-i18n="latexManual.close">Pechar</button>
         </div>

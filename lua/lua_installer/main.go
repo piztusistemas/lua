@@ -34,7 +34,7 @@ func main() {
 
 		wailsApp := application.New(application.Options{
 			Name:        "Lua Installer",
-			Description: "Instalador de Lua",
+			Description: "Instalador de Lúa",
 			Services: []application.Service{
 				application.NewService(app),
 			},
@@ -52,7 +52,7 @@ func main() {
 		})
 
 		wailsApp.Window.NewWithOptions(application.WebviewWindowOptions{
-			Title:            "Lua — Instalador",
+			Title:            "Lúa — Instalador",
 			Width:            1024,
 			Height:           720,
 			StartState:       application.WindowStateMaximised,

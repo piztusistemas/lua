@@ -23,7 +23,7 @@
         <key>CFBundlePackageType</key>
         <string>APPL</string>
         <key>CFBundleName</key>
-        <string>Lua</string>
+        <string>Lúa</string>
         <!-- Ten que coincidir co nome do binario que create:app:bundle copia
              a Contents/MacOS (APP_NAME en Taskfile.yml). -->
         <key>CFBundleExecutable</key>

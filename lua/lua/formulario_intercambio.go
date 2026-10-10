@@ -180,10 +180,10 @@ func importarBundleFormulario(data []byte) (ResultadoImportacionFormulario, erro
 		return res, idioma.Errorf("go.formulario.son_datos", "este ficheiro é un documento cos DATOS dun formulario, non o formulario en si: ábreo desde o formulario ao que pertence")
 	}
 	if cab.Formato != formatoBundleFormulario {
-		return res, idioma.Errorf("go.formulario.sen_marcador", "o ficheiro non é un formulario de Lua (falta o marcador «%s»)", formatoBundleFormulario)
+		return res, idioma.Errorf("go.formulario.sen_marcador", "o ficheiro non é un formulario de Lúa (falta o marcador «%s»)", formatoBundleFormulario)
 	}
 	if cab.Version < 1 || cab.Version > versionBundleFormulario {
-		return res, idioma.Errorf("go.formulario.version", "o ficheiro ten a versión %d do formato e este Lua só entende ata a %d: actualiza Lua", cab.Version, versionBundleFormulario)
+		return res, idioma.Errorf("go.formulario.version", "o ficheiro ten a versión %d do formato e este Lúa só entende ata a %d: actualiza Lúa", cab.Version, versionBundleFormulario)
 	}
 	var b BundleFormulario
 	if err := json.Unmarshal(data, &b); err != nil {
@@ -288,7 +288,7 @@ func (a *App) ExportarFormulario(id, datosJSON string) (string, error) {
 		base = f.ID
 	}
 	path, err := saveFileDialogCompat("Exportar formulario", "", base+extensionBundleFormulario,
-		"Formulario de Lua (*.json)", "*.json")
+		"Formulario de Lúa (*.json)", "*.json")
 	if err != nil || path == "" {
 		return "", err
 	}
@@ -307,7 +307,7 @@ func (a *App) ExportarFormulario(id, datosJSON string) (string, error) {
 func (a *App) ImportarFormulario() (ResultadoImportacionFormulario, error) {
 	path, err := application.Get().Dialog.OpenFile().
 		SetTitle("Importar formulario").
-		AddFilter("Formulario de Lua (*.json)", "*.json").
+		AddFilter("Formulario de Lúa (*.json)", "*.json").
 		PromptForSingleSelection()
 	if err != nil || path == "" {
 		return ResultadoImportacionFormulario{}, err

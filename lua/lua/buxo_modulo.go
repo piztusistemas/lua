@@ -157,7 +157,7 @@ func (a *App) abrirBuxo(raiz, materia, id string) error {
 	}
 	dir := a.dirBuxoInstalado()
 	if dir == "" {
-		return idioma.Errorf("go.buxo.non_instalado", "Buxo aínda non está instalado (descárgase ao arrincar Lua; mira Opcións)")
+		return idioma.Errorf("go.buxo.non_instalado", "Buxo aínda non está instalado (descárgase ao arrincar Lúa; mira Opcións)")
 	}
 	if strings.TrimSpace(raiz) == "" {
 		return fmt.Errorf("falta o cartafol da bóveda")

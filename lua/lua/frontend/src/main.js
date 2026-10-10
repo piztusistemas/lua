@@ -2247,7 +2247,7 @@ function aplicarActualizacionLua(estado) {
 // din que hai unha nova). Lua péchase só e reábrese xa actualizado.
 btnActualizarLua.addEventListener('click', async () => {
   if (!await confirmar(t('about.actualizar.confirmar',
-      'Isto vai reiniciar Lua para aplicar a actualización. ¿Continuar?'))) {
+      'Isto vai reiniciar Lúa para aplicar a actualización. ¿Continuar?'))) {
     return
   }
   btnActualizarLua.disabled = true

@@ -37,7 +37,7 @@ func esqCampoFormulario() map[string]any {
 		"tipo":        esqEnum("Tipo de campo.", tiposCampoFormulario...),
 		"etiqueta":    esqTxt("O que ve o usuario (e o rótulo no documento)."),
 		"axuda":       esqTxt("Axuda curta opcional."),
-		"obrigatorio": esqBool("Se falta, Lua avisa ao xerar."),
+		"obrigatorio": esqBool("Se falta, Lúa avisa ao xerar."),
 		"agochado":    esqBool("O dato só serve para a plantilla ou a tubería: non sae no corpo."),
 		"opcions":     map[string]any{"type": "array", "items": map[string]any{"type": "string"}, "description": "Só para escolla: as opcións."},
 		"columnas":    map[string]any{"type": "array", "items": col, "description": "Só para táboa: as súas columnas."},
@@ -52,7 +52,7 @@ var ferramentasFormularioEditor = []IAFerramenta{
 	},
 	{
 		Nome: "formulario_cambiar", Tipo: tipoEscritura, Onde: "frontend",
-		Descricion: "Cambia o borrador do formulario no deseñador: só o que indiques. 'campos' e 'fluxo' substitúense ENTEIROS (manda a lista completa). Lua valida o resultado e, se hai un erro, non cambia nada e dío: le a mensaxe e corrixe. Se cambias 'campos' e o formulario xa ten tubería propia, Lua engade/quita os nodos dos campos novos/eliminados (e avísate). O cambio non se garda ata que o usuario prema Gardar formulario, e pode desfacelo co botón «Desfacer cambio da IA». Despois proba co formulario_probar.",
+		Descricion: "Cambia o borrador do formulario no deseñador: só o que indiques. 'campos' e 'fluxo' substitúense ENTEIROS (manda a lista completa). Lúa valida o resultado e, se hai un erro, non cambia nada e dío: le a mensaxe e corrixe. Se cambias 'campos' e o formulario xa ten tubería propia, Lúa engade/quita os nodos dos campos novos/eliminados (e avísate). O cambio non se garda ata que o usuario prema Gardar formulario, e pode desfacelo co botón «Desfacer cambio da IA». Despois proba co formulario_probar.",
 		Parametros: esqObx(map[string]any{
 			"nome":       esqTxt("Nome do formulario."),
 			"descricion": esqTxt("Descrición curta (sae baixo o título)."),
@@ -86,7 +86,7 @@ var ferramentasFormularioBackend = []ferramentaBackend{
 	{
 		def: IAFerramenta{
 			Nome: "formulario_axuda", Tipo: tipoLectura, Onde: "backend",
-			Descricion: "Explica como se define un formulario en Lua: tipos de campo, tipos de nodo da tubería (con entradas, parámetros e exemplos), regras e o método recomendado para deseñar un formulario a partir dun documento. Léea unha vez ANTES de deseñar.",
+			Descricion: "Explica como se define un formulario en Lúa: tipos de campo, tipos de nodo da tubería (con entradas, parámetros e exemplos), regras e o método recomendado para deseñar un formulario a partir dun documento. Léea unha vez ANTES de deseñar.",
 		},
 		exec: func(a *App, _ map[string]any) (any, error) { return axudaFormulario(), nil },
 	},
@@ -104,7 +104,7 @@ var ferramentasFormularioBackend = []ferramentaBackend{
 	{
 		def: IAFerramenta{
 			Nome: "formulario_probar", Tipo: tipoLectura, Onde: "backend",
-			Descricion: "Proba o formulario con datos de mostra: avalía a tubería (valor de cada nodo, erros) e devolve os bloques do documento e unha páxina do PDF renderizada coa plantilla activa. Inventa datos de mostra realistas (en 'datos.valores', clave = id do campo; unha táboa é unha lista de filas {id_columna: valor}). O borrador do deseñador engádeo Lua automaticamente.",
+			Descricion: "Proba o formulario con datos de mostra: avalía a tubería (valor de cada nodo, erros) e devolve os bloques do documento e unha páxina do PDF renderizada coa plantilla activa. Inventa datos de mostra realistas (en 'datos.valores', clave = id do campo; unha táboa é unha lista de filas {id_columna: valor}). O borrador do deseñador engádeo Lúa automaticamente.",
 			Parametros: esqObx(map[string]any{
 				"datos":   map[string]any{"type": "object", "description": "{valores:{id_campo: valor}, contexto:{centro, localidade, curso, departamento, responsable, cargo}}. Sen datos, proba en baleiro."},
 				"paxina":  esqNum("Páxina do PDF que queres ver (1 por defecto)."),

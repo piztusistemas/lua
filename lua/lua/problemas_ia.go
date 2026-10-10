@@ -20,7 +20,7 @@ package main
 //   - «maxima»: os cálculos van en Maxima (simbólicos: solve, diff,
 //     integrate, factor...) e Maxima comproba a solución.
 //   - «autonomo»: a IA resolve soa; os cálculos só poden ser aritmética
-//     (o avaliador de Lua, sen Maxima). Se o problema non se deixa
+//     (o avaliador de Lúa, sen Maxima). Se o problema non se deixa
 //     parametrizar, a IA escribe os números do caso concreto e a solución
 //     queda marcada coma non paramétrica (vale só para eses valores).
 //
@@ -354,7 +354,7 @@ func resolverCon(s Settings, m *xerar.Motor, p PedidoResolverProblema) (Resultad
 		}
 		fallos := m.Probar(con.motor(), sementes)
 		fallos = append(fallos, fallosDebuxos(m.Calcular(con.motor(), semente))...)
-		motor := "o avaliador de Lua"
+		motor := "o avaliador de Lúa"
 		if m.TenMaxima() {
 			motor = "Maxima"
 		}

@@ -25,7 +25,7 @@ import (
 var versionLuaFicheiro string
 
 var axustesActualizacionLua = actualizacion.Axustes{
-	Nome:         "Lua",
+	Nome:         "Lúa",
 	Repo:         "piztusistemas/lua",
 	PrefixoAsset: "lua_",
 	Executable:   "lua",

@@ -7,7 +7,7 @@ version: '3'
 # This information is used to generate the build assets.
 info:
   companyName: "Piztu" # The name of the company
-  productName: "Lua" # The name of the application
+  productName: "Lúa" # The name of the application
   productIdentifier: "gal.omeu.piztu.lua-installer" # The unique product identifier
   description: "Instalador de Lua e das súas dependencias (LaTeX)" # The application description
   copyright: "Copyright © Piztu" # Copyright text

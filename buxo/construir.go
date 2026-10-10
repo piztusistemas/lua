@@ -78,7 +78,7 @@ func fontesRaw(raiz string) int {
 // engadir PDF novos. Un fallo nunha fonte non para as demais.
 func (m *Mestre) Construir(ctx context.Context, ia *ClienteIA) error {
 	if ia == nil {
-		return idioma.Errorf("erro.sen_conexion_ia", "non hai conexión coa IA: abre Buxo desde Lua cunha clave de IA configurada")
+		return idioma.Errorf("erro.sen_conexion_ia", "non hai conexión coa IA: abre Buxo desde Lúa cunha clave de IA configurada")
 	}
 	if e := ia.Estado(ctx); !e.Configurada {
 		return idioma.Errorf("erro.ia_non_configurada", "a IA non está configurada (%s)", e.Erro)

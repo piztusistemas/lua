@@ -46,10 +46,10 @@ var camposPlantilla = map[string]any{
 	"portada":     esqTxt("LaTeX da portada (entra onde a plantilla poña {{PORTADA}})."),
 	"sinatura":    esqTxt("LaTeX da última folla (entra onde a plantilla poña {{SINATURA}})."),
 	"introducion": esqTxt("Texto da introdución por defecto, con variables {{CENTRO}}, {{CURSO}}..."),
-	"estilo":      esqTxt("DESEÑO do documento en LaTeX (formato dos títulos, etiquetas do cronograma, cabeceira das actas...): substitúe o de Lua enteiro; baleiro = o de Lua. Parte do estilo por defecto (plantilla_editor_ler dá estiloPorDefecto)."),
+	"estilo":      esqTxt("DESEÑO do documento en LaTeX (formato dos títulos, etiquetas do cronograma, cabeceira das actas...): substitúe o de Lúa enteiro; baleiro = o de Lúa. Parte do estilo por defecto (plantilla_editor_ler dá estiloPorDefecto)."),
 	"textos": map[string]any{
 		"type": "object",
-		"description": "Textos fixos do documento (títulos de sección, «Sen tarefas», rótulos das actas...): clave -> texto; só se cambian os que indiques (un texto baleiro volve ao de Lua). " +
+		"description": "Textos fixos do documento (títulos de sección, «Sen tarefas», rótulos das actas...): clave -> texto; só se cambian os que indiques (un texto baleiro volve ao de Lúa). " +
 			"Claves: " + clavesTextosDoc() + ". Levan variables {{CENTRO}}, {{CURSO}}, {{DEPARTAMENTO}}... e as propias de cada un (ver plantilla_editor_ler: textosDispoñibles).",
 		"additionalProperties": map[string]any{"type": "string"},
 	},
@@ -119,7 +119,7 @@ var ferramentasFrontend = []IAFerramenta{
 			"dataFin":       esqTxt("Data de fin AAAA-MM-DD."),
 			"centro":        esqTxt("Nome do centro."),
 			"localidade":    esqTxt("Localidade."),
-			"departamento":  esqTxt("Nome do departamento, p.ex. Departamento de Matemáticas (Lua serve para calquera departamento)."),
+			"departamento":  esqTxt("Nome do departamento, p.ex. Departamento de Matemáticas (Lúa serve para calquera departamento)."),
 			"xefe":          esqTxt("Nome de quen asina (xefe/a do departamento)."),
 			"cargoSinatura": esqTxt("Cargo que figura na sinatura."),
 			"introducion":   esqTxt("Texto da introdución do informe (baleiro = usar o da plantilla ou o por defecto)."),
@@ -128,7 +128,7 @@ var ferramentasFrontend = []IAFerramenta{
 	},
 	{
 		Nome: "ferramenta_activa", Tipo: tipoEscritura, Onde: "frontend",
-		Descricion: "Lua ten varias ferramentas (columna da esquerda): 'cronograma' (o cronograma anual do departamento) e 'actas' (as actas mensuais do departamento e os informes de seguimento das materias). Sen argumentos di cal está activa; con 'ferramenta' cambia a ela. As ferramentas curso_* e tarefa_* traballan co cronograma; as actas_* e acta_* coas actas. curso_novo, curso_abrir, curso_gardar, informe_xerar, informe_exportar e historial valen para a ferramenta activa.",
+		Descricion: "Lúa ten varias ferramentas (columna da esquerda): 'cronograma' (o cronograma anual do departamento) e 'actas' (as actas mensuais do departamento e os informes de seguimento das materias). Sen argumentos di cal está activa; con 'ferramenta' cambia a ela. As ferramentas curso_* e tarefa_* traballan co cronograma; as actas_* e acta_* coas actas. curso_novo, curso_abrir, curso_gardar, informe_xerar, informe_exportar e historial valen para a ferramenta activa.",
 		Parametros: esqObx(map[string]any{"ferramenta": esqEnum("Ferramenta á que cambiar.", "cronograma", "actas")}),
 	},
 	{

@@ -370,7 +370,7 @@ export async function montarEditorPlantilla(container, {
 
   const axuda = el('p', 'plantilla-axuda')
   axuda.innerHTML = t('plantillas.latexHelp',
-    'Escribe <code>{{CORPO}}</code> onde queiras que vaia o informe (índice, introdución, cronograma e desenvolvemento). Se non poñes <code>\\documentclass</code>, Lua engade o seu preámbulo (abonda para cabeceira e pé; xa carga <code>fancyhdr</code>); se o poñes, mandas ti e Lua só engade os paquetes e as definicións que precisa o informe. A primeira e a última páxina deséñanse abaixo e entran onde poñas <code>{{PORTADA}}</code> e <code>{{SINATURA}}</code>; sen eses marcadores Lua pon a súa portada e a súa sinatura. Os datos fixos do centro ponos coma variables: <code>{{TELEFONO}}</code>, <code>{{CORREO}}</code>… Lua enche soas, a partir do curso e do centro, <code>{{CENTRO}}</code>, <code>{{LOCALIDADE}}</code>, <code>{{CURSO}}</code>, <code>{{DEPARTAMENTO}}</code>, <code>{{XEFE}}</code> (ou <code>{{ORIENTADOR}}</code>), <code>{{CARGO}}</code>, <code>{{TITULO}}</code>, <code>{{DATA}}</code>, <code>{{DATA_LONGA}}</code>, <code>{{DATA_INICIO}}</code>, <code>{{DATA_FIN}}</code>, <code>{{ANO}}</code> e <code>{{FICHEIRO}}</code>; se unha variable co mesmo nome ten valor na plantilla, gaña ese valor. O logotipo do curso pónse con <code>\\logocentro[height=2cm]</code>.')
+    'Escribe <code>{{CORPO}}</code> onde queiras que vaia o informe (índice, introdución, cronograma e desenvolvemento). Se non poñes <code>\\documentclass</code>, Lúa engade o seu preámbulo (abonda para cabeceira e pé; xa carga <code>fancyhdr</code>); se o poñes, mandas ti e Lúa só engade os paquetes e as definicións que precisa o informe. A primeira e a última páxina deséñanse abaixo e entran onde poñas <code>{{PORTADA}}</code> e <code>{{SINATURA}}</code>; sen eses marcadores Lúa pon a súa portada e a súa sinatura. Os datos fixos do centro ponos coma variables: <code>{{TELEFONO}}</code>, <code>{{CORREO}}</code>… Lúa enche soas, a partir do curso e do centro, <code>{{CENTRO}}</code>, <code>{{LOCALIDADE}}</code>, <code>{{CURSO}}</code>, <code>{{DEPARTAMENTO}}</code>, <code>{{XEFE}}</code> (ou <code>{{ORIENTADOR}}</code>), <code>{{CARGO}}</code>, <code>{{TITULO}}</code>, <code>{{DATA}}</code>, <code>{{DATA_LONGA}}</code>, <code>{{DATA_INICIO}}</code>, <code>{{DATA_FIN}}</code>, <code>{{ANO}}</code> e <code>{{FICHEIRO}}</code>; se unha variable co mesmo nome ten valor na plantilla, gaña ese valor. O logotipo do curso pónse con <code>\\logocentro[height=2cm]</code>.')
   bloqueLatex.appendChild(axuda)
 
   const latexBarra = el('div', 'plantillas-toolbar')
@@ -411,24 +411,24 @@ export async function montarEditorPlantilla(container, {
     clave: 'portada', codigo: true, filas: 12,
     etiqueta: t('plantillas.cover', 'Portada (LaTeX)'),
     axudaTexto: t('plantillas.coverHelp',
-      'Deseño da primeira páxina. Usa as mesmas variables (centro, curso, xefe/a de departamento, cargo, data…) e o logotipo do curso con \\logocentro. Debe levar {{PORTADA}} no LaTeX de arriba; baleiro, Lua usa a súa portada. Só se aplica ao PDF e ao .tex.'),
-    botonTexto: t('plantillas.useDefaultCover', 'Usar a portada de Lua'),
+      'Deseño da primeira páxina. Usa as mesmas variables (centro, curso, xefe/a de departamento, cargo, data…) e o logotipo do curso con \\logocentro. Debe levar {{PORTADA}} no LaTeX de arriba; baleiro, Lúa usa a súa portada. Só se aplica ao PDF e ao .tex.'),
+    botonTexto: t('plantillas.useDefaultCover', 'Usar a portada de Lúa'),
   })
   const bloqueSinatura = bloque(t('plantillas.bloque.sinatura', 'Sinatura do PDF'), 'sinatura', 'pdf', t('plantillas.chip.sinatura', 'Sinatura'))
   const sinaturaArea = campoParte(bloqueSinatura, {
     clave: 'sinatura', codigo: true, filas: 10,
     etiqueta: t('plantillas.signature', 'Sinatura (LaTeX)'),
     axudaTexto: t('plantillas.signatureHelp',
-      'Deseño do peche do documento (data, quen asina e cargo). Vai ao final, sen folla propia; se a queres aparte, empeza o fragmento con \\clearpage. Debe levar {{SINATURA}} no LaTeX de arriba; baleiro, Lua usa a súa sinatura. Só se aplica ao PDF e ao .tex.'),
-    botonTexto: t('plantillas.useDefaultSignature', 'Usar a sinatura de Lua'),
+      'Deseño do peche do documento (data, quen asina e cargo). Vai ao final, sen folla propia; se a queres aparte, empeza o fragmento con \\clearpage. Debe levar {{SINATURA}} no LaTeX de arriba; baleiro, Lúa usa a súa sinatura. Só se aplica ao PDF e ao .tex.'),
+    botonTexto: t('plantillas.useDefaultSignature', 'Usar a sinatura de Lúa'),
   })
   const bloqueIntro = bloque(t('plantillas.bloque.intro', 'Introdución'), 'intro', 'pdf', t('plantillas.chip.intro', 'Introdución'))
   const introArea = campoParte(bloqueIntro, {
     clave: 'introducion', codigo: false, filas: 8,
     etiqueta: t('plantillas.intro2', 'Texto da introdución'),
     axudaTexto: t('plantillas.introHelp',
-      'Texto da sección «Introdución». Podes usar variables coma {{CENTRO}}, {{CURSO}} e {{DEPARTAMENTO}}; unha liña en branco separa parágrafos. Se o curso ten a súa propia introdución, esa gaña. Baleiro = o texto de Lua.'),
-    botonTexto: t('plantillas.useDefaultIntro', 'Usar o texto de Lua'),
+      'Texto da sección «Introdución». Podes usar variables coma {{CENTRO}}, {{CURSO}} e {{DEPARTAMENTO}}; unha liña en branco separa parágrafos. Se o curso ten a súa propia introdución, esa gaña. Baleiro = o texto de Lúa.'),
+    botonTexto: t('plantillas.useDefaultIntro', 'Usar o texto de Lúa'),
   })
 
   // ---------- Estilo: o deseño do documento, en LaTeX ----------
@@ -437,14 +437,14 @@ export async function montarEditorPlantilla(container, {
     clave: 'estilo', codigo: true, filas: 18,
     etiqueta: t('plantillas.estilo', 'Estilo (LaTeX)'),
     axudaTexto: t('plantillas.estiloHelp',
-      'O deseño do documento vai aquí, non no código de Lua: formato dos parágrafos e dos títulos, as etiquetas do cronograma (\\chip, \\mesbadge, ambiente trimestre), a cabeceira das actas (\\actacab, \\actasecc, \\actasinaturas...). Baleiro, Lua usa o seu estilo; se escribes algo, substitúeo enteiro (parte do de Lua co botón de abaixo). As cores das tarefas (tf-*, tt-*, tb-*, tc-*), gris-linea, gris-texto, \\fontchip e \\logocentro vén sempre de Lua. Só se aplica ao PDF e ao .tex.'),
-    botonTexto: t('plantillas.useDefaultStyle', 'Usar o estilo de Lua'),
+      'O deseño do documento vai aquí, non no código de Lúa: formato dos parágrafos e dos títulos, as etiquetas do cronograma (\\chip, \\mesbadge, ambiente trimestre), a cabeceira das actas (\\actacab, \\actasecc, \\actasinaturas...). Baleiro, Lúa usa o seu estilo; se escribes algo, substitúeo enteiro (parte do de Lúa co botón de abaixo). As cores das tarefas (tf-*, tt-*, tb-*, tc-*), gris-linea, gris-texto, \\fontchip e \\logocentro vén sempre de Lúa. Só se aplica ao PDF e ao .tex.'),
+    botonTexto: t('plantillas.useDefaultStyle', 'Usar o estilo de Lúa'),
   })
 
   // ---------- Textos: todos os textos fixos do documento ----------
   const bloqueTextos = bloque(t('plantillas.bloque.textos', 'Textos do documento'), 'textos', 'datos', t('plantillas.chip.textos', 'Textos'))
   bloqueTextos.appendChild(el('p', 'plantilla-axuda', t('plantillas.textosHelp',
-    'Lua xera o contido; os textos fixos do documento (títulos das seccións, «Sen tarefas», os rótulos das actas...) cámbianse aquí, en PDF, Word, OpenDocument e Markdown. Baleiro = o texto de Lua (o que se ve gris). Valen as variables {{CENTRO}}, {{CURSO}}, {{DEPARTAMENTO}}... e as que indica cada texto.')))
+    'Lúa xera o contido; os textos fixos do documento (títulos das seccións, «Sen tarefas», os rótulos das actas...) cámbianse aquí, en PDF, Word, OpenDocument e Markdown. Baleiro = o texto de Lúa (o que se ve gris). Valen as variables {{CENTRO}}, {{CURSO}}, {{DEPARTAMENTO}}... e as que indica cada texto.')))
   const textosFiltro = el('input')
   textosFiltro.type = 'search'
   textosFiltro.placeholder = t('plantillas.textosFiltro', 'Buscar un texto…')
@@ -483,7 +483,7 @@ export async function montarEditorPlantilla(container, {
           else delete textos[x.clave]
         })
         const reiniciar = boton('↺', null, () => { input.value = ''; delete textos[x.clave]; marcarCambios() })
-        reiniciar.title = t('plantillas.textoPorDefecto', 'Volver ao texto de Lua')
+        reiniciar.title = t('plantillas.textoPorDefecto', 'Volver ao texto de Lúa')
         linha.append(input, reiniciar)
         fila.appendChild(linha)
         if (x.axuda) fila.appendChild(el('small', 'plantilla-texto__axuda', x.axuda))
@@ -518,7 +518,7 @@ export async function montarEditorPlantilla(container, {
   // ---------- Word e OpenDocument: a estética destes formatos tamén é da plantilla ----------
   const bloqueTipo = bloque(t('plantillas.ofi.titulo', 'Word e OpenDocument (.docx / .odt)'), 'ofi', 'ofi', t('plantillas.chip.ofi', 'Letra e marxes'))
   bloqueTipo.appendChild(el('p', 'plantilla-axuda', t('plantillas.ofi.axuda',
-    'Lua xera a información do documento; o aspecto en Word e OpenDocument (tipo de letra, cores, portada, cabeceira e pé) é da plantilla. Todo o que deixes baleiro usa o deseño por defecto de Lua. Podes usar as mesmas variables ({{CENTRO}}, {{CURSO}}…).')))
+    'Lúa xera a información do documento; o aspecto en Word e OpenDocument (tipo de letra, cores, portada, cabeceira e pé) é da plantilla. Todo o que deixes baleiro usa o deseño por defecto de Lúa. Podes usar as mesmas variables ({{CENTRO}}, {{CURSO}}…).')))
   const ofiGrade = el('div', 'plantilla-ofi-grade')
 
   const fonteInput = el('input')
@@ -565,7 +565,7 @@ export async function montarEditorPlantilla(container, {
   campoNumero('marxeDereita', t('plantillas.ofi.marxeDereita', 'Marxe dereita (cm)'), { min: 0.5, max: 6, step: 0.1, placeholder: '2.5' })
   bloqueTipo.appendChild(ofiGrade)
   bloqueTipo.appendChild(el('p', 'plantilla-axuda', t('plantillas.ofi.marxesAxuda',
-    'Deixa baleiro o interliñado e as marxes para usar os de Lua (1,15 e 2,5 cm en Word; 2 cm en OpenDocument).')))
+    'Deixa baleiro o interliñado e as marxes para usar os de Lúa (1,15 e 2,5 cm en Word; 2 cm en OpenDocument).')))
 
   const bloqueCores = bloque(t('plantillas.bloque.cores', 'Cores de Word/OpenDocument'), 'cores', 'ofi', t('plantillas.chip.cores', 'Cores'))
   const CORES_OFI = [
@@ -623,7 +623,7 @@ export async function montarEditorPlantilla(container, {
   bloqueOfiPortada.appendChild(el('p', 'plantilla-axuda', t('plantillas.ofi.portadaAxuda',
     'Unha liña por elemento: @logo 35 (logotipo do curso, alto en mm), @imaxe nome.png 30 (unha imaxe desta plantilla), @espazo 12, # Título, ## Subtítulo, --- (liña), ### Liña destacada e texto normal. Baleiro = a portada por defecto.')))
   const ofiBarra = el('div', 'plantillas-toolbar')
-  ofiBarra.appendChild(boton(t('plantillas.ofi.usarPortada', 'Usar a portada de Lua'), null, () => {
+  ofiBarra.appendChild(boton(t('plantillas.ofi.usarPortada', 'Usar a portada de Lúa'), null, () => {
     if (!porDefecto.portadaOfimatica) return
     ofiPortadaArea.value = porDefecto.portadaOfimatica
     ofi.portada = ofiPortadaArea.value
@@ -864,7 +864,7 @@ export async function montarEditorPlantilla(container, {
       return false
     }
     if (!datos.latex.includes(MARCADOR_CORPO)) {
-      estado.textContent = t('plantillas.needBody', 'Falta {{CORPO}}: sen el Lua non sabe onde meter o documento.')
+      estado.textContent = t('plantillas.needBody', 'Falta {{CORPO}}: sen el Lúa non sabe onde meter o documento.')
       return false
     }
     ocupado = true

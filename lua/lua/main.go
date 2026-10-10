@@ -32,7 +32,7 @@ func main() {
 
 	wailsApp := application.New(application.Options{
 		Name:        "Lua",
-		Description: "Xerador de informes de Lua (cronograma anual dos centros educativos, LaTeX)",
+		Description: "Xerador de informes de Lúa (cronograma anual dos centros educativos, LaTeX)",
 		Services: []application.Service{
 			application.NewService(app),
 		},
@@ -48,7 +48,7 @@ func main() {
 	// Xanela principal ("editor") - maximizada dende o arranque.
 	wailsApp.Window.NewWithOptions(application.WebviewWindowOptions{
 		Name:             nomeXanelaEditor,
-		Title:            "Lua",
+		Title:            "Lúa",
 		Width:            1024,
 		Height:           768,
 		StartState:       application.WindowStateMaximised,

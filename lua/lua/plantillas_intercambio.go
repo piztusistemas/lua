@@ -70,7 +70,7 @@ func (a *App) ExportarPlantilla(id string) (string, error) {
 
 	base := nomeFicheiroPlantilla(atopada.Nome) + extensionBundlePlantilla
 	path, err := saveFileDialogCompat("Exportar plantilla", "", base,
-		"Plantilla de Lua (*"+extensionBundlePlantilla+")", "*"+extensionBundlePlantilla)
+		"Plantilla de Lúa (*"+extensionBundlePlantilla+")", "*"+extensionBundlePlantilla)
 	if err != nil || path == "" {
 		return "", err
 	}

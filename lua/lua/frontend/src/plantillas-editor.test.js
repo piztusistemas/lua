@@ -316,13 +316,13 @@ describe('lanzador de bloques (só se despregan os que se chaman)', () => {
 })
 
 describe('Estilo e Textos do documento (o deseño e os textos son da plantilla)', () => {
-  it('«Usar o estilo de Lua» enche o estilo e gárdase coa plantilla', async () => {
+  it('«Usar o estilo de Lúa» enche o estilo e gárdase coa plantilla', async () => {
     const api = apiFalsa()
     await abrirEditorPlantilla({ t, api, plantilla: { ...P } })
     const m = visible()
     const bloque = m.querySelector('.plantilla-bloque[data-bloque="estilo"]')
     expect(bloque.querySelector('textarea').value).toBe('')
-    botonDe(bloque, 'Usar o estilo de Lua').click()
+    botonDe(bloque, 'Usar o estilo de Lúa').click()
     expect(bloque.querySelector('textarea').value).toContain('ESTILO-YANG')
     botonDe(m.querySelector('.modal-actions'), 'Aplicar').click()
     await vi.waitFor(() => expect(api.gardar).toHaveBeenCalled())

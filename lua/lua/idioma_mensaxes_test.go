@@ -60,7 +60,7 @@ func TestFicheiroNonValidoEnCastelan(t *testing.T) {
 	if err == nil {
 		t.Fatal("un JSON que non é un formulario debería dar erro")
 	}
-	if !strings.Contains(err.Error(), "no es un formulario de Lua") {
+	if !strings.Contains(err.Error(), "no es un formulario de Lúa") {
 		t.Errorf("erro en castelán, obtido %q", err.Error())
 	}
 	_, err = importarBundleFormulario([]byte(`non é JSON`))

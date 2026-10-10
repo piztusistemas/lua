@@ -32,7 +32,7 @@ const (
 // rutas de configuración e o catálogo de textos de documento (textos_doc.go),
 // que é de dominio e por iso non vive no módulo.
 var opcionsPlantilla = plantilla.Opcions{
-	Nome:             "Lua",
+	Nome:             "Lúa",
 	DirImaxes:        plantillaImaxesDir,
 	NormalizarTextos: normalizarTextosDoc,
 }

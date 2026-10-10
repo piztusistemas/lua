@@ -6,9 +6,9 @@
 		"0000": {
 			"ProductVersion": "26.10.3",
 			"CompanyName": "Piztu",
-			"FileDescription": "Instalador de Lua",
+			"FileDescription": "Instalador de Lúa",
 			"LegalCopyright": "Copyright © Piztu",
-			"ProductName": "Lua",
+			"ProductName": "Lúa",
 			"Comments": "Instalador de Lua — xerador de informes para centros educativos (LaTeX)"
 		}
 	}

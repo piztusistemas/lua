@@ -133,7 +133,7 @@ export function abrirProxectos({ t, accions }) {
           type: 'button', class: 'crono-btn', text: t('proxectos.buxo', 'Fontes de coñecemento'), disabled: !buxo.instalado,
           title: buxo.instalado
             ? t('proxectos.buxo.title', 'Abre Buxo: engade PDF e constrúe a bóveda de coñecemento do proxecto')
-            : buxo.erro ? t('proxectos.buxo.erro', 'Buxo non está instalado: {msg}', { msg: buxo.erro }) : t('proxectos.buxo.non', 'Buxo aínda non está instalado: Lua descárgao ao arrincar (mira Opcións → Módulos)'),
+            : buxo.erro ? t('proxectos.buxo.erro', 'Buxo non está instalado: {msg}', { msg: buxo.erro }) : t('proxectos.buxo.non', 'Buxo aínda non está instalado: Lúa descárgao ao arrincar (mira Opcións → Módulos)'),
           onclick: () => executar(() => accions.abrirBuxo(p.id)),
         }) : null,
         el('button', {

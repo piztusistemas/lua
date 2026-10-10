@@ -5,7 +5,7 @@ version: '3'
 
 info:
   companyName: "Piztu"
-  productName: "Lua"
+  productName: "Lúa"
   productIdentifier: "gal.omeu.piztu.lua"
   description: "Xerador de informes para centros educativos (cronograma anual e actas, LaTeX)"
   copyright: "Copyright © Piztu"

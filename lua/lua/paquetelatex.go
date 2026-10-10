@@ -48,7 +48,7 @@ func (a *App) InstalarPaqueteLatex() InstallStatus {
 		return InstallStatus{Log: "Non se pode instalar automaticamente: " + info.Motivo}
 	}
 	log, ok := rexistroPaquetes.Instalar(paquetes.Instalacion{
-		NomeApp:           "Lua",
+		NomeApp:           "Lúa",
 		InformarProgreso:  informarProgresoInstalacion,
 		FicheiroInstalado: kpsewhichFound,
 	})

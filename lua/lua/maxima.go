@@ -124,7 +124,7 @@ func (a *App) InstallMaxima() InstallStatus {
 		}
 		logPrevio = logBrew
 		cmd = exec.Command("brew", "install", "maxima", "gnuplot")
-		cmd.Env, limparEntorno = prepararEntornoInstalacion("Lua precisa permisos de administrador para instalar Maxima.")
+		cmd.Env, limparEntorno = prepararEntornoInstalacion("Lúa precisa permisos de administrador para instalar Maxima.")
 	default:
 		return InstallStatus{Log: "Sistema operativo non recoñecido para instalación automática."}
 	}

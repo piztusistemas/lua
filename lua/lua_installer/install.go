@@ -204,7 +204,7 @@ var winPackages = []string{"MiKTeX.MiKTeX", "JohnMacFarlane.Pandoc"}
 // elevate_normal.go), así que winget instala directo.
 func instalarDependenciasWindows(log func(string)) error {
 	if !commandExists("winget") {
-		return fmt.Errorf("non se atopou winget - instala MiKTeX/Pandoc manualmente, ou reintenta despois dende Lua (Opcións)")
+		return fmt.Errorf("non se atopou winget - instala MiKTeX/Pandoc manualmente, ou reintenta despois dende Lúa (Opcións)")
 	}
 	var ultimoErro error
 	for _, id := range winPackages {

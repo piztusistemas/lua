@@ -160,13 +160,13 @@ describe('editor de plantillas', () => {
     expect(gardada.introducion).toBe('A miña introdución de {{CENTRO}}')
   })
 
-  it('"Usar a portada de Lua" restaura o deseño por defecto', async () => {
+  it('"Usar a portada de Lúa" restaura o deseño por defecto', async () => {
     const api = apiFalsa()
     api.fragmentosPorDefecto = vi.fn(async () => ({ portada: 'PORTADA DE YANG', sinatura: 'S', introducion: 'I' }))
     await abrirEditorPlantilla({ t, api, plantilla: { ...EXEMPLO, portada: 'outra' } })
     const modal = document.querySelector('.overlay:not(.hidden) .modal')
     expect(modal.querySelector('.plantilla-parte').value).toBe('outra')
-    ;[...modal.querySelectorAll('.plantillas-toolbar button')].find((b) => b.textContent === 'Usar a portada de Lua').click()
+    ;[...modal.querySelectorAll('.plantillas-toolbar button')].find((b) => b.textContent === 'Usar a portada de Lúa').click()
     expect(modal.querySelector('.plantilla-parte').value).toBe('PORTADA DE YANG')
   })
 

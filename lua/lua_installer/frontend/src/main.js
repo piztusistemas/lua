@@ -58,7 +58,7 @@ function render() {
     app.innerHTML = `
       <div class="sidebar">
         <div class="sidebar-top">
-          <img src="${luaLogo}" class="sidebar-logo" alt="Lua">
+          <img src="${luaLogo}" class="sidebar-logo" alt="Lúa">
           <div class="sidebar-lang">
             <span>${t('nav.idioma', 'Idioma')}</span>
             <select id="lang-select">
@@ -74,7 +74,7 @@ function render() {
           `).join('')}
         </div>
         <div class="sidebar-sep"></div>
-        <div class="sidebar-info">${t('app.info', 'Lua {v}').replace(' {v}', versionCache ? ' v' + versionCache : '')}</div>
+        <div class="sidebar-info">${t('app.info', 'Lúa {v}').replace(' {v}', versionCache ? ' v' + versionCache : '')}</div>
         <div class="sidebar-info">${t('app.licenza', 'Licenza AGPLv3')}</div>
       </div>
       <div class="main-panel">
@@ -190,7 +190,7 @@ function instalacionHTML() {
         <h3>${t('inst.card', 'Instalación')}</h3>
         <p>${instDescCache}</p>
         <div class="sep"></div>
-        <button class="btn-main primary" id="btn-instalar">${t('inst.btn', '🚀 Instalar Lua')}</button>
+        <button class="btn-main primary" id="btn-instalar">${t('inst.btn', '🚀 Instalar Lúa')}</button>
         <div class="log-box" id="inst-log"><div class="placeholder">${t('inst.out.inicial', '')}</div></div>
       </div>
     `;

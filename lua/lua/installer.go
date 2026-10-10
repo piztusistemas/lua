@@ -194,7 +194,7 @@ func (a *App) InstallLatex() InstallStatus {
 		// (ver brew_darwin.go), que amosa o diálogo nativo de contrasinal.
 		cmd = exec.Command("brew", "install", "--cask", "mactex-no-gui")
 		cmd.Env, limparEntorno = prepararEntornoInstalacion(
-			"Lua precisa permisos de administrador para instalar MacTeX (a distribución de LaTeX).")
+			"Lúa precisa permisos de administrador para instalar MacTeX (a distribución de LaTeX).")
 
 	default:
 		return InstallStatus{Log: "Sistema operativo non recoñecido para instalación automática."}

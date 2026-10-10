@@ -279,7 +279,7 @@ func (m *Mestre) transcribirPaxinas(ctx context.Context, ia *ClienteIA, paxinas 
 			return "", idioma.Errorf("desc.erro", "%s: %w", descVisible, err)
 		}
 		if t.Truncado {
-			m.log.Aviso("rex.tokens", "%s: a resposta da IA cortouse polo límite de tokens (auméntao nas Opcións de Lua)", descVisible)
+			m.log.Aviso("rex.tokens", "%s: a resposta da IA cortouse polo límite de tokens (auméntao nas Opcións de Lúa)", descVisible)
 		}
 		texto := limparValado(t.Texto)
 		texto = figuraRe.ReplaceAllStringFunc(texto, func(f string) string {
@@ -376,7 +376,7 @@ func copiarImaxe(orixe, destino string) error {
 func (m *Mestre) converterConVision(ctx context.Context, it *Item, motivo error) error {
 	ia := m.iaVision()
 	if ia == nil {
-		return idioma.Errorf("erro.precisa_ia", "para ler fórmulas e debuxos cómpre a IA (abre Buxo desde Lua cunha IA configurada)")
+		return idioma.Errorf("erro.precisa_ia", "para ler fórmulas e debuxos cómpre a IA (abre Buxo desde Lúa cunha IA configurada)")
 	}
 	orixe := filepath.Join(m.raiz, dirPDF, it.Nome)
 	base := strings.TrimSuffix(it.Nome, filepath.Ext(it.Nome))

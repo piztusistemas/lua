@@ -184,7 +184,7 @@ export function crearPanelAsistente({
       aviso.append(
         el('p', { text: abrirOpcions
           ? t('asistente.sen.ia', 'Para usar o asistente hai que configurar unha IA en Opcións (provedor, clave da API e modelo).')
-          : t('asistente.sen.ia.xanela', 'Para usar o asistente hai que configurar unha IA en Opcións (na xanela principal de Lua: provedor, clave da API e modelo). Despois volve abrir este panel.') }),
+          : t('asistente.sen.ia.xanela', 'Para usar o asistente hai que configurar unha IA en Opcións (na xanela principal de Lúa: provedor, clave da API e modelo). Despois volve abrir este panel.') }),
         ...(abrirOpcions ? [el('button', { type: 'button', class: 'asistente__btn-opcions', text: t('asistente.abrir.opcions', 'Abrir Opcións'), onclick: () => abrirOpcions() })] : []))
     }
     const bloqueado = !estadoIA.configurada || ocupado

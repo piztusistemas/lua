@@ -252,9 +252,9 @@ func TestImportarRexeitaFicheirosMalos(t *testing.T) {
 		quere string
 	}{
 		"non é json":            {[]byte("isto non é json"), "JSON válido"},
-		"outro formato":         {[]byte(`{"formato":"lua-plantilla","version":1}`), "non é un formulario de Lua"},
+		"outro formato":         {[]byte(`{"formato":"lua-plantilla","version":1}`), "non é un formulario de Lúa"},
 		"un documento de datos": {[]byte(`{"ferramenta":"formulario","formulario":"exame","datos":{}}`), "DATOS dun formulario"},
-		"versión futura":        {con(func(b *BundleFormulario) { b.Version = 2 }), "actualiza Lua"},
+		"versión futura":        {con(func(b *BundleFormulario) { b.Version = 2 }), "actualiza Lúa"},
 		"sen versión":           {con(func(b *BundleFormulario) { b.Version = 0 }), "versión"},
 		"sen nome":              {con(func(b *BundleFormulario) { b.Formulario.Nome = "" }), "non é válido"},
 		"campo raro":            {con(func(b *BundleFormulario) { b.Formulario.Campos[0].Tipo = "boton" }), "non é válido"},
