@@ -22,7 +22,7 @@
 //     confirmar(msg)           Promise<boolean>
 //   }
 import { el } from '../informes/dom.js'
-import { svgIcona } from './iconas.js'
+import { svgIcona, coresFormularios, valorCor } from './iconas.js'
 
 const ICONA_MAIS = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M10 4.5v11M4.5 10h11"/></svg>'
 const ICONA_LAPIS = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16 14.5 5.5a1.4 1.4 0 0 1 2 2L6 18l-3 1z"/></svg>'
@@ -32,9 +32,10 @@ const ICONA_X = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stro
 // opcionsFerramentas: o que se pode meter nun proxecto, en orde (integradas e
 // despois formularios por nome).
 export function opcionsFerramentas(integradas, formularios) {
+  const cores = coresFormularios(formularios)
   return [
     ...integradas.map((f) => ({ id: f.id, nome: f.nome, icona: null })),
-    ...formularios.map((f) => ({ id: 'form:' + f.id, nome: f.nome, icona: f.icona })),
+    ...formularios.map((f) => ({ id: 'form:' + f.id, nome: f.nome, icona: f.icona, cor: cores[f.id] })),
   ]
 }
 
@@ -107,7 +108,7 @@ export function abrirProxectos({ t, accions }) {
       cb.checked = marcada
       cb.addEventListener('change', () => aoCambiar(cb.checked))
       return el('label', { class: 'prx-casilla' }, cb,
-        o.icona ? el('span', { class: 'prx-casilla__icona', html: svgIcona(o.icona), 'aria-hidden': 'true' }) : null,
+        o.icona ? el('span', { class: 'prx-casilla__icona', style: `--cor-formulario: ${valorCor(o.cor)}`, html: svgIcona(o.icona), 'aria-hidden': 'true' }) : null,
         el('span', { text: o.nome }))
     }
 

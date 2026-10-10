@@ -25,6 +25,9 @@ const ambitoFormulario = "formulario"
 // iconasFormulario debe coincidir coas claves de frontend/src/formularios/iconas.js.
 var iconasFormulario = []string{"formulario", "lista", "calendario", "persoas", "libro", "estrela", "correo", "aviso", "grafico", "lapis", "maleta", "reloxo", "camara", "corazon", "bandeira", "mochila"}
 
+// coresFormulario debe coincidir coas claves de CORES en frontend/src/formularios/iconas.js.
+var coresFormulario = []string{"azul", "laranxa", "violeta", "ciano", "rosa", "ambar", "indigo", "marron"}
+
 func esqCampoFormulario() map[string]any {
 	col := map[string]any{"type": "object", "properties": map[string]any{
 		"id":       esqTxt("Identificador da columna (minúsculas, díxitos e _)."),
@@ -57,7 +60,8 @@ var ferramentasFormularioEditor = []IAFerramenta{
 			"nome":       esqTxt("Nome do formulario."),
 			"descricion": esqTxt("Descrición curta (sae baixo o título)."),
 			"titulo":     esqTxt("Título do documento (baleiro = o nome)."),
-			"icona":      esqEnum("Icona da columna esquerda.", iconasFormulario...),
+			"icona":      esqEnum("Icona da columna esquerda: a que mellor represente o tema do formulario (un formulario novo xa trae unha que non usan os outros; non a cambies sen motivo).", iconasFormulario...),
+			"cor":        esqEnum("Cor da icona na columna esquerda (un formulario novo xa trae unha libre; non a cambies se o usuario non o pide).", coresFormulario...),
 			"portada":    esqBool("Leva a portada da plantilla."),
 			"sinatura":   esqBool("Leva o peche con lugar, data e sinatura."),
 			"campos":     map[string]any{"type": "array", "items": esqCampoFormulario(), "description": "TODOS os campos, na orde en que se piden."},

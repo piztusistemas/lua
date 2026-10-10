@@ -25,6 +25,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"strings"
 )
 
@@ -289,18 +290,22 @@ func estaFixadoNaBiblioteca(id string) bool {
 // reClaveIcona: as claves de icona do frontend (formulario, estrela, reloxo...).
 var reClaveIcona = regexp.MustCompile(`^[a-z0-9_-]{1,40}$`)
 
-// actualizarIconaFormulario cambia só a icona da columna esquerda: vale en
-// calquera modo, porque non toca os campos.
-func actualizarIconaFormulario(id, icona string) (Formulario, error) {
+// actualizarIconaFormulario cambia só a icona e a cor da columna esquerda:
+// vale en calquera modo, porque non toca os campos. Cor baleira = sen cor
+// propia (o frontend repártelle unha libre).
+func actualizarIconaFormulario(id, icona, cor string) (Formulario, error) {
 	icona = strings.TrimSpace(icona)
 	if !reClaveIcona.MatchString(icona) {
 		return Formulario{}, fmt.Errorf("icona non válida: %q", icona)
+	}
+	if cor = strings.TrimSpace(cor); cor != "" && !slices.Contains(coresFormulario, cor) {
+		return Formulario{}, fmt.Errorf("cor non válida: %q", cor)
 	}
 	f, err := lerFormulario(id)
 	if err != nil {
 		return Formulario{}, err
 	}
-	f.Icona = icona
+	f.Icona, f.Cor = icona, cor
 	return f, escribirFormulario(f)
 }
 

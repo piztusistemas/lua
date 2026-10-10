@@ -18,6 +18,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"sort"
 	"strings"
 )
@@ -97,6 +98,7 @@ type Formulario struct {
 	ID         string `json:"id"`
 	Nome       string `json:"nome"`
 	Icona      string `json:"icona,omitempty"` // clave do selector de iconas do frontend
+	Cor        string `json:"cor,omitempty"`   // clave de coresFormulario; baleira = o frontend repártelle unha libre
 	Descricion string `json:"descricion,omitempty"`
 	// Modo: modoDeseno ou modoProduccion. Baleiro (un formulario de antes) vale coma deseño.
 	Modo string `json:"modo,omitempty"`
@@ -187,6 +189,9 @@ func normalizarFormulario(f Formulario) Formulario {
 	f.Descricion = strings.TrimSpace(f.Descricion)
 	f.Titulo = strings.TrimSpace(f.Titulo)
 	f.Icona = strings.TrimSpace(f.Icona)
+	if f.Cor = strings.TrimSpace(f.Cor); !slices.Contains(coresFormulario, f.Cor) {
+		f.Cor = ""
+	}
 	if f.Modo != modoProduccion {
 		f.Modo = modoDeseno
 	}

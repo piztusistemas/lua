@@ -63,10 +63,10 @@ func (a *App) GardarDescricionFormulario(id, descricion string) (Formulario, err
 	return actualizarDescricionFormulario(id, descricion)
 }
 
-// GardarIconaFormulario cambia só a icona do formulario na columna esquerda
-// (menú do botón dereito → «Cambiar icona»). Vale en calquera modo.
-func (a *App) GardarIconaFormulario(id, icona string) (Formulario, error) {
-	return actualizarIconaFormulario(id, icona)
+// GardarIconaFormulario cambia só a icona e a cor do formulario na columna
+// esquerda (menú do botón dereito → «Cambiar icona»). Vale en calquera modo.
+func (a *App) GardarIconaFormulario(id, icona, cor string) (Formulario, error) {
+	return actualizarIconaFormulario(id, icona, cor)
 }
 
 // TiposCampoFormulario é a paleta de campos que pode arrastrar o deseñador.

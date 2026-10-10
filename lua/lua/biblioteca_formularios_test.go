@@ -218,24 +218,27 @@ func TestDescricionDeFormularioVaiEnCalqueraModo(t *testing.T) {
 func TestIconaDeFormularioVaiEnCalqueraModo(t *testing.T) {
 	bibliotecaTemporal(t)
 	a := formularioDeProba(t, "Alfa")
-	f, err := actualizarIconaFormulario(a.ID, "  estrela ")
-	if err != nil || f.Icona != "estrela" {
+	f, err := actualizarIconaFormulario(a.ID, "  estrela ", " rosa ")
+	if err != nil || f.Icona != "estrela" || f.Cor != "rosa" {
 		t.Fatalf("icona: %+v, %v", f, err)
 	}
 	if _, err := cambiarModoFormulario(a.ID, modoProduccion); err != nil {
 		t.Fatal(err)
 	}
-	f, err = actualizarIconaFormulario(a.ID, "reloxo")
-	if err != nil || f.Icona != "reloxo" || !f.enProduccion() || len(f.Campos) != 1 {
+	f, err = actualizarIconaFormulario(a.ID, "reloxo", "azul")
+	if err != nil || f.Icona != "reloxo" || f.Cor != "azul" || !f.enProduccion() || len(f.Campos) != 1 {
 		t.Fatalf("en produción: %+v, %v", f, err)
 	}
-	if g, _ := lerFormulario(a.ID); g.Icona != "reloxo" {
-		t.Errorf("non quedou gardada: %q", g.Icona)
+	if g, _ := lerFormulario(a.ID); g.Icona != "reloxo" || g.Cor != "azul" {
+		t.Errorf("non quedou gardada: %q %q", g.Icona, g.Cor)
 	}
-	if _, err := actualizarIconaFormulario(a.ID, "<script>"); err == nil {
+	if _, err := actualizarIconaFormulario(a.ID, "<script>", ""); err == nil {
 		t.Error("unha clave de icona con caracteres raros debería rexeitarse")
 	}
-	if _, err := actualizarIconaFormulario("non_existe", "estrela"); err == nil {
+	if _, err := actualizarIconaFormulario(a.ID, "estrela", "vermello"); err == nil {
+		t.Error("unha cor descoñecida debería rexeitarse")
+	}
+	if _, err := actualizarIconaFormulario("non_existe", "estrela", ""); err == nil {
 		t.Error("un formulario que non existe debería fallar")
 	}
 }

@@ -5,11 +5,11 @@
 // Todo cambio pasa POLA VALIDACIÓN DE GO (formulario_validar) antes de entrar
 // no borrador: a IA equivócase con ids, tipos e ligazóns, e a mensaxe de erro
 // exacta é o que lle permite corrixir. Se non valida, non se cambia nada.
-import { CLAVES_ICONA } from '../formularios/iconas.js'
+import { CLAVES_ICONA, CLAVES_COR } from '../formularios/iconas.js'
 
 const TAMANO_MAX = 30000
 const erro = (m) => { throw new Error(m) }
-const CLAVES = ['nome', 'descricion', 'titulo', 'icona', 'portada', 'sinatura', 'campos', 'fluxo']
+const CLAVES = ['nome', 'descricion', 'titulo', 'icona', 'cor', 'portada', 'sinatura', 'campos', 'fluxo']
 
 // crearFerramentasFormulario devolve `executar(nome, args) -> {contido, erro, imaxes}`.
 //   editor  { ler(), borrador(), cambiar(formulario), datos() }   (o deseñador)
@@ -29,7 +29,7 @@ export function crearFerramentasFormulario({ editor, api, ui }) {
     async formulario_ler() {
       const b = editor.borrador()
       const saida = {
-        nome: b.nome, descricion: b.descricion || '', titulo: b.titulo || '', icona: b.icona || 'formulario',
+        nome: b.nome, descricion: b.descricion || '', titulo: b.titulo || '', icona: b.icona || 'formulario', cor: b.cor || null,
         portada: !!b.portada, sinatura: !!b.sinatura, campos: b.campos, gardado: !!b.id, id: b.id || null,
         automatico: !b.fluxo, fluxo: b.fluxo || null,
       }
@@ -46,7 +46,7 @@ export function crearFerramentasFormulario({ editor, api, ui }) {
 
     async formulario_cambiar(a) {
       const dados = CLAVES.filter((k) => a[k] !== undefined)
-      if (!dados.length) erro('non indicaches ningún campo a cambiar (nome, descricion, titulo, icona, portada, sinatura, campos, fluxo)')
+      if (!dados.length) erro('non indicaches ningún campo a cambiar (nome, descricion, titulo, icona, cor, portada, sinatura, campos, fluxo)')
       const descoñecidos = Object.keys(a).filter((k) => !CLAVES.includes(k))
       const cand = JSON.parse(JSON.stringify(editor.borrador()))
       for (const k of dados) {
@@ -61,6 +61,9 @@ export function crearFerramentasFormulario({ editor, api, ui }) {
         } else if (k === 'icona') {
           if (!CLAVES_ICONA.includes(v)) erro(`icona non válida «${v}». Usa: ${CLAVES_ICONA.join(', ')}`)
           cand.icona = v
+        } else if (k === 'cor') {
+          if (!CLAVES_COR.includes(v)) erro(`cor non válida «${v}». Usa: ${CLAVES_COR.join(', ')}`)
+          cand.cor = v
         } else if (k === 'portada' || k === 'sinatura') {
           cand[k] = v === true || v === 'true'
         } else {

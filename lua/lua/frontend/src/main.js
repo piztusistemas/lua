@@ -42,8 +42,8 @@ import { FERRAMENTA_CRONOGRAMA } from './informes/ferramenta-cronograma.js'
 import { FERRAMENTA_ACTAS } from './informes/ferramenta-actas.js'
 import { crearFerramentaFormulario } from './formularios/ferramenta.js'
 import { abrirDisenador } from './formularios/disenador.js'
-import { svgIcona } from './formularios/iconas.js'
-import { haiContidoFormulario, datosParaExportar } from './formularios/modelo.js'
+import { svgIcona, coresFormularios, valorCor, aparenciaLibre } from './formularios/iconas.js'
+import { haiContidoFormulario, datosParaExportar, novoEsquema } from './formularios/modelo.js'
 import { abrirBibliotecaFormularios } from './formularios/biblioteca.js'
 import { abrirProxectos } from './formularios/proxectos.js'
 import { crearColumna } from './formularios/columna.js'
@@ -842,13 +842,19 @@ async function asegurarFerramentaVisible() {
   else aplicarFerramentaNaInterface() // ningunha: pantalla de benvida
 }
 
-// A icona do formulario ten a cor do seu modo: VERMELLO en deseño (a IA pode
-// axudar, con datos ficticios) e VERDE en produción (datos reais, sen IA). O
-// modo tamén vai no texto, para non depender só da cor.
+// Os esquemas de todos os formularios cargados (para repartir as cores).
+const esquemasFormularios = () => idsFormularios().map((id) => controladores.get(id)?.ferramenta.esquema).filter(Boolean)
+
+// Cada formulario ten a súa icona e a súa cor (iconas.js), para distinguilos
+// dunha ollada. O modo vai nun punto na esquina: VERMELLO en deseño (a IA
+// pode axudar, con datos ficticios) e VERDE en produción (datos reais, sen
+// IA). Tamén vai no texto, para non depender só da cor.
 function pintarBotonFormulario(boton, esquema) {
   const produccion = esquema.modo === 'produccion'
   const modo = produccion ? t('formularios.modo.produccion', 'Produción') : t('formularios.modo.deseno', 'Deseño')
-  boton.innerHTML = svgIcona(esquema.icona)
+  const cor = coresFormularios([...esquemasFormularios().filter((e) => e.id !== esquema.id), esquema])[esquema.id]
+  boton.innerHTML = svgIcona(esquema.icona) + '<span class="ferramenta-btn__modo" aria-hidden="true"></span>'
+  boton.style.setProperty('--cor-formulario', valorCor(cor))
   boton.classList.toggle('ferramenta-btn--produccion', produccion)
   boton.classList.toggle('ferramenta-btn--deseno', !produccion)
   boton.title = `${esquema.nome} · ${modo}`
@@ -856,18 +862,18 @@ function pintarBotonFormulario(boton, esquema) {
 }
 
 // cambiarIconaFormulario abre a xanela «Cambiar icona» (menú do botón dereito
-// ou «⋯» da biblioteca) e garda a icona escollida, sen abrir o deseñador.
+// ou «⋯» da biblioteca) e garda a icona e a cor escollidas, sen abrir o deseñador.
 async function cambiarIconaFormulario(id) {
   const c = controladores.get(id)
   if (!c) return
   const esquema = c.ferramenta.esquema
-  const clave = await escollerIcona({ t, nome: esquema.nome, actual: esquema.icona })
-  if (!clave || clave === (esquema.icona || 'formulario')) return
+  const corActual = coresFormularios(esquemasFormularios())[esquema.id]
+  const r = await escollerIcona({ t, nome: esquema.nome, actual: esquema.icona, cor: corActual })
+  if (!r || (r.icona === (esquema.icona || 'formulario') && r.cor === esquema.cor)) return
   try {
-    const novo = await GardarIconaFormulario(esquema.id, clave)
+    const novo = await GardarIconaFormulario(esquema.id, r.icona, r.cor)
     c.ferramenta.actualizarEsquema(novo)
-    const boton = formularioNav.querySelector(`.ferramenta-btn[data-ferramenta="${CSS.escape(id)}"]`)
-    if (boton) pintarBotonFormulario(boton, novo)
+    repintarBotonsFormularios()
     pintarColumna()
   } catch (err) {
     showWarnings([mensaxeErro(err)])
@@ -1019,7 +1025,16 @@ function quitarFormulario(id) {
   delete contedorFerramenta[id]
   delete paxinasPorFerramenta[id]
   formularioNav.querySelector(`.ferramenta-btn[data-ferramenta="${CSS.escape(id)}"]`)?.remove()
+  repintarBotonsFormularios() // os de antes (sen cor gardada) poden cambiar de cor
   pintarColumna()
+}
+
+function repintarBotonsFormularios() {
+  for (const id of idsFormularios()) {
+    const boton = formularioNav.querySelector(`.ferramenta-btn[data-ferramenta="${CSS.escape(id)}"]`)
+    const esquema = controladores.get(id)?.ferramenta.esquema
+    if (boton && esquema) pintarBotonFormulario(boton, esquema)
+  }
 }
 
 // eliminarFormularioDaColumna borra un formulario (menú do botón dereito ou biblioteca),
@@ -1201,7 +1216,10 @@ const asistenteDoDisenador = () => ({
 // hai xanelas nativas (proba en navegador), ábrese coma unha capa aquí mesmo.
 async function deseñarFormulario(fid) {
   const id = fid ? 'form:' + fid : null
-  const actual = id ? controladores.get(id)?.ferramenta.esquema : null
+  // Un formulario novo nace coa forma e a cor que menos se usan.
+  const gardado = id ? controladores.get(id)?.ferramenta.esquema : null
+  // Un dos de antes (sen cor gardada) leva a que xa amosa: ao gardar queda fixada.
+  const actual = gardado ? { ...gardado, cor: coresFormularios(esquemasFormularios())[gardado.id] } : { ...novoEsquema(), ...aparenciaLibre(esquemasFormularios()) }
   // Un formulario en produción non se deseña (o botón nin se ofrece; isto é o seguro).
   if (actual?.modo === 'produccion') {
     showWarnings([t('formularios.modo.bloqueado', 'Este formulario está en modo produción: pásao a deseño para cambialo.')])

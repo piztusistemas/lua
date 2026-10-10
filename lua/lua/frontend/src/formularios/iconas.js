@@ -53,3 +53,63 @@ const TIPO = {
 export function svgTipo(tipo) {
   return `<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${TIPO[tipo] || TIPO.texto}</svg>`
 }
+
+// Cores da icona de cada formulario, para distinguilos dunha ollada na columna
+// esquerda. Ningunha é vermella nin verde: esas son as do modo (deseño /
+// produción), que vai nun punto á parte. A clave gárdase no esquema (`cor`).
+const CORES = {
+  azul: 'oklch(52% 0.17 255)',
+  laranxa: 'oklch(62% 0.17 55)',
+  violeta: 'oklch(50% 0.2 300)',
+  ciano: 'oklch(56% 0.11 215)',
+  rosa: 'oklch(56% 0.2 350)',
+  ambar: 'oklch(66% 0.15 80)',
+  indigo: 'oklch(45% 0.17 275)',
+  marron: 'oklch(48% 0.08 50)',
+}
+
+export const CLAVES_COR = Object.keys(CORES)
+
+export const NOME_COR = {
+  azul: 'Azul', laranxa: 'Laranxa', violeta: 'Violeta', ciano: 'Ciano',
+  rosa: 'Rosa', ambar: 'Ámbar', indigo: 'Índigo', marron: 'Marrón',
+}
+
+export const valorCor = (clave) => CORES[clave] || CORES.azul
+
+const corValida = (f) => (CORES[f?.cor] ? f.cor : '')
+
+// coresFormularios devolve {id: clave de cor} para todos os esquemas. Os que
+// xa teñen cor quedan coa súa; os de antes (sen cor) reparten, por orde de id,
+// as cores que non usa ningún dos outros. Así ningún cambia de cor cando nace
+// un formulario novo (colle unha cor libre, ver aparenciaLibre) nin cando un
+// dos de antes garda a cor que xa amosaba.
+export function coresFormularios(esquemas) {
+  const out = {}
+  const sen = []
+  for (const f of esquemas || []) {
+    if (corValida(f)) out[f.id] = f.cor
+    else sen.push(f.id)
+  }
+  const usadas = new Set(Object.values(out))
+  const libres = CLAVES_COR.filter((k) => !usadas.has(k))
+  const quendas = libres.length ? libres : CLAVES_COR
+  sen.sort().forEach((id, i) => { out[id] = quendas[i % quendas.length] })
+  return out
+}
+
+// aparenciaLibre escolle a icona e a cor dun formulario novo: as menos usadas
+// polos que xa hai (a primeira, se empatan).
+export function aparenciaLibre(esquemas) {
+  const lista = esquemas || []
+  const cores = coresFormularios(lista)
+  const menosUsada = (claves, usadas) => {
+    const n = Object.fromEntries(claves.map((k) => [k, 0]))
+    for (const k of usadas) if (k in n) n[k]++
+    return claves.reduce((m, k) => (n[k] < n[m] ? k : m), claves[0])
+  }
+  return {
+    icona: menosUsada(CLAVES_ICONA, lista.map((f) => f.icona || 'formulario')),
+    cor: menosUsada(CLAVES_COR, Object.values(cores)),
+  }
+}

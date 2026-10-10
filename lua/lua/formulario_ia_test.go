@@ -302,3 +302,35 @@ func TestAmbitoFormularioDatosFerramentas(t *testing.T) {
 		t.Error("o prompt do ámbito formulario_datos non sae")
 	}
 }
+
+// O mesmo coas cores: unha clave só en Go deixaría a icona coa cor por defecto.
+func TestCoresFormularioCoincidenCoFrontend(t *testing.T) {
+	raw, err := os.ReadFile("frontend/src/formularios/iconas.js")
+	if err != nil {
+		t.Skip("sen o código do frontend")
+	}
+	s := string(raw)
+	ini := strings.Index(s, "const CORES = {")
+	fin := strings.Index(s[ini:], "\n}\n")
+	if ini < 0 || fin < 0 {
+		t.Fatal("non se atopou o obxecto CORES en iconas.js")
+	}
+	var js []string
+	for _, l := range strings.Split(s[ini:ini+fin], "\n") {
+		if m := regexp.MustCompile(`^  (\w+): '`).FindStringSubmatch(l); m != nil {
+			js = append(js, m[1])
+		}
+	}
+	if strings.Join(js, ",") != strings.Join(coresFormulario, ",") {
+		t.Errorf("cores distintas\n  frontend: %v\n  Go:       %v", js, coresFormulario)
+	}
+}
+
+func TestNormalizarFormularioCor(t *testing.T) {
+	if f := normalizarFormulario(Formulario{Nome: "X", Cor: " rosa "}); f.Cor != "rosa" {
+		t.Errorf("cor válida: %q", f.Cor)
+	}
+	if f := normalizarFormulario(Formulario{Nome: "X", Cor: "vermello"}); f.Cor != "" {
+		t.Errorf("unha cor descoñecida debería quedar baleira: %q", f.Cor)
+	}
+}

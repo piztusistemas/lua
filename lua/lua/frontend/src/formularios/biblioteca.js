@@ -19,7 +19,7 @@
 //     confirmar(msg), preguntar(msg, valor)   diálogos propios
 //   }
 import { el } from '../informes/dom.js'
-import { svgIcona } from './iconas.js'
+import { svgIcona, coresFormularios, valorCor } from './iconas.js'
 import {
   filtrar, contarPorCarpeta, estaFixa, estaAgochada, moverACarpeta, renomearCarpeta, eliminarCarpeta, nomeRepetido, agochar,
 } from './biblioteca-modelo.js'
@@ -145,7 +145,7 @@ export function abrirBibliotecaFormularios({ t, accions }) {
       const cantidade = (f.campos || []).filter((c) => c.tipo !== 'seccion').length
 
       return el('article', { class: 'bib-form' + (estaAgochada(b, id) ? ' bib-form--agochado' : '') },
-        el('span', { class: `bib-form__icona bib-form__icona--${produccion ? 'produccion' : 'deseno'}`, html: svgIcona(f.icona), 'aria-hidden': 'true' }),
+        el('span', { class: `bib-form__icona bib-form__icona--${produccion ? 'produccion' : 'deseno'}`, style: `--cor-formulario: ${valorCor(coresFormularios(accions.formularios())[f.id])}`, html: svgIcona(f.icona), 'aria-hidden': 'true' }),
         el('div', { class: 'bib-form__texto' },
           el('div', { class: 'bib-form__tit' },
             el('strong', { text: f.nome }),
