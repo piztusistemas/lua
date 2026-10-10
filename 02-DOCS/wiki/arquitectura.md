@@ -53,7 +53,7 @@ van no mesmo repositorio: Lúa non compila sen `edicion` ao carón.
 | `actualizacion` | Autoactualización desde as Releases de GitHub. |
 | `api` | API local de Lúa para os módulos (`PIZTU_API_URL`, `PIZTU_API_TOKEN`). |
 | `boveda` | Bóveda de Obsidian (espazo de traballo de Buxo). |
-| `calculo` | Avaliador das fórmulas dos nodos «calcular» das tuberías. |
+| `calculo` | Avaliador das fórmulas dos nodos «calcular» das tubaxes. |
 | `cas` | Ponte con Maxima (opcional, con tempo máximo por chamada). |
 | `documento` | Xeración de documentos herdada de Yang. |
 | `ficha` | Importar formularios de Lúa como fichas. |
