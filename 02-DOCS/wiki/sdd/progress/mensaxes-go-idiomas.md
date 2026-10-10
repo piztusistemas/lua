@@ -38,3 +38,10 @@ Fallbacks: sen `02-DOCS/wiki/sdd/config.yaml` (ordes da constitución: gofmt, go
 - decision: o asistente garda co mesmo SaveSettings, así que abondan dous puntos (arrinque e SaveSettings), non tres
 - decision: sen sync.Once ao rexistrar os dicionarios; cun Once, un test que restablece o tradutor deixaba o Go sen dicionarios (fallo visto na suite completa)
 - check: PIZTU_CONTEXTO non existe nos tests → os tests seguen en galego
+
+## T005 — 2026-10-10
+- status: complete
+- red (mutacións): clave inexistente, galego distinto do JSON, galego non literal → «3 problemas en 3 chamadas»; `%d` engadido en pt → «verbos de formato … (mesma orde)»
+- green: sen mutacións, verde
+- files: lua/lua/i18n_test.go
+- decision: os verbos `%s %d %v %q %w` compáranse en orde; as variables `{x}` do frontend seguen comparándose ordenadas

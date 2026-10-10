@@ -8,6 +8,7 @@ import (
 	"regexp"
 	"slices"
 	"sort"
+	"strconv"
 	"strings"
 	"testing"
 )
@@ -95,7 +96,11 @@ func TestClavesDoFrontendEstanEnGalego(t *testing.T) {
 	}
 }
 
-var reVariable = regexp.MustCompile(`\{[A-Za-z_0-9]+\}|%[sdvq]`)
+// As variables {x} do frontend poden ir en calquera orde; os verbos de
+// formato do Go (%s, %d, %v, %q, %w) insírense por posición, así que teñen
+// que ir na mesma orde en todos os idiomas.
+var reVariable = regexp.MustCompile(`\{[A-Za-z_0-9]+\}`)
+var reVerbo = regexp.MustCompile(`%[sdvqw]`)
 
 func TestIdiomasTenAsMesmasClavesEVariables(t *testing.T) {
 	gl := lerIdioma(t, "gl")
@@ -113,11 +118,73 @@ func TestIdiomasTenAsMesmasClavesEVariables(t *testing.T) {
 			if !slices.Equal(a, b) {
 				t.Errorf("%s.json %q: variables %v, en galego %v", codigo, clave, b, a)
 			}
+			if va, vb := reVerbo.FindAllString(valor, -1), reVerbo.FindAllString(trad, -1); !slices.Equal(va, vb) {
+				t.Errorf("%s.json %q: verbos de formato %v, en galego %v (mesma orde)", codigo, clave, vb, va)
+			}
 		}
 		for clave := range outro {
 			if _, ok := gl[clave]; !ok {
 				t.Errorf("%s.json: sobra %q (non está en gl.json)", codigo, clave)
 			}
 		}
+	}
+}
+
+// Unha chamada idioma.T("clave", "galego", ...) ou idioma.Errorf(...) no Go.
+var reChamadaGo = regexp.MustCompile("idioma\\.(?:T|Errorf)\\(\\s*\"([^\"]+)\"\\s*,\\s*(\"(?:\\\\.|[^\"\\\\])*\"|`[^`]*`)?")
+
+// TestMensaxesDoGoEstanEnGalego (spec mensaxes-go-idiomas, aceptación 5):
+// toda mensaxe do Go traducible de Lua e de edicion ten a súa clave en
+// gl.json, e o texto galego do código é o mesmo ca o do JSON.
+func TestMensaxesDoGoEstanEnGalego(t *testing.T) {
+	gl := lerIdioma(t, "gl")
+	var problemas []string
+	chamadas := 0
+	revisar := func(ruta string) {
+		datos, err := os.ReadFile(ruta)
+		if err != nil {
+			t.Fatal(err)
+		}
+		for _, m := range reChamadaGo.FindAllStringSubmatch(string(datos), -1) {
+			chamadas++
+			clave := m[1]
+			if m[2] == "" {
+				problemas = append(problemas, ruta+": "+clave+": o texto galego ten que ser un literal")
+				continue
+			}
+			galego, err := strconv.Unquote(m[2])
+			if err != nil {
+				problemas = append(problemas, ruta+": "+clave+": literal non válido")
+				continue
+			}
+			valor, ok := gl[clave]
+			switch {
+			case !ok:
+				problemas = append(problemas, ruta+": falta "+clave+" en gl.json")
+			case valor != galego:
+				problemas = append(problemas, ruta+": "+clave+": o galego do código non é o de gl.json\n    código: "+galego+"\n    json:   "+valor)
+			}
+		}
+	}
+	for _, raiz := range []string{".", filepath.Join("..", "..", "edicion")} {
+		err := filepath.WalkDir(raiz, func(ruta string, d fs.DirEntry, err error) error {
+			if err != nil {
+				return err
+			}
+			if d.IsDir() && (d.Name() == "node_modules" || d.Name() == "frontend" || d.Name() == "build") {
+				return fs.SkipDir
+			}
+			if !d.IsDir() && strings.HasSuffix(ruta, ".go") && !strings.HasSuffix(ruta, "_test.go") {
+				revisar(ruta)
+			}
+			return nil
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+	sort.Strings(problemas)
+	if len(problemas) > 0 {
+		t.Errorf("%d problemas en %d chamadas:\n  %s", len(problemas), chamadas, strings.Join(problemas, "\n  "))
 	}
 }
