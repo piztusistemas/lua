@@ -15,7 +15,7 @@ package main
 // os que non son PDF).
 
 import (
-	"fmt"
+	"edicion/idioma"
 	"io"
 	"os"
 	"path/filepath"
@@ -75,7 +75,7 @@ func nomeSeguro(nome string) string {
 func CopiarFicheiro(orixe, dir string) (string, error) {
 	tipo := tipoDe(orixe)
 	if tipo == "" {
-		return "", fmt.Errorf("«%s»: Buxo non sabe tratar ese tipo de ficheiro", filepath.Base(orixe))
+		return "", idioma.Errorf("erro.tipo_ficheiro", "«%s»: Buxo non sabe tratar ese tipo de ficheiro", filepath.Base(orixe))
 	}
 	if tipo == tipoPDF {
 		return CopiarPDF(orixe, dir)

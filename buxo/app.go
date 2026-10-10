@@ -2,8 +2,8 @@ package main
 
 import (
 	"context"
+	"edicion/idioma"
 	_ "embed"
-	"fmt"
 	"strings"
 	"sync"
 
@@ -173,7 +173,7 @@ func (a *App) CambiarModo(modo string) {
 // Markdown e documentos de oficina escollidos.
 func (a *App) EscollerPDFs() (int, error) {
 	if a.mestre == nil {
-		return 0, fmt.Errorf("non hai bóveda")
+		return 0, idioma.Errorf("erro.sen_boveda", "non hai bóveda")
 	}
 	dialogo := application.Get().Dialog.OpenFile()
 	// Ancorado á xanela (en macOS, coma folla): buxo é un executable solto
@@ -199,11 +199,11 @@ func (a *App) EscollerPDFs() (int, error) {
 // instrución (opcional) que escribiu o usuario.
 func (a *App) EngadirURLs(texto, instrucion string) error {
 	if a.mestre == nil {
-		return fmt.Errorf("non hai bóveda")
+		return idioma.Errorf("erro.sen_boveda", "non hai bóveda")
 	}
 	urls := strings.Fields(texto)
 	if len(urls) == 0 {
-		return fmt.Errorf("escribe polo menos unha URL")
+		return idioma.Errorf("erro.sen_url", "escribe polo menos unha URL")
 	}
 	go a.mestre.ProcurarPDFs(context.Background(), a.ia, urls, instrucion)
 	return nil
@@ -219,12 +219,12 @@ func (a *App) Quitar(id int) {
 // Construir lanza (en fondo) a construción da wiki coa IA.
 func (a *App) Construir() error {
 	if a.mestre == nil {
-		return fmt.Errorf("non hai bóveda")
+		return idioma.Errorf("erro.sen_boveda", "non hai bóveda")
 	}
 	a.mu.Lock()
 	if a.construindo {
 		a.mu.Unlock()
-		return fmt.Errorf("a bóveda xa se está construíndo")
+		return idioma.Errorf("erro.construindo", "a bóveda xa se está construíndo")
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 	a.construindo, a.cancelar = true, cancel

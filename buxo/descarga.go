@@ -5,6 +5,7 @@ package main
 import (
 	"bytes"
 	"context"
+	"edicion/idioma"
 	"fmt"
 	"io"
 	"mime"
@@ -86,7 +87,7 @@ func nomeDeResposta(r *http.Response, u *url.URL) string {
 func DescargarPDF(ctx context.Context, cliente *http.Client, enderezo, dir string) (string, error) {
 	u, err := url.Parse(strings.TrimSpace(enderezo))
 	if err != nil || (u.Scheme != "http" && u.Scheme != "https") || u.Host == "" {
-		return "", fmt.Errorf("a URL «%s» non é válida (só http e https)", enderezo)
+		return "", idioma.Errorf("erro.url_non_valida", "a URL «%s» non é válida (só http e https)", enderezo)
 	}
 	if cliente == nil {
 		cliente = &http.Client{Timeout: timeoutDescarga}
@@ -99,17 +100,17 @@ func DescargarPDF(ctx context.Context, cliente *http.Client, enderezo, dir strin
 	req.Header.Set("Accept", "application/pdf,*/*;q=0.5")
 	resp, err := cliente.Do(req)
 	if err != nil {
-		return "", fmt.Errorf("non se puido descargar: %w", err)
+		return "", idioma.Errorf("erro.descarga", "non se puido descargar: %w", err)
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("o servidor respondeu %d", resp.StatusCode)
+		return "", idioma.Errorf("erro.servidor", "o servidor respondeu %d", resp.StatusCode)
 	}
 	cab := make([]byte, 1024)
 	n, _ := io.ReadFull(resp.Body, cab)
 	cab = cab[:n]
 	if !ePDF(cab) {
-		return "", fmt.Errorf("non é un PDF (contido: %s)", resp.Header.Get("Content-Type"))
+		return "", idioma.Errorf("erro.non_pdf_contido", "non é un PDF (contido: %s)", resp.Header.Get("Content-Type"))
 	}
 	if err := os.MkdirAll(dir, 0o755); err != nil {
 		return "", err
@@ -128,7 +129,7 @@ func DescargarPDF(ctx context.Context, cliente *http.Client, enderezo, dir strin
 	}
 	if err == nil {
 		if st, e := os.Stat(tmp); e == nil && st.Size() > maxTamanoPDF {
-			err = fmt.Errorf("o PDF pasa de %d MB", maxTamanoPDF>>20)
+			err = idioma.Errorf("erro.pdf_grande", "o PDF pasa de %d MB", maxTamanoPDF>>20)
 		}
 	}
 	if err != nil {
@@ -152,7 +153,7 @@ func CopiarPDF(orixe, dir string) (string, error) {
 	cab := make([]byte, 1024)
 	n, _ := io.ReadFull(f, cab)
 	if !ePDF(cab[:n]) {
-		return "", fmt.Errorf("«%s» non é un PDF", filepath.Base(orixe))
+		return "", idioma.Errorf("erro.non_pdf", "«%s» non é un PDF", filepath.Base(orixe))
 	}
 	if _, err := f.Seek(0, io.SeekStart); err != nil {
 		return "", err

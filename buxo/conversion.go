@@ -10,8 +10,8 @@ package main
 import (
 	"bufio"
 	"context"
+	"edicion/idioma"
 	"encoding/json"
-	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -55,7 +55,7 @@ func rutaSidecar() (string, error) {
 			}
 		}
 	}
-	return "", fmt.Errorf("non se atopa o conversor %s (ten que ir ao lado de buxo)", nome)
+	return "", idioma.Errorf("erro.sen_conversor", "non se atopa o conversor %s (ten que ir ao lado de buxo)", nome)
 }
 
 // ConverterPDFs converte os PDF a Markdown en saida (un .md por PDF, mesmo
@@ -72,7 +72,7 @@ func ConverterPDFs(ctx context.Context, sidecar, saida string, pdfs []string, ca
 		return err
 	}
 	if err := cmd.Start(); err != nil {
-		return fmt.Errorf("non se puido lanzar o conversor: %w", err)
+		return idioma.Errorf("erro.conversor_non_lanza", "non se puido lanzar o conversor: %w", err)
 	}
 	dados := map[string]bool{}
 	sc := bufio.NewScanner(stdout)
@@ -89,11 +89,11 @@ func ConverterPDFs(ctx context.Context, sidecar, saida string, pdfs []string, ca
 	// Os PDF sen resposta (o conversor morreu, ou cancelouse) dánse por fallidos.
 	for _, p := range pdfs {
 		if !dados[p] {
-			motivo := "o conversor rematou sen dar resultado"
+			motivo := idioma.T("conversor.sen_resultado", "o conversor rematou sen dar resultado")
 			if ctx.Err() != nil {
-				motivo = "cancelado"
+				motivo = idioma.T("conversor.cancelado", "cancelado")
 			} else if espera != nil {
-				motivo = "o conversor fallou: " + espera.Error()
+				motivo = idioma.T("conversor.fallou", "o conversor fallou: %s", espera.Error())
 			}
 			cadaResultado(ResultadoConversion{Entrada: p, Erro: motivo})
 		}

@@ -16,17 +16,17 @@ import (
 
 func TestMotivoVision(t *testing.T) {
 	texto := strings.Repeat("Unha frase normal dun documento sen nada especial. ", 20)
-	if m := motivoVision(texto, 1, 0); m != "" {
-		t.Errorf("texto normal: %q", m)
+	if m := motivoVision(texto, 1, 0); m != nil {
+		t.Errorf("texto normal: %v", m)
 	}
-	if m := motivoVision("ola", 3, 0); !strings.Contains(m, "pouco texto") {
-		t.Errorf("escaneado: %q", m)
+	if m := motivoVision("ola", 3, 0); m == nil || !strings.Contains(m.Error(), "pouco texto") {
+		t.Errorf("escaneado: %v", m)
 	}
-	if m := motivoVision(texto+"∫ x² dx = √2 ± π", 1, 0); m != "ten fórmulas" {
-		t.Errorf("fórmulas: %q", m)
+	if m := motivoVision(texto+"∫ x² dx = √2 ± π", 1, 0); m == nil || m.Error() != "ten fórmulas" {
+		t.Errorf("fórmulas: %v", m)
 	}
-	if m := motivoVision(texto, 1, 2); !strings.Contains(m, "figura") {
-		t.Errorf("figuras: %q", m)
+	if m := motivoVision(texto, 1, 2); m == nil || !strings.Contains(m.Error(), "figura") {
+		t.Errorf("figuras: %v", m)
 	}
 	if !mdTenFormulasEnTexto("Resolve x^2 - 4 = 0") || mdTenFormulasEnTexto("Resolve $x^2 - 4 = 0$ e $y$") {
 		t.Error("mdTenFormulasEnTexto")

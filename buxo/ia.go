@@ -7,6 +7,7 @@ package main
 
 import (
 	"context"
+	"edicion/idioma"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -187,7 +188,7 @@ func (ia *ClienteIA) Axente(ctx context.Context, sistema, pedido string, maxPaso
 		}
 		if len(t.Chamadas) == 0 {
 			if t.Truncado {
-				return t.Texto, fmt.Errorf("a resposta da IA cortouse polo límite de tokens (auméntao en Opcións)")
+				return t.Texto, idioma.Errorf("erro.tokens", "a resposta da IA cortouse polo límite de tokens (auméntao en Opcións)")
 			}
 			return t.Texto, nil
 		}

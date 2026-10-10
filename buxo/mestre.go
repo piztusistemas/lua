@@ -7,6 +7,7 @@ package main
 
 import (
 	"context"
+	"edicion/idioma"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -91,7 +92,7 @@ func NovoMestre(raiz, materia string, log *Rexistro, cambio func()) *Mestre {
 // tarefaVision: un ficheiro para a IA e por que.
 type tarefaVision struct {
 	it     *Item
-	motivo string
+	motivo error
 	// textoPrevio: o que deu markitdown (se a IA falla, queda iso).
 	textoPrevio bool
 }
@@ -115,7 +116,9 @@ func (m *Mestre) visorIA() {
 	for {
 		select {
 		case t := <-m.visor:
-			m.poñer(t.it, func(i *Item) { i.Estado, i.Vision, i.Detalle = estConvertendo, t.motivo, "agardando pola IA" })
+			m.poñer(t.it, func(i *Item) {
+				i.Estado, i.Vision, i.Detalle = estConvertendo, t.motivo.Error(), idioma.T("detalle.agardando_ia", "agardando pola IA")
+			})
 			err := m.converterConVision(m.ctx, t.it, t.motivo)
 			switch {
 			case err == nil:
@@ -125,7 +128,7 @@ func (m *Mestre) visorIA() {
 				m.poñer(t.it, func(i *Item) { i.Estado, i.Detalle, i.Vision = estFeito, "", "" })
 				m.log.Aviso("rex.ia_non_le", "%s: a IA non o puido ler (%v); queda o texto de markitdown (sen fórmulas nin debuxos)", t.it.Nome, err)
 			default:
-				m.fallar(t.it, err.Error())
+				m.fallar(t.it, err)
 			}
 		case <-m.ctx.Done():
 			return
@@ -134,8 +137,10 @@ func (m *Mestre) visorIA() {
 }
 
 // aVision manda un ficheiro á cola da IA.
-func (m *Mestre) aVision(it *Item, motivo string, textoPrevio bool) {
-	m.poñer(it, func(i *Item) { i.Estado, i.Vision, i.Detalle = estConvertendo, motivo, "en cola para a IA" })
+func (m *Mestre) aVision(it *Item, motivo error, textoPrevio bool) {
+	m.poñer(it, func(i *Item) {
+		i.Estado, i.Vision, i.Detalle = estConvertendo, motivo.Error(), idioma.T("detalle.cola_ia", "en cola para a IA")
+	})
 	select {
 	case m.visor <- tarefaVision{it: it, motivo: motivo, textoPrevio: textoPrevio}:
 	case <-m.ctx.Done():
@@ -230,7 +235,7 @@ func (m *Mestre) lanzar(it *Item) {
 // obter deixa o PDF en pdf/ (copia ou descarga) e pásao ao converso.
 func (m *Mestre) obter(it *Item) {
 	if err := CrearEstrutura(m.raiz, m.materia); err != nil {
-		m.fallar(it, "non se puido crear a bóveda: "+err.Error())
+		m.fallar(it, idioma.Errorf("fallo.crear_boveda", "non se puido crear a bóveda: %v", err))
 		return
 	}
 	dir := filepath.Join(m.raiz, dirPDF)
@@ -245,7 +250,7 @@ func (m *Mestre) obter(it *Item) {
 		nome, err = CopiarFicheiro(it.Fonte, dir)
 	}
 	if err != nil {
-		m.fallar(it, err.Error())
+		m.fallar(it, err)
 		return
 	}
 	m.poñer(it, func(i *Item) { i.Nome, i.Estado = nome, estConvertendo })
@@ -258,10 +263,10 @@ func (m *Mestre) encamiñar(it *Item) {
 	switch tipoDe(it.Nome) {
 	case tipoImaxe:
 		if it.Modo == modoTexto {
-			m.fallar(it, "unha imaxe só se pode ler coa IA (cambia o modo a Automático)")
+			m.fallar(it, idioma.Errorf("fallo.imaxe_ia", "unha imaxe só se pode ler coa IA (cambia o modo a Automático)"))
 			return
 		}
-		m.aVision(it, "é unha imaxe", false)
+		m.aVision(it, idioma.Errorf("motivo.imaxe", "é unha imaxe"), false)
 		return
 	case tipoMarkdown:
 		m.vivos.Add(1)
@@ -269,7 +274,7 @@ func (m *Mestre) encamiñar(it *Item) {
 		return
 	case tipoPDF:
 		if it.Modo == modoVision {
-			m.aVision(it, "lectura coa IA pedida", false)
+			m.aVision(it, idioma.Errorf("motivo.pedida", "lectura coa IA pedida"), false)
 			return
 		}
 	}
@@ -284,28 +289,28 @@ func (m *Mestre) encamiñar(it *Item) {
 func (m *Mestre) converterMarkdown(it *Item) {
 	d, err := os.ReadFile(filepath.Join(m.raiz, dirPDF, it.Nome))
 	if err != nil {
-		m.fallar(it, err.Error())
+		m.fallar(it, err)
 		return
 	}
 	md, conversion := string(d), "markdown"
 	if it.Modo == modoVision || it.Modo == modoAuto && mdTenFormulasEnTexto(md) {
 		if novo, err := m.normalizarMarkdown(m.ctx, it, md); err == nil {
 			md, conversion = novo, "markdown (fórmulas pasadas a LaTeX coa IA)"
-			m.poñer(it, func(i *Item) { i.Vision = "fórmulas en texto plano" })
+			m.poñer(it, func(i *Item) { i.Vision = idioma.T("detalle.texto_plano", "fórmulas en texto plano") })
 		} else if err.Error() != "sen IA" {
 			m.log.Aviso("rex.formulas_fallan", "%s: non se puideron pasar as fórmulas a LaTeX (%v); queda tal cal", it.Nome, err)
 		}
 	}
 	if err := m.escribirRaw(it, md, conversion); err != nil {
-		m.fallar(it, err.Error())
+		m.fallar(it, err)
 		return
 	}
 	m.poñer(it, func(i *Item) { i.Estado, i.Detalle = estFeito, "" })
 	m.log.Info("rex.engadido", "Engadido raw/%s", nomeMD(it.Nome))
 }
 
-func (m *Mestre) fallar(it *Item, motivo string) {
-	m.poñer(it, func(i *Item) { i.Estado, i.Erro = estErro, motivo })
+func (m *Mestre) fallar(it *Item, motivo error) {
+	m.poñer(it, func(i *Item) { i.Estado, i.Erro = estErro, motivo.Error() })
 	m.log.Erro("rex.saltase_motivo", "%s: %s (sáltase)", nomeAmosable(it), motivo)
 }
 
@@ -352,7 +357,7 @@ func (m *Mestre) converterLote(lote []*Item) {
 		s, err := rutaSidecar()
 		if err != nil {
 			for _, it := range lote {
-				m.fallar(it, err.Error())
+				m.fallar(it, err)
 			}
 			return
 		}
@@ -373,18 +378,18 @@ func (m *Mestre) converterLote(lote []*Item) {
 			return
 		}
 		if !r.Ok {
-			m.fallar(it, "non se puido converter: "+r.Erro)
+			m.fallar(it, idioma.Errorf("fallo.converter", "non se puido converter: %s", r.Erro))
 			return
 		}
 		if err := engadirCabeceira(r.Saida, it); err != nil {
-			m.fallar(it, err.Error())
+			m.fallar(it, err)
 			return
 		}
 		// Un PDF con fórmulas, debuxos ou escaneado: a IA le as páxinas.
 		if tipoDe(it.Nome) == tipoPDF && it.Modo == modoAuto && m.iaVision() != nil {
 			md, _ := os.ReadFile(r.Saida)
 			p := filepath.Join(m.raiz, dirPDF, it.Nome)
-			if motivo := motivoVision(string(md), paxinasPDF(p), figurasPDF(p)); motivo != "" {
+			if motivo := motivoVision(string(md), paxinasPDF(p), figurasPDF(p)); motivo != nil {
 				m.aVision(it, motivo, true)
 				return
 			}
@@ -398,7 +403,7 @@ func (m *Mestre) converterLote(lote []*Item) {
 			feito := it.Estado == estFeito || it.Estado == estErro
 			m.mu.Unlock()
 			if !feito {
-				m.fallar(it, err.Error())
+				m.fallar(it, err)
 			}
 		}
 	}

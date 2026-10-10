@@ -16,6 +16,7 @@ package main
 import (
 	"bytes"
 	"context"
+	"edicion/idioma"
 	"encoding/base64"
 	"fmt"
 	"image"
@@ -50,16 +51,16 @@ const simbolosMates = "∫∑∏√∞≈≠≤≥±×÷∂∇∆πθλμσΔΩ�
 
 // motivoVision di por que un PDF convertido con markitdown precisa a IA
 // ("" = o texto abonda). paxinas e figuras veñen de pdfinfo e pdfimages.
-func motivoVision(md string, paxinas, figuras int) string {
+func motivoVision(md string, paxinas, figuras int) error {
 	texto := strings.TrimSpace(md)
 	if paxinas < 1 {
 		paxinas = 1
 	}
 	if len([]rune(texto)) < 150*paxinas {
-		return "ten pouco texto extraíble (escaneado ou feito de imaxes)"
+		return idioma.Errorf("motivo.pouco_texto", "ten pouco texto extraíble (escaneado ou feito de imaxes)")
 	}
 	if strings.Contains(texto, "(cid:") {
-		return "o texto sae con caracteres ilexibles"
+		return idioma.Errorf("motivo.ilexible", "o texto sae con caracteres ilexibles")
 	}
 	mates := 0
 	for _, r := range texto {
@@ -68,7 +69,7 @@ func motivoVision(md string, paxinas, figuras int) string {
 		}
 	}
 	if mates >= 5 {
-		return "ten fórmulas"
+		return idioma.Errorf("motivo.formulas", "ten fórmulas")
 	}
 	// Fraccións e expoñentes esnaquizados: moitas liñas cun só número ou letra.
 	curtas, total := 0, 0
@@ -81,12 +82,12 @@ func motivoVision(md string, paxinas, figuras int) string {
 		}
 	}
 	if total > 20 && curtas*100/total >= 12 {
-		return "ten fórmulas (o texto sae esnaquizado)"
+		return idioma.Errorf("motivo.formulas_rotas", "ten fórmulas (o texto sae esnaquizado)")
 	}
 	if figuras > 0 {
-		return fmt.Sprintf("ten %d figura(s) ou debuxo(s)", figuras)
+		return idioma.Errorf("motivo.figuras", "ten %d figura(s) ou debuxo(s)", figuras)
 	}
-	return ""
+	return nil
 }
 
 // paxinasPDF conta as páxinas (pdfinfo).
@@ -156,7 +157,7 @@ type paxinaVision struct {
 // renderizarPDF pasa as páxinas do PDF a PNG en dir.
 func renderizarPDF(ctx context.Context, pdf, dir string) ([]paxinaVision, error) {
 	if !plataforma.CommandExists("pdftoppm") {
-		return nil, fmt.Errorf("para que a IA lea as páxinas cómpre pdftoppm (poppler)")
+		return nil, idioma.Errorf("erro.sen_pdftoppm", "para que a IA lea as páxinas cómpre pdftoppm (poppler)")
 	}
 	cmd := exec.CommandContext(ctx, "pdftoppm", "-r", strconv.Itoa(ppVision), "-png", pdf, filepath.Join(dir, "p"))
 	plataforma.OcultarConsola(cmd)
@@ -174,7 +175,7 @@ func renderizarPDF(ctx context.Context, pdf, dir string) ([]paxinaVision, error)
 	}
 	sort.Slice(out, func(i, j int) bool { return out[i].Numero < out[j].Numero })
 	if len(out) == 0 {
-		return nil, fmt.Errorf("o PDF non ten páxinas")
+		return nil, idioma.Errorf("erro.pdf_sen_paxinas", "o PDF non ten páxinas")
 	}
 	return out, nil
 }
@@ -264,17 +265,21 @@ func (m *Mestre) transcribirPaxinas(ctx context.Context, ia *ClienteIA, paxinas 
 			nums = append(nums, strconv.Itoa(p.Numero))
 		}
 		desc := fmt.Sprintf("páxina %s de %d", nums[0], len(paxinas))
+		// descVisible é o mesmo no idioma de Lua (panel e erros); desc, en
+		// galego, vai na petición á IA.
+		descVisible := idioma.Errorf("desc.paxina", "páxina %s de %d", nums[0], len(paxinas))
 		if len(nums) > 1 {
 			desc = fmt.Sprintf("páxinas %s-%s de %d", nums[0], nums[len(nums)-1], len(paxinas))
+			descVisible = idioma.Errorf("desc.paxinas", "páxinas %s-%s de %d", nums[0], nums[len(nums)-1], len(paxinas))
 		}
-		progreso("a IA le as " + desc)
+		progreso(idioma.T("detalle.ia_le", "a IA le as %s", descVisible))
 		pedido := "Transcribe " + desc + ". As imaxes van na orde das páxinas " + strings.Join(nums, ", ") + "."
 		t, err := ia.turnoComPulso(ctx, sistemaVision, []IAMensaxe{{Rol: "user", Texto: pedido, Imaxes: imaxes}}, nil, nil)
 		if err != nil {
-			return "", fmt.Errorf("%s: %w", desc, err)
+			return "", idioma.Errorf("desc.erro", "%s: %w", descVisible, err)
 		}
 		if t.Truncado {
-			m.log.Aviso("rex.tokens", "%s: a resposta da IA cortouse polo límite de tokens (auméntao nas Opcións de Lua)", desc)
+			m.log.Aviso("rex.tokens", "%s: a resposta da IA cortouse polo límite de tokens (auméntao nas Opcións de Lua)", descVisible)
 		}
 		texto := limparValado(t.Texto)
 		texto = figuraRe.ReplaceAllStringFunc(texto, func(f string) string {
@@ -294,7 +299,7 @@ func (m *Mestre) transcribirPaxinas(ctx context.Context, ia *ClienteIA, paxinas 
 			nFig++
 			nome := fmt.Sprintf("%s-p%d-%d.png", base, p.Numero, nFig)
 			if err := m.recortarFigura(p.Ruta, caixa, nome); err != nil {
-				m.log.Aviso("rex.figura", "%s: non se puido recortar unha figura (%v): vai a páxina enteira", desc, err)
+				m.log.Aviso("rex.figura", "%s: non se puido recortar unha figura (%v): vai a páxina enteira", descVisible, err)
 				nome = fmt.Sprintf("%s-p%d.png", base, p.Numero)
 				if err := copiarImaxe(p.Ruta, filepath.Join(m.raiz, dirRaw, dirImaxes, nome)); err != nil {
 					return "*[Figura: " + g[1] + "]*"
@@ -368,10 +373,10 @@ func copiarImaxe(orixe, destino string) error {
 // ---------- Conversións coa IA ----------
 
 // converterConVision transcribe un PDF ou unha imaxe e escribe raw/<nome>.md.
-func (m *Mestre) converterConVision(ctx context.Context, it *Item, motivo string) error {
+func (m *Mestre) converterConVision(ctx context.Context, it *Item, motivo error) error {
 	ia := m.iaVision()
 	if ia == nil {
-		return fmt.Errorf("para ler fórmulas e debuxos cómpre a IA (abre Buxo desde Lua cunha IA configurada)")
+		return idioma.Errorf("erro.precisa_ia", "para ler fórmulas e debuxos cómpre a IA (abre Buxo desde Lua cunha IA configurada)")
 	}
 	orixe := filepath.Join(m.raiz, dirPDF, it.Nome)
 	base := strings.TrimSuffix(it.Nome, filepath.Ext(it.Nome))
@@ -406,7 +411,9 @@ func (m *Mestre) normalizarMarkdown(ctx context.Context, it *Item, md string) (s
 	var out strings.Builder
 	anacos := partirMarkdown(md, 9000)
 	for i, a := range anacos {
-		m.poñer(it, func(x *Item) { x.Detalle = fmt.Sprintf("a IA pasa as fórmulas a LaTeX (%d/%d)", i+1, len(anacos)) })
+		m.poñer(it, func(x *Item) {
+			x.Detalle = idioma.T("detalle.formulas_latex", "a IA pasa as fórmulas a LaTeX (%d/%d)", i+1, len(anacos))
+		})
 		t, err := ia.turnoComPulso(ctx, sistemaNormalizar, []IAMensaxe{{Rol: "user", Texto: a}}, nil, nil)
 		if err != nil {
 			return md, err

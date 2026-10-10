@@ -8,6 +8,7 @@ package main
 import (
 	"bytes"
 	"context"
+	"edicion/idioma"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -102,7 +103,7 @@ func obterPaxina(ctx context.Context, cliente *http.Client, enderezo string) (co
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
-		return nil, false, nil, fmt.Errorf("o servidor respondeu %d", resp.StatusCode)
+		return nil, false, nil, idioma.Errorf("erro.servidor", "o servidor respondeu %d", resp.StatusCode)
 	}
 	corpo, err = io.ReadAll(io.LimitReader(resp.Body, maxPaxina))
 	if err != nil {

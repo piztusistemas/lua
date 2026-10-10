@@ -7,8 +7,8 @@ package main
 
 import (
 	"context"
+	"edicion/idioma"
 	"encoding/json"
-	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -78,20 +78,20 @@ func fontesRaw(raiz string) int {
 // engadir PDF novos. Un fallo nunha fonte non para as demais.
 func (m *Mestre) Construir(ctx context.Context, ia *ClienteIA) error {
 	if ia == nil {
-		return fmt.Errorf("non hai conexión coa IA: abre Buxo desde Lua cunha clave de IA configurada")
+		return idioma.Errorf("erro.sen_conexion_ia", "non hai conexión coa IA: abre Buxo desde Lua cunha clave de IA configurada")
 	}
 	if e := ia.Estado(ctx); !e.Configurada {
-		return fmt.Errorf("a IA non está configurada (%s)", e.Erro)
+		return idioma.Errorf("erro.ia_non_configurada", "a IA non está configurada (%s)", e.Erro)
 	}
 	if fontesRaw(m.raiz) == 0 {
-		return fmt.Errorf("aínda non hai documentos convertidos: engade ficheiros (PDF, imaxes, Markdown...) primeiro")
+		return idioma.Errorf("erro.sen_documentos", "aínda non hai documentos convertidos: engade ficheiros (PDF, imaxes, Markdown...) primeiro")
 	}
 	if err := CrearEstrutura(m.raiz, m.materia); err != nil {
 		return err
 	}
 	pend, err := ia.pendentesBoveda(ctx)
 	if err != nil {
-		return fmt.Errorf("non se puido consultar a bóveda: %w", err)
+		return idioma.Errorf("erro.consultar_boveda", "non se puido consultar a bóveda: %w", err)
 	}
 	if len(pend) == 0 {
 		m.log.Info("rex.wiki_ao_dia", "A wiki xa cita todas as fontes de raw/: nada que construír.")

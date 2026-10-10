@@ -67,3 +67,26 @@ func TestRexistroIdiomas(t *testing.T) {
 		}
 	}
 }
+
+// Spec buxo-idiomas, aceptación 2: un erro de conversión, con Lua en inglés,
+// sae en inglés e conserva o nome do ficheiro.
+func TestErroConversionEnIngles(t *testing.T) {
+	t.Cleanup(idioma.Restablecer)
+	idioma.Restablecer()
+	t.Setenv("BUXO_IDIOMA", "en")
+	configurarIdioma()
+	orixe := filepath.Join(t.TempDir(), "notas.xyz")
+	if err := os.WriteFile(orixe, []byte("x"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	_, err := CopiarFicheiro(orixe, t.TempDir())
+	if err == nil {
+		t.Fatal("un .xyz debería dar erro")
+	}
+	if got := err.Error(); !strings.Contains(got, "notas.xyz") || !strings.Contains(got, "does not know how to handle") {
+		t.Errorf("erro en inglés co nome, obtido %q", got)
+	}
+	if m := motivoVision("ola", 3, 0); m == nil || !strings.Contains(m.Error(), "little extractable text") {
+		t.Errorf("motivo en inglés, obtido %v", m)
+	}
+}
