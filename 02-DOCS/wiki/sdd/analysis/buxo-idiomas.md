@@ -44,3 +44,6 @@ Constitución: sen violacións. Dependencia entre plans (T001 ← mensaxes-go-id
 
 - **plan:** G1, unha frase.
 - **tasks:** G2, unha liña nas Interfaces de T004.
+
+## Decisión do usuario
+- 2026-10-10 — Achados aceptados tal como están («acepto e programar xa»). Implementación: en caso de dúbida mana o §3 dos plans.

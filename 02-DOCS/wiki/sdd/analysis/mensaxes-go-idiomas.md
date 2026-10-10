@@ -50,3 +50,6 @@ Portadores para implementadores illados: §0 presente; Interfaces en T002, T004 
 - **tasks:** F1 (test de T006 coa mensaxe 1), F3 (revisar `problemas.go:301` en T007), F4 opcional.
 - **plan:** F2, unha liña en §3: os logs internos usan `idioma.Galego(err)`.
 - Ou aceptar conscientemente F2-F5 e implementar.
+
+## Decisión do usuario
+- 2026-10-10 — Achados aceptados tal como están («acepto e programar xa»). Implementación: en caso de dúbida mana o §3 dos plans.
