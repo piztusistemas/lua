@@ -1070,5 +1070,11 @@
   "go.latex.vista_previa": "non se puido xerar a vista previa das páxinas: %v",
   "go.latex.imaxes_plantilla": "non se puideron copiar as imaxes da plantilla: %w",
   "go.latex.sen_paxinas": "LaTeX non deu ningunha páxina",
-  "go.plantilla.variable_indefinida": "a plantilla usa {{%s}}, que non está definida: quedou baleira"
+  "go.plantilla.variable_indefinida": "a plantilla usa {{%s}}, que non está definida: quedou baleira",
+  "go.maxima.sen_resposta": "Maxima non respondeu en %s - a sesión reiniciouse automaticamente, podes tentalo de novo",
+  "go.maxima.non_inicia": "non se puido iniciar Maxima: %w",
+  "go.problemas.condicion": "non se cumpre «%s»",
+  "go.problemas.condicion_maxima": "non se cumpre «%s» (Maxima di %s)",
+  "go.problemas.variable_inexistente": "%s: {%s} está nunha fórmula pero non é ningunha variable",
+  "go.problemas.sen_solucion": "pregunta %s: aínda non ten solución"
 }

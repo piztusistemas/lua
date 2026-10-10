@@ -53,3 +53,10 @@ Fallbacks: sen `02-DOCS/wiki/sdd/config.yaml` (ordes da constitución: gofmt, go
 - files: edicion/documento/latex.go, edicion/plantilla/composicion.go, lua/lua/{debuxos_latex,informe_cronograma,latexdoc}.go, idiomas/*.json, idioma_mensaxes_test.go
 - claves: 12 (go.latex.*, go.plantilla.variable_indefinida), 20 sitios
 - decision: traducións por situación (ver decisions.md); F1 da análise aceptado: non hai test da mensaxe «non se atopou %s» (precisa un equipo sen motor LaTeX)
+
+## T007 — 2026-10-10
+- status: complete
+- green: `go test ./...` en edicion e lua/lua verde; garda verde
+- claves: 6 (go.maxima.*, go.problemas.*), 7 sitios
+- F3 da análise: `edicion/xerar/problemas.go:301` busca «timeout»/«tempo»; a mensaxe de Maxima sen resposta non contén ningún, nin antes nin nas traducións (evitados a propósito) → comportamento igual
+- nota: `probas.go:154` («non se cumpre » + c, concatenado) non é da lista; queda en galego

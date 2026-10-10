@@ -4,6 +4,7 @@
 package xerar
 
 import (
+	"edicion/idioma"
 	_ "embed"
 	"fmt"
 	"math/rand/v2"
@@ -105,7 +106,7 @@ func Corpo(f *ficha.Ficha, fichas Fichas, o Opcions, dir string) (Resultado, err
 		}
 		sess, err := cas.Open(ruta)
 		if err != nil {
-			return Resultado{}, fmt.Errorf("non se puido iniciar Maxima: %w", err)
+			return Resultado{}, idioma.Errorf("go.maxima.non_inicia", "non se puido iniciar Maxima: %w", err)
 		}
 		x.m = cas.NewMaxima(sess)
 		defer x.m.Close()

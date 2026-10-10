@@ -13,6 +13,7 @@ package xerar
 // do resto.
 
 import (
+	"edicion/idioma"
 	"fmt"
 	"strings"
 	"sync"
@@ -95,7 +96,7 @@ func NovoMotor(o Opcions, conMaxima bool, timeout time.Duration) (*Motor, error)
 		if ruta := RutaMaxima(o.Maxima); ruta != "" {
 			sess, err := cas.Open(ruta)
 			if err != nil {
-				return nil, fmt.Errorf("non se puido iniciar Maxima: %w", err)
+				return nil, idioma.Errorf("go.maxima.non_inicia", "non se puido iniciar Maxima: %w", err)
 			}
 			x.m = cas.NewMaxima(sess)
 			if timeout > 0 {
@@ -241,7 +242,7 @@ func (x *xerador) comprobar(c string, vals map[string]Valor) string {
 			return fmt.Sprintf("non se puido comprobar «%s»: %v", c, err)
 		}
 		if n == 0 {
-			return fmt.Sprintf("non se cumpre «%s»", c)
+			return idioma.T("go.problemas.condicion", "non se cumpre «%s»", c)
 		}
 		return ""
 	}
@@ -250,7 +251,7 @@ func (x *xerador) comprobar(c string, vals map[string]Valor) string {
 		return fmt.Sprintf("non se puido comprobar «%s»: %v", c, err)
 	}
 	if r := ultimoValor(out); r != "true" {
-		return fmt.Sprintf("non se cumpre «%s» (Maxima di %s)", c, r)
+		return idioma.T("go.problemas.condicion_maxima", "non se cumpre «%s» (Maxima di %s)", c, r)
 	}
 	return ""
 }

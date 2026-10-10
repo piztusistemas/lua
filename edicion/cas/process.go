@@ -4,6 +4,7 @@ package cas
 
 import (
 	"bufio"
+	"edicion/idioma"
 	"fmt"
 	"io"
 	"os/exec"
@@ -129,7 +130,7 @@ func (s *Session) rawSend(text string) (string, error) {
 		return r.out, r.err
 	case <-time.After(timeout):
 		s.Kill()
-		return "", fmt.Errorf("Maxima non respondeu en %s - a sesión reiniciouse automaticamente, podes tentalo de novo", timeout)
+		return "", idioma.Errorf("go.maxima.sen_resposta", "Maxima non respondeu en %s - a sesión reiniciouse automaticamente, podes tentalo de novo", timeout)
 	}
 }
 

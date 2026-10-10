@@ -23,6 +23,7 @@ package main
 // xusto antes de escribir o PDF, o Markdown, o Word ou o OpenDocument.
 
 import (
+	"edicion/idioma"
 	"encoding/json"
 	"fmt"
 	"regexp"
@@ -202,7 +203,7 @@ func avisosProblemas(c CampoFormulario, v any) []string {
 		}
 		for _, nome := range variablesEnFormulas(p.Enunciado) {
 			if !declaradas[nome] && !unidadesComuns[nome] {
-				avisos = append(avisos, fmt.Sprintf("%s: {%s} está nunha fórmula pero non é ningunha variable", onde, nome))
+				avisos = append(avisos, idioma.T("go.problemas.variable_inexistente", "%s: {%s} está nunha fórmula pero non é ningunha variable", onde, nome))
 				declaradas[nome] = true
 			}
 		}
@@ -327,7 +328,7 @@ func expandirProblemas(bloques []bloqueDoc, xer *XeracionProblemas, m motorProbl
 				switch {
 				case x.Solucions == solucionsNon:
 				case sol == "":
-					avisar(fmt.Sprintf("pregunta %s: aínda non ten solución", num))
+					avisar(idioma.T("go.problemas.sen_solucion", "pregunta %s: aínda non ten solución", num))
 				case x.Solucions == solucionsXunto:
 					out = append(out, bloqueDoc{Tipo: bloqueSolucion, Rotulo: tx.T("FORM_SOLUCION"), Texto: sol})
 				default:

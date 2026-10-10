@@ -1070,5 +1070,11 @@
   "go.latex.vista_previa": "no se pudo generar la vista previa de las páginas: %v",
   "go.latex.imaxes_plantilla": "no se pudieron copiar las imágenes de la plantilla: %w",
   "go.latex.sen_paxinas": "LaTeX no generó ninguna página",
-  "go.plantilla.variable_indefinida": "la plantilla usa {{%s}}, que no está definida: quedó vacía"
+  "go.plantilla.variable_indefinida": "la plantilla usa {{%s}}, que no está definida: quedó vacía",
+  "go.maxima.sen_resposta": "Maxima no respondió en %s - la sesión se reinició automáticamente, puedes intentarlo de nuevo",
+  "go.maxima.non_inicia": "no se pudo iniciar Maxima: %w",
+  "go.problemas.condicion": "no se cumple «%s»",
+  "go.problemas.condicion_maxima": "no se cumple «%s» (Maxima dice %s)",
+  "go.problemas.variable_inexistente": "%s: {%s} está en una fórmula pero no es ninguna variable",
+  "go.problemas.sen_solucion": "pregunta %s: aún no tiene solución"
 }
