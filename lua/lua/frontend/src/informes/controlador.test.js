@@ -23,7 +23,7 @@ function novoContexto(apiExtra = {}, uiExtra = {}, opcions = {}) {
     ...apiExtra,
   }
   const ui = {
-    setStatus: vi.fn(), setStatusGardado: vi.fn(), showWarnings: vi.fn(), log: vi.fn(),
+    setStatus: vi.fn(), setStatusGardado: vi.fn(), showWarnings: vi.fn(), log: vi.fn(), logAvisos: vi.fn(),
     mensaxeErro: (e) => (e && e.message) || String(e),
     previsualizar: vi.fn(), limparResultado: vi.fn(), setUltimoPDF: vi.fn(),
     confirmar: vi.fn(async () => true), ocupado: vi.fn(), ocupadoBoton: vi.fn(), logLatex: vi.fn(), aoFallar: vi.fn(),
@@ -234,7 +234,11 @@ describe('xerar', () => {
     expect(await inf.xerar()).toBe(true)
     expect(api.XerarInformeCronograma.mock.calls[0][0].plan.academicYear).toMatch(/^\d{4}\/\d{4}$/)
     expect(ui.previsualizar).toHaveBeenCalledWith(['data:image/png;base64,AA'])
-    expect(ui.showWarnings).toHaveBeenLastCalledWith(['aviso'])
+    // Os avisos van ao rexistro, despois do «Feito.»; a barra amarela queda baleira.
+    expect(ui.logAvisos).toHaveBeenLastCalledWith(['aviso'])
+    expect(ui.log.mock.invocationCallOrder.at(-1)).toBeLessThan(ui.logAvisos.mock.invocationCallOrder.at(-1))
+    expect(ui.showWarnings).toHaveBeenLastCalledWith([])
+    expect(ui.setStatus).toHaveBeenLastCalledWith(expect.stringMatching(/1/))
     expect(ui.setUltimoPDF).toHaveBeenLastCalledWith('UERG')
     expect(inf.temResultado()).toBe(true)
     expect(ui.ocupado.mock.calls).toEqual([[true], [false, true]]) // o 2.º dato di se saíu ben (a barra de progreso aprende o tempo)

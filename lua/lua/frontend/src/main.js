@@ -455,9 +455,10 @@ function mensaxeErro(err) {
 const LOG_MAX_LINEAS = 500
 const logOutput = document.getElementById('log-output')
 
-function log(txt) {
+function log(txt, clase) {
   const linea = document.createElement('div')
   linea.textContent = txt
+  if (clase) linea.className = clase
   logOutput.appendChild(linea)
   while (logOutput.childElementCount > LOG_MAX_LINEAS) {
     logOutput.removeChild(logOutput.firstChild)
@@ -485,6 +486,13 @@ function logPdflatex(texto) {
   for (const liña of texto.split('\n')) {
     if (liña.trim()) log('[PDFLATEX] ' + liña)
   }
+}
+
+// logAvisos: os avisos dunha xeración que saíu ben (pregunta sen solución,
+// variable da plantilla sen definir…) van ao rexistro, despois da saída do
+// compilador e en ámbar, para distinguilos do resto.
+function logAvisos(list) {
+  for (const w of list || []) log('[AVISO] ' + w, 'log-aviso')
 }
 
 function showWarnings(list) {
@@ -689,6 +697,7 @@ function criarControlador(ferramenta) {
       setStatusGardado,
       showWarnings,
       log,
+      logAvisos,
       mensaxeErro,
       confirmar,
       previsualizar: (paxinas) => {
@@ -1379,9 +1388,9 @@ async function accionRemota(accionFn, btn, statusCompiling, errKey, errFallback)
   log('[XERAR] ' + statusCompiling)
   try {
     const result = await accionFn()
-    showWarnings(result.warnings || [])
     setStatusGardado(result.path ? t('status.exported', 'Exportado: ') + result.path : t('status.unsaved', 'sen gardar'), result.path)
     log('[XERAR] ' + (result.path ? 'Exportado: ' + result.path : 'Feito.'))
+    logAvisos(result.warnings)
   } catch (err) {
     setStatus(t(errKey, errFallback))
     showWarnings([mensaxeErro(err)])
@@ -1885,7 +1894,7 @@ function entrarModoResultado() {
     if (estado.version === ultimaVersion) return
     ultimaVersion = estado.version
     preview.srcdoc = pagesToPreviewHTML(estado.pageImages)
-    showWarnings(estado.warnings)
+    logAvisos(estado.warnings)
   }
 
   // Subscribirse ANTES de pedir o snapshot inicial - se chega un Xerar()

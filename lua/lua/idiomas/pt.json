@@ -524,6 +524,7 @@
   "status.compilingMarkdown": "A compilar Markdown...",
   "status.compilingOdt": "A compilar OpenDocument (.odt)...",
   "status.done": "Concluído.",
+  "status.doneWarnings": "Concluído, com {n} avisos (ver o registo).",
   "status.error": "Erro",
   "status.errorCompilingPdf": "Erro ao compilar PDF",
   "status.errorExporting": "Erro ao exportar",

@@ -740,6 +740,8 @@ body.editor-ancho-completo .pane-editor { width: 100% !important; flex: 1; }
 
 #log-output div { white-space: pre-wrap; word-break: break-all; }
 
+#log-output .log-aviso { color: #fbbf24; }
+
 /* ---------- Overlays / modals ---------- */
 
 .overlay {

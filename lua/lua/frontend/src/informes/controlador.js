@@ -325,10 +325,14 @@ export function createInformes({
       versionResultado = versionAoInicio
       ui.setUltimoPDF?.(r.pdfBase64)
       ui.previsualizar(r.pageImages)
-      ui.showWarnings(r.warnings)
       ui.logLatex?.(r.log)
-      ui.setStatus(t('status.done', 'Feito.'))
       ui.log('[XERAR] Feito.')
+      // Os avisos van ao rexistro, despois da saída do compilador; a barra
+      // amarela (showWarnings) queda para os erros.
+      ui.logAvisos(r.warnings)
+      ui.setStatus(r.warnings?.length
+        ? t('status.doneWarnings', 'Feito, con {n} avisos (ver o rexistro).', { n: r.warnings.length })
+        : t('status.done', 'Feito.'))
       ultimoXerar = { ok: true, avisos: r.warnings || [], paxinas: (r.pageImages || []).length, erro: '' }
       return true
     } catch (err) {
@@ -353,10 +357,10 @@ export function createInformes({
     ui.log('[XERAR] ' + estado)
     try {
       const r = await fn()
-      ui.showWarnings(r?.warnings || [])
       const path = r?.path
       ui.setStatusGardado(path ? t('status.exported', 'Exportado: ') + path : t('status.unsaved', 'sen gardar'), path)
       ui.log('[XERAR] ' + (path ? 'Exportado: ' + path : 'Feito.'))
+      ui.logAvisos(r?.warnings)
       return path || null
     } catch (err) {
       ui.setStatus(t(erroClave, erroTexto))
