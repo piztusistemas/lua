@@ -28,6 +28,7 @@ func main() {
 	flag.StringVar(&args.Materia, "materia", os.Getenv("BUXO_MATERIA"), "tema do proxecto")
 	flag.StringVar(&args.ID, "id", os.Getenv("BUXO_BOVEDA_ID"), "id da bóveda na API da aplicación anfitrioa")
 	flag.Parse()
+	configurarIdioma()
 	if args.Boveda != "" {
 		if abs, err := filepath.Abs(args.Boveda); err == nil {
 			args.Boveda = abs
