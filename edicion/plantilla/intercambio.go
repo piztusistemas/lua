@@ -1,9 +1,9 @@
 package plantilla
 
 import (
+	"edicion/idioma"
 	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -140,13 +140,13 @@ func ConstruirBundle(p Plantilla, o Opcions) (Bundle, error) {
 func ImportarBundle(data []byte, o Opcions, imp Importador) (Plantilla, error) {
 	var b Bundle
 	if err := json.Unmarshal(data, &b); err != nil {
-		return Plantilla{}, fmt.Errorf("o ficheiro non é unha plantilla de %s válida: %w", o.Nome, err)
+		return Plantilla{}, idioma.Errorf("go.plantilla.non_valida", "o ficheiro non é unha plantilla de %s válida: %w", o.Nome, err)
 	}
 	if !formatoAceptado(b.Formato) {
-		return Plantilla{}, fmt.Errorf("o ficheiro non é unha plantilla de %s", o.Nome)
+		return Plantilla{}, idioma.Errorf("go.plantilla.non_e", "o ficheiro non é unha plantilla de %s", o.Nome)
 	}
 	if b.Version > VersionBundle {
-		return Plantilla{}, fmt.Errorf("esta plantilla fíxose cunha versión máis nova de %s: actualiza %s para importala", o.Nome, o.Nome)
+		return Plantilla{}, idioma.Errorf("go.plantilla.mais_nova", "esta plantilla fíxose cunha versión máis nova de %s: actualiza %s para importala", o.Nome, o.Nome)
 	}
 
 	p := b.Plantilla
@@ -170,7 +170,7 @@ func ImportarBundle(data []byte, o Opcions, imp Importador) (Plantilla, error) {
 			// unha imaxe non entrou, en vez de perder o texto (o caro de
 			// reescribir) por un logo que se pode volver subir.
 			gardada.Imaxes = imp.Imaxes(gardada.ID)
-			return gardada, fmt.Errorf("plantilla importada, pero a imaxe %q non se puido gardar: %w", im.Nome, err)
+			return gardada, idioma.Errorf("go.plantilla.imaxe_non_gardada", "plantilla importada, pero a imaxe %q non se puido gardar: %w", im.Nome, err)
 		}
 	}
 	gardada.Imaxes = imp.Imaxes(gardada.ID)

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"edicion/idioma"
 	"errors"
 
 	"github.com/wailsapp/wails/v3/pkg/application"
@@ -165,7 +166,7 @@ func (a *App) pecharDeseñadorFormulario(id string) error {
 	sucia := a.formularios.sucias[idLimpo]
 	a.formularios.mu.Unlock()
 	if sucia {
-		return errors.New("o deseñador deste formulario está aberto con cambios sen gardar: gárdaos ou péchao antes de pasalo a produción")
+		return idioma.Errorf("go.formulario.desenador_aberto", "o deseñador deste formulario está aberto con cambios sen gardar: gárdaos ou péchao antes de pasalo a produción")
 	}
 	a.PecharXanelaFormulario(id)
 	return nil

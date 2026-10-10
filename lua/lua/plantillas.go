@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"edicion/idioma"
 	"encoding/base64"
 	"fmt"
 	"os"
@@ -104,7 +105,7 @@ func (a *App) GardarPlantilla(p PlantillaLatex) (PlantillaLatex, error) {
 		return PlantillaLatex{}, fmt.Errorf("dálle un nome á plantilla")
 	}
 	if strings.TrimSpace(p.Latex) == "" {
-		return PlantillaLatex{}, fmt.Errorf("a plantilla non ten código LaTeX")
+		return PlantillaLatex{}, idioma.Errorf("go.plantilla.sen_latex", "a plantilla non ten código LaTeX")
 	}
 	if !strings.Contains(p.Latex, marcadorCorpo) {
 		return PlantillaLatex{}, fmt.Errorf("o LaTeX da plantilla ten que levar %s no sitio onde vai o documento", marcadorCorpo)
@@ -525,7 +526,7 @@ func (a *App) PrevisualizarPlantillaDocumento(p PlantillaLatex, req XerarInforme
 
 func (a *App) previsualizarPlantillaPedido(p PlantillaLatex, pedido XerarInformeCronogramaRequest) (GeneratePDFResult, error) {
 	if strings.TrimSpace(p.Latex) == "" {
-		return GeneratePDFResult{}, fmt.Errorf("a plantilla non ten código LaTeX")
+		return GeneratePDFResult{}, idioma.Errorf("go.plantilla.sen_latex", "a plantilla non ten código LaTeX")
 	}
 	if !strings.Contains(p.Latex, marcadorCorpo) {
 		return GeneratePDFResult{}, fmt.Errorf("o LaTeX da plantilla ten que levar %s no sitio onde vai o informe", marcadorCorpo)

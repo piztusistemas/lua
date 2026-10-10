@@ -18,6 +18,7 @@ package main
 // «form:<id>».
 
 import (
+	"edicion/idioma"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -161,7 +162,7 @@ func validarBiblioteca(b BibliotecaFormularios, existentes map[string]bool) erro
 		}
 		k := strings.ToLower(c.Nome)
 		if nomes[k] {
-			return fmt.Errorf("xa hai un cartafol chamado «%s»", c.Nome)
+			return idioma.Errorf("go.cartafol.repetido", "xa hai un cartafol chamado «%s»", c.Nome)
 		}
 		nomes[k] = true
 	}
@@ -237,7 +238,7 @@ func escribirBiblioteca(b BibliotecaFormularios) error {
 func crearCarpetaFormularios(nome string) (BibliotecaFormularios, error) {
 	nome = strings.TrimSpace(nome)
 	if nome == "" {
-		return BibliotecaFormularios{}, errors.New("o cartafol necesita un nome")
+		return BibliotecaFormularios{}, idioma.Errorf("go.cartafol.sen_nome", "o cartafol necesita un nome")
 	}
 	b, err := lerBiblioteca()
 	if err != nil {

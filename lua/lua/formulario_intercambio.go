@@ -19,6 +19,7 @@ package main
 // Non leva plantillas: van aparte e levan LaTeX e imaxes.
 
 import (
+	"edicion/idioma"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -162,7 +163,7 @@ func nomeLibreFormulario(nome string, usados map[string]bool) string {
 func importarBundleFormulario(data []byte) (ResultadoImportacionFormulario, error) {
 	var res ResultadoImportacionFormulario
 	if len(data) > maxBytesBundleFormulario {
-		return res, fmt.Errorf("o ficheiro é demasiado grande (máximo %d MB)", maxBytesBundleFormulario>>20)
+		return res, idioma.Errorf("go.ficheiro.grande", "o ficheiro é demasiado grande (máximo %d MB)", maxBytesBundleFormulario>>20)
 	}
 	// Primeiro só a cabeceira: un ficheiro doutra clase (un documento cos datos
 	// dun formulario, unha plantilla) ten que dar unha mensaxe clara, non un
@@ -173,25 +174,25 @@ func importarBundleFormulario(data []byte) (ResultadoImportacionFormulario, erro
 		Ferramenta string `json:"ferramenta"`
 	}
 	if err := json.Unmarshal(data, &cab); err != nil {
-		return res, fmt.Errorf("o ficheiro non é un JSON válido: %w", err)
+		return res, idioma.Errorf("go.ficheiro.json", "o ficheiro non é un JSON válido: %w", err)
 	}
 	if cab.Ferramenta == "formulario" {
-		return res, fmt.Errorf("este ficheiro é un documento cos DATOS dun formulario, non o formulario en si: ábreo desde o formulario ao que pertence")
+		return res, idioma.Errorf("go.formulario.son_datos", "este ficheiro é un documento cos DATOS dun formulario, non o formulario en si: ábreo desde o formulario ao que pertence")
 	}
 	if cab.Formato != formatoBundleFormulario {
-		return res, fmt.Errorf("o ficheiro non é un formulario de Lua (falta o marcador «%s»)", formatoBundleFormulario)
+		return res, idioma.Errorf("go.formulario.sen_marcador", "o ficheiro non é un formulario de Lua (falta o marcador «%s»)", formatoBundleFormulario)
 	}
 	if cab.Version < 1 || cab.Version > versionBundleFormulario {
-		return res, fmt.Errorf("o ficheiro ten a versión %d do formato e este Lua só entende ata a %d: actualiza Lua", cab.Version, versionBundleFormulario)
+		return res, idioma.Errorf("go.formulario.version", "o ficheiro ten a versión %d do formato e este Lua só entende ata a %d: actualiza Lua", cab.Version, versionBundleFormulario)
 	}
 	var b BundleFormulario
 	if err := json.Unmarshal(data, &b); err != nil {
-		return res, fmt.Errorf("o formulario do ficheiro non é válido: %w", err)
+		return res, idioma.Errorf("go.formulario.non_valido", "o formulario do ficheiro non é válido: %w", err)
 	}
 
 	f := normalizarFormulario(b.Formulario)
 	if err := validarFormulario(f); err != nil {
-		return res, fmt.Errorf("o formulario do ficheiro non é válido: %w", err)
+		return res, idioma.Errorf("go.formulario.non_valido", "o formulario do ficheiro non é válido: %w", err)
 	}
 
 	// Nunca se pisa un formulario: se o id xa existe, entra coma copia.
@@ -207,7 +208,7 @@ func importarBundleFormulario(data []byte) (ResultadoImportacionFormulario, erro
 	if ids[f.ID] {
 		f.ID = idLibre(f.ID, ids)
 		f.Nome = nomeLibreFormulario(f.Nome, nomes)
-		res.Avisos = append(res.Avisos, fmt.Sprintf("Xa tiñas un formulario con ese identificador: o importado entrou coma copia, «%s».", f.Nome))
+		res.Avisos = append(res.Avisos, idioma.T("go.formulario.copia", "Xa tiñas un formulario con ese identificador: o importado entrou coma copia, «%s».", f.Nome))
 	}
 
 	f, err = gardarFormulario(f)
@@ -217,7 +218,7 @@ func importarBundleFormulario(data []byte) (ResultadoImportacionFormulario, erro
 
 	datos, descartados := sanearDatosIntercambio(f, b.Datos)
 	if descartados > 0 {
-		res.Avisos = append(res.Avisos, fmt.Sprintf("%d datos do ficheiro non correspondían a ningún campo do formulario e non se cargaron.", descartados))
+		res.Avisos = append(res.Avisos, idioma.T("go.formulario.datos_descartados", "%d datos do ficheiro non correspondían a ningún campo do formulario e non se cargaron.", descartados))
 	}
 	// Datos que non son de proba: o formulario entra en PRODUCIÓN (sen IA).
 	if datos != nil && !datos.Proba {
@@ -228,7 +229,7 @@ func importarBundleFormulario(data []byte) (ResultadoImportacionFormulario, erro
 	}
 	if datos != nil {
 		if err := escribirBorradorImportado(f.ID, datos); err != nil {
-			return res, fmt.Errorf("o formulario entrou na biblioteca pero non se puideron cargar os seus datos: %w", err)
+			return res, idioma.Errorf("go.formulario.datos_non_cargados", "o formulario entrou na biblioteca pero non se puideron cargar os seus datos: %w", err)
 		}
 	}
 	res.Formulario, res.Datos = f, datos
@@ -312,7 +313,7 @@ func (a *App) ImportarFormulario() (ResultadoImportacionFormulario, error) {
 		return ResultadoImportacionFormulario{}, err
 	}
 	if fi, err := os.Stat(path); err == nil && fi.Size() > maxBytesBundleFormulario {
-		return ResultadoImportacionFormulario{}, fmt.Errorf("o ficheiro é demasiado grande (máximo %d MB)", maxBytesBundleFormulario>>20)
+		return ResultadoImportacionFormulario{}, idioma.Errorf("go.ficheiro.grande", "o ficheiro é demasiado grande (máximo %d MB)", maxBytesBundleFormulario>>20)
 	}
 	data, err := os.ReadFile(path)
 	if err != nil {

@@ -49,3 +49,22 @@ func TestAvisoCambioDeMotorEnIngles(t *testing.T) {
 		t.Errorf("aviso en inglés, obtido %q", aviso)
 	}
 }
+
+// Spec mensaxes-go-idiomas, aceptación 2: abrir un ficheiro que non é un
+// formulario válido, con Lua en castelán → o erro está en castelán.
+func TestFicheiroNonValidoEnCastelan(t *testing.T) {
+	t.Setenv("XDG_CONFIG_HOME", t.TempDir())
+	t.Setenv("HOME", t.TempDir())
+	conIdioma(t, "es")
+	_, err := importarBundleFormulario([]byte(`{"ola": 1}`))
+	if err == nil {
+		t.Fatal("un JSON que non é un formulario debería dar erro")
+	}
+	if !strings.Contains(err.Error(), "no es un formulario de Lua") {
+		t.Errorf("erro en castelán, obtido %q", err.Error())
+	}
+	_, err = importarBundleFormulario([]byte(`non é JSON`))
+	if err == nil || !strings.Contains(err.Error(), "no es un JSON válido") {
+		t.Errorf("JSON roto: erro en castelán, obtido %v", err)
+	}
+}

@@ -26,6 +26,7 @@ package main
 // «form:<id>».
 
 import (
+	"edicion/idioma"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -516,14 +517,14 @@ func nomeCarpetaRepetido(c []CarpetaProxectos, nome, excepto string) bool {
 func crearCarpetaProxectos(nome string) ([]CarpetaProxectos, error) {
 	nome = limparTexto(nome, maxNomeCarpetaProxecto)
 	if nome == "" {
-		return nil, errors.New("o cartafol necesita un nome")
+		return nil, idioma.Errorf("go.cartafol.sen_nome", "o cartafol necesita un nome")
 	}
 	c, _ := lerCarpetasProxectos()
 	if len(c) >= maxCarpetasProxectos {
 		return c, fmt.Errorf("hai máis de %d cartafoles", maxCarpetasProxectos)
 	}
 	if nomeCarpetaRepetido(c, nome, "") {
-		return c, fmt.Errorf("xa hai un cartafol chamado «%s»", nome)
+		return c, idioma.Errorf("go.cartafol.repetido", "xa hai un cartafol chamado «%s»", nome)
 	}
 	usados := map[string]bool{}
 	for _, x := range c {
@@ -540,11 +541,11 @@ func crearCarpetaProxectos(nome string) ([]CarpetaProxectos, error) {
 func renomearCarpetaProxectos(id, nome string) ([]CarpetaProxectos, error) {
 	nome = limparTexto(nome, maxNomeCarpetaProxecto)
 	if nome == "" {
-		return nil, errors.New("o cartafol necesita un nome")
+		return nil, idioma.Errorf("go.cartafol.sen_nome", "o cartafol necesita un nome")
 	}
 	c, _ := lerCarpetasProxectos()
 	if nomeCarpetaRepetido(c, nome, id) {
-		return c, fmt.Errorf("xa hai un cartafol chamado «%s»", nome)
+		return c, idioma.Errorf("go.cartafol.repetido", "xa hai un cartafol chamado «%s»", nome)
 	}
 	for i := range c {
 		if c[i].ID == id {

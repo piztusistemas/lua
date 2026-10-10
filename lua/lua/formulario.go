@@ -11,6 +11,7 @@ package main
 // textos fixos son da plantilla (ver textos_doc.go, «formulario»).
 
 import (
+	"edicion/idioma"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -250,7 +251,7 @@ func tipoCampoValido(t string) bool {
 // validarFormulario devolve o primeiro problema do esquema (xa normalizado), ou nil.
 func validarFormulario(f Formulario) error {
 	if f.Nome == "" {
-		return errors.New("o formulario non ten nome")
+		return idioma.Errorf("go.formulario.sen_nome", "o formulario non ten nome")
 	}
 	if !idFormularioRe.MatchString(f.ID) {
 		return fmt.Errorf("o identificador %q do formulario non vale (minúsculas, díxitos e _, empezando por letra)", f.ID)
@@ -279,19 +280,19 @@ func validarCampo(c CampoFormulario, columna bool) error {
 		return fmt.Errorf("o identificador %q non vale", c.ID)
 	}
 	if c.Etiqueta == "" {
-		return fmt.Errorf("«%s» non ten etiqueta", c.ID)
+		return idioma.Errorf("go.formulario.sen_etiqueta", "«%s» non ten etiqueta", c.ID)
 	}
 	switch c.Tipo {
 	case campoEscolla:
 		if len(c.Opcions) == 0 {
-			return fmt.Errorf("«%s» é unha escolla sen opcións", c.Etiqueta)
+			return idioma.Errorf("go.formulario.escolla_baleira", "«%s» é unha escolla sen opcións", c.Etiqueta)
 		}
 	case campoTaboa:
 		if columna {
 			return fmt.Errorf("«%s»: unha táboa non pode ir dentro doutra", c.Etiqueta)
 		}
 		if len(c.Columnas) == 0 {
-			return fmt.Errorf("a táboa «%s» non ten columnas", c.Etiqueta)
+			return idioma.Errorf("go.formulario.taboa_sen_columnas", "a táboa «%s» non ten columnas", c.Etiqueta)
 		}
 		if len(c.Columnas) > maxColumnasTaboa {
 			return fmt.Errorf("a táboa «%s» ten máis de %d columnas", c.Etiqueta, maxColumnasTaboa)
