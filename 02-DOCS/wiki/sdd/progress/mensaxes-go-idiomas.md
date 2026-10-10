@@ -88,3 +88,12 @@ Fallbacks: sen `02-DOCS/wiki/sdd/config.yaml` (ordes da constitución: gofmt, go
 - red: TestIASenClaveEnIngles (erro en galego)
 - green: verde e executado; `go test ./...` e `go vet` en edicion e lua/lua verdes; garda verde
 - claves: 8 (go.ia.*), 41 sitios (os erros da IA están repetidos en tres clientes)
+
+## T013 — 2026-10-10
+- status: complete
+- check: `grep -c '"go\.' idiomas/*.json` = 74 en gl, es, en e pt; TestMensaxesDoGoEstanEnGalego e TestIdiomasTenAsMesmasClavesEVariables verdes
+- nota: as traducións fixéronse en T006-T012 (ver decisions.md)
+
+## T014 — 2026-10-10
+- status: complete
+- check: `cd yang/yang && go test ./...` dá os mesmos fallos ca a liña base (`matexe-wails [build failed]`, `TestSetDecimaisRoundsFloatingResults`); só cambian os tempos
