@@ -1,6 +1,6 @@
-# Lua — aplicación
+# Lúa — aplicación
 
-Código da aplicación Lua (Go + Wails v3).
+Código da aplicación Lúa (Go + Wails v3).
 
 - Que fai: [`../README.md`](../README.md)
 - Como compilar e probar: [`02-DOCS/wiki/desenvolvemento.md`](../../02-DOCS/wiki/desenvolvemento.md)

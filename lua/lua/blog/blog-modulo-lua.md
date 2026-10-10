@@ -1,10 +1,10 @@
 ---
-title: "Lua: cronograma e actas do departamento en LaTeX, con plantillas e IA"
+title: "Lúa: cronograma e actas do departamento en LaTeX, con plantillas e IA"
 slug: modulo-lua-cronograma-actas
 categoría: Módulos
 ---
 
-![Lua, o módulo de documentación de departamentos de Piztu](imaxes/logo.png)
+![Lúa, o módulo de documentación de departamentos de Piztu](imaxes/logo.png)
 
 Cada curso, os departamentos didácticos repiten a mesma tarefa: actualizar o
 **cronograma anual**, redactar a **acta** de cada reunión e cubrir o
@@ -12,10 +12,10 @@ Cada curso, os departamentos didácticos repiten a mesma tarefa: actualizar o
 Writer significa loitar co formato cada vez que se pega un texto, perder a conta
 dos meses e reescribir cabeceiras, pés e portadas en cada documento.
 
-**Lua** é o módulo de Piztu que resolve exactamente isto: recolle os datos do
+**Lúa** é o módulo de Piztu que resolve exactamente isto: recolle os datos do
 centro, do departamento e do curso nun formulario e **xera o documento
 completo** —portada, índice, introdución, cronograma, actas e sinatura—
-compilado en **LaTeX** co estilo do centro. Ti escribes o contido; Lua encárgase
+compilado en **LaTeX** co estilo do centro. Ti escribes o contido; Lúa encárgase
 da estrutura e da estética.
 
 - Repositorio: [github.com/piztusistemas/lua](https://github.com/piztusistemas/lua)
@@ -24,9 +24,9 @@ da estrutura e da estética.
 
 ---
 
-## Que é Lua e que problema resolve
+## Que é Lúa e que problema resolve
 
-Lua é un **módulo de Piztu** (ten o seu `modulo.json`, cun `id`, unha icona e un
+Lúa é un **módulo de Piztu** (ten o seu `modulo.json`, cun `id`, unha icona e un
 executable) que tamén se pode instalar e usar de forma autónoma, sen Piztu. A
 súa razón de ser é unha soa: **xerar a documentación dos departamentos didácticos
 dos centros educativos**.
@@ -90,7 +90,7 @@ novos tipos de documento.
 
 ### Unha barra de ferramentas, un documento por ferramenta
 
-Lua ten unha **columna de ferramentas á esquerda**, só con iconas (o nome aparece
+Lúa ten unha **columna de ferramentas á esquerda**, só con iconas (o nome aparece
 no *tooltip*). Cada ferramenta conserva o seu propio curso, o seu ficheiro, o seu
 **desfacer/refacer** e o seu resultado: pódese pasar dun cronograma a unhas actas
 sen perder nada.
@@ -113,12 +113,12 @@ A biblioteca de plantillas é compartida por todas as ferramentas.
 
 - A plantilla é **LaTeX cun marcador `{{CORPO}}`** (onde vai o informe) e
   variables `{{TELEFONO}}`, `{{CORREO}}`… que se enchen unha vez.
-- Lua enche soa `{{CENTRO}}`, `{{CURSO}}`, `{{ORIENTADOR}}`, `{{DEPARTAMENTO}}`,
+- Lúa enche soa `{{CENTRO}}`, `{{CURSO}}`, `{{ORIENTADOR}}`, `{{DEPARTAMENTO}}`,
   `{{LOCALIDADE}}`, `{{CARGO}}`, `{{DATA}}`, `{{ANO}}`, `{{TITULO}}` e
   `{{FICHEIRO}}`. Unha variable da plantilla con valor **gaña** sobre a
   automática: así un centro fixa o seu nome unha vez e non o escribe en cada
   curso.
-- Pode ser un **fragmento** (só cabeceira e pé; o preámbulo ponoo Lua) ou unha
+- Pode ser un **fragmento** (só cabeceira e pé; o preámbulo ponoo Lúa) ou unha
   plantilla **completa**, co seu `\documentclass`, marxes e fontes.
 - O logotipo sóbese como imaxe da plantilla e úsase por nome
   (`\includegraphics{logotipo.png}`).
@@ -126,7 +126,7 @@ A biblioteca de plantillas é compartida por todas as ferramentas.
   en base64) para que todo o departamento use o mesmo estilo, e tamén se poden
   **crear coa IA a partir dun documento de mostra**.
 
-E hai unha separación de responsabilidades moi clara: **Lua xera o contido; o
+E hai unha separación de responsabilidades moi clara: **Lúa xera o contido; o
 deseño e os textos son da plantilla**. O formato dos títulos e as etiquetas van no
 bloque *Estilo*; **todos** os textos fixos («Índice», «Sen tarefas», os rótulos
 das actas…) van no bloque *Textos do documento*. Non hai texto no documento que
@@ -138,7 +138,7 @@ non se poida cambiar.
 maximizada**, que se pode desmaximizar e levar a outro monitor. Está organizado en
 **bloques e tres columnas** (*Datos e recursos*, *PDF e LaTeX*, *Word e
 OpenDocument*), pero de primeiras só se ven a identidade e a maqueta: unha fila de
-botóns (o **lanzador**) despraga cada bloque ao premelo. Lua lembra os bloques
+botóns (o **lanzador**) despraga cada bloque ao premelo. Lúa lembra os bloques
 abertos e agocha as columnas baleiras. Hai bloques para identidade, textos,
 variables, imaxes, maqueta, portada, sinatura, introdución, estilo, Markdown,
 letra e marxes, cores, cabeceira e pé, e a portada de Word/OpenDocument.
@@ -151,7 +151,7 @@ volver abrir. **Gardar** (Ctrl+Intro) garda e pecha.
 
 ### Word e OpenDocument sen ferramentas externas
 
-Aínda que o núcleo sexa LaTeX, Lua non deixa fóra a ofimática. Cada plantilla
+Aínda que o núcleo sexa LaTeX, Lúa non deixa fóra a ofimática. Cada plantilla
 leva un bloque `ofimatica` propio: fonte, cinco cores, tamaño do texto,
 interliñado e catro marxes, ademais de portada, cabeceira e pé. Eses elementos
 escríbense por liñas e poden levar **varios logotipos en liña** e variables
@@ -160,13 +160,13 @@ LibreOffice nin Pandoc.
 
 ### Idiomas, instalación e actualización
 
-- **Catro idiomas** (galego, castelán, inglés e portugués). Se Lua se abre desde
+- **Catro idiomas** (galego, castelán, inglés e portugués). Se Lúa se abre desde
   Piztu, herda o idioma que o profesorado escolleu en ⚙ Aula; a elección feita en
   Opcións sempre gaña.
 - **Instalador propio** para Debian/Ubuntu, Windows e macOS, que ademais instala
   LaTeX e as súas dependencias. En Linux o módulo vai a `/opt/piztu/modulos/lua`;
   en Windows, a `Program Files`; en macOS, a `/Applications/Lua.app`.
-- **Actualización integrada**: Lua consulta as releases de
+- **Actualización integrada**: Lúa consulta as releases de
   `piztusistemas/lua` en GitHub, descarga a versión nova, **comproba o
   `sha256`** e substitúe o executable en execución.
 - **Requisitos**: LaTeX (`pdflatex`, `xelatex` ou `lualatex`, a escoller en
@@ -211,7 +211,7 @@ acordos, rogos e sinatura.
 
 Xunto cos documentos, o repositorio publica as **plantillas** coas que se
 xeraron: `cronograma IES.json` e `actas IES.json`. Son ficheiros de intercambio
-de Lua (`"formato": "lua-plantilla"`) que se poden **importar na biblioteca de
+de Lúa (`"formato": "lua-plantilla"`) que se poden **importar na biblioteca de
 plantillas** e reutilizar tal cal, ou duplicar e adaptar ao propio centro.
 
 | Plantilla | Que define | Ligazón |
@@ -256,13 +256,13 @@ Dous detalles que ilustran a filosofía do proxecto:
 
 - **O ficheiro é autocontido.** As imaxes van dentro en base64, así que unha
   plantilla compártese cun só `.json` e chega con todo.
-- **Ao importala, Lua crea unha copia propia.** As plantillas de fábrica non se
+- **Ao importala, Lúa crea unha copia propia.** As plantillas de fábrica non se
   pisan: importar unha mostra xera unha nova entrada na biblioteca, lista para
   editar.
 
 ## Integración coa IA
 
-Lua naceu cun **asistente integrado** que non é un chatbot á parte: é unha capa
+Lúa naceu cun **asistente integrado** que non é un chatbot á parte: é unha capa
 que **controla o propio programa**. Funciona cun esquema de ferramentas no estilo
 **MCP**: a IA recibe un catálogo (`tools/list`) e pide executar accións
 (`tools/call`).
@@ -311,18 +311,18 @@ texto lido intenta dar ordes, ignórase.
 
 ### Dúas direccións de integración
 
-1. **IA dentro de Lua** (xa dispoñible): o asistente crea e mellora contido,
+1. **IA dentro de Lúa** (xa dispoñible): o asistente crea e mellora contido,
    redacta a introdución, corrixe, busca lexislación en fontes oficiais e
    constrúe ou modifica plantillas a partir dun documento de mostra.
-2. **Lua dentro dun fluxo con IA**: como o contido vive nun **JSON limpo e
+2. **Lúa dentro dun fluxo con IA**: como o contido vive nun **JSON limpo e
    documentado**, calquera axente ou módulo pode xerar ou completar ese JSON e
-   Lua encárgase de compilalo. É unha fronteira de integración moi natural para
+   Lúa encárgase de compilalo. É unha fronteira de integración moi natural para
    automatizacións (por exemplo, un asistente que prepara o borrador do
    cronograma a partir da programación xeral anual do centro).
 
 ## Novos tipos de documentos: memorias e máis alá
 
-A arquitectura de Lua está pensada para medrar. Engadir un tipo de documento
+A arquitectura de Lúa está pensada para medrar. Engadir un tipo de documento
 novo —unha **memoria anual do departamento**, por exemplo— non require tocar o
 motor: consiste en definir os datos e a súa sección LaTeX, e deixar que o
 controlador común faga o resto.
@@ -379,7 +379,7 @@ asistente. Só hai que escribir o modelo e o editor.
 - **Acta de avaliación** ou calquera documento con estrutura fixa e datos
   variables.
 
-O interesante é que todos comparten a mesma idea: **Lua pon o contido e a
+O interesante é que todos comparten a mesma idea: **Lúa pon o contido e a
 estrutura; a plantilla pon a estética**. Engadir un tipo novo é, sobre todo, un
 exercicio de definir ben os datos e a súa sección no documento.
 
@@ -389,14 +389,14 @@ exercicio de definir ben os datos e a súa sección no documento.
    [Release 26.9.6](https://github.com/piztusistemas/lua/releases/tag/26.9.6)
    — `lua-installer` (Linux), `lua-installer.exe` (Windows),
    `lua-installer-macos.app.zip` (macOS).
-2. **Instala LaTeX** e `poppler-utils` se non os tes; o instalador e o propio Lua
+2. **Instala LaTeX** e `poppler-utils` se non os tes; o instalador e o propio Lúa
    tamén poden facelo.
 3. **Importa as plantillas de mostra** (`cronograma IES.json` e
    `actas IES.json`) desde a biblioteca de plantillas do editor.
 4. **Crea o teu curso**, enche os datos do centro e do departamento, engade
    tarefas ou actas e preme **Xerar**.
 
-Se tes Piztu instalado, Lua aparece como un módulo máis en ⚙ Aula → Módulos.
+Se tes Piztu instalado, Lúa aparece como un módulo máis en ⚙ Aula → Módulos.
 
 ---
 

@@ -1,8 +1,8 @@
-# Piztu Lua
+# Piztu Lúa
 
 Aplicación de escritorio para docentes: xera a documentación dos departamentos
 (cronograma anual, actas, formularios propios) e problemas de matemáticas e
-ciencias con Maxima, compilados en LaTeX, Word e OpenDocument. Lua absorbe o
+ciencias con Maxima, compilados en LaTeX, Word e OpenDocument. Lúa absorbe o
 que facía Yang.
 
 Funciona en macOS, Windows e Linux, e a interface está en galego, castelán,
@@ -13,20 +13,20 @@ inglés e portugués.
 | Cartafol | Que é |
 |----------|-------|
 | [`lua/lua`](lua/lua) | A aplicación (Go + Wails v3, frontend en JavaScript sen framework). |
-| [`lua/lua_installer`](lua/lua_installer) | Instalador de Lua e das súas dependencias (Go + Wails v3). |
+| [`lua/lua_installer`](lua/lua_installer) | Instalador de Lúa e das súas dependencias (Go + Wails v3). |
 | [`edicion`](edicion) | Motor común: plantillas, LaTeX, Word/ODT, IA, Maxima, actualizacións, bóveda. |
 | [`buxo`](buxo) | Módulo que converte PDF e documentos nunha bóveda de Obsidian coa IA. |
 | [`markitdown`](markitdown) | Copia de MarkItDown (Microsoft, MIT) coa que Buxo converte documentos. |
 | [`02-DOCS`](02-DOCS) | Documentación do proxecto: constitución, arquitectura, desenvolvemento. |
-| [`exemplos`](exemplos) | Exemplos de documentos xerados con Lua. |
+| [`exemplos`](exemplos) | Exemplos de documentos xerados con Lúa. |
 
-Que fai Lua, ferramenta a ferramenta: [`lua/README.md`](lua/README.md).
+Que fai Lúa, ferramenta a ferramenta: [`lua/README.md`](lua/README.md).
 Como encaixan as pezas: [arquitectura](02-DOCS/wiki/arquitectura.md).
 
 ## Instalar
 
 Descarga a última versión desde as
-[Releases](https://github.com/piztusistemas/lua/releases). Lua comproba alí
+[Releases](https://github.com/piztusistemas/lua/releases). Lúa comproba alí
 as actualizacións e o módulo Buxo.
 
 ## Compilar desde o código
@@ -41,7 +41,7 @@ task build        # binario en build/bin/
 ```
 
 Para xerar PDF fai falla unha distribución LaTeX (TeX Live ou MacTeX). Maxima,
-LibreOffice e ImageMagick son opcionais: se faltan, Lua avisa e di que instalar.
+LibreOffice e ImageMagick son opcionais: se faltan, Lúa avisa e di que instalar.
 
 ## Probar
 
@@ -65,5 +65,5 @@ escríbense en galego.
 
 ## Licenza
 
-Cada módulo ten o seu ficheiro `LICENSE`: [Lua](lua/lua/LICENSE) (AGPL-3.0),
+Cada módulo ten o seu ficheiro `LICENSE`: [Lúa](lua/lua/LICENSE) (AGPL-3.0),
 [Buxo](buxo/LICENSE) (MIT).

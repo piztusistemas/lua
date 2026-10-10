@@ -2,6 +2,7 @@ package main
 
 import (
 	"embed"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io/fs"
@@ -12,6 +13,7 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+	"unicode/utf16"
 )
 
 // "all:" e non só "files": sen ese prefixo, //go:embed ignora todo o que
@@ -441,22 +443,7 @@ func createShortcuts() error {
 		return fmt.Errorf("escribindo icona: %w", err)
 	}
 
-	desktop := strings.Join([]string{
-		"[Desktop Entry]",
-		"Version=1.0",
-		"Type=Application",
-		"Name=Lua",
-		"Name[gl_ES]=Lua",
-		"Comment=Xerador de documentación para centros educativos: proxectos, formularios, cronograma e actas (LaTeX, Word, ODT)",
-		"Comment[gl_ES]=Xerador de documentación para centros educativos: proxectos, formularios, cronograma e actas (LaTeX, Word, ODT)",
-		"Exec=" + filepath.Join(destDir, "lua"),
-		"Icon=" + iconPath,
-		"Terminal=false",
-		"StartupNotify=true",
-		"Categories=Education;Science;",
-		"Keywords=informe;cronograma;orientacion;latex;piztu;",
-		"",
-	}, "\n")
+	desktop := entradaEscritorioLinux(destDir, iconPath)
 
 	appPath := "/usr/share/applications/lua.desktop"
 	if err := os.WriteFile(appPath, []byte(desktop), 0644); err != nil {
@@ -483,18 +470,47 @@ func createShortcuts() error {
 // usuario real, vía WScript.Shell (COM) invocado dende PowerShell — é a
 // forma estándar de crear .lnk sen depender de ningunha libraría Go extra
 // (equivalente Windows a createShortcuts, que escribe .desktop en Linux). A
+// entradaEscritorioLinux é o .desktop de Lúa: o nome visible leva til, o
+// executable e os cartafoles seguen sendo «lua».
+func entradaEscritorioLinux(dir, icona string) string {
+	return strings.Join([]string{
+		"[Desktop Entry]",
+		"Version=1.0",
+		"Type=Application",
+		"Name=Lúa",
+		"Name[gl_ES]=Lúa",
+		"Comment=Xerador de documentación para centros educativos: proxectos, formularios, cronograma e actas (LaTeX, Word, ODT)",
+		"Comment[gl_ES]=Xerador de documentación para centros educativos: proxectos, formularios, cronograma e actas (LaTeX, Word, ODT)",
+		"Exec=" + filepath.Join(dir, "lua"),
+		"Icon=" + icona,
+		"Terminal=false",
+		"StartupNotify=true",
+		"Categories=Education;Science;",
+		"Keywords=informe;cronograma;orientacion;latex;piztu;",
+		"",
+	}, "\n")
+}
+
+// nomeAtalloWindows é o nome visible dos accesos directos de Windows.
+// atallosWindowsVellos son os que deixaron instalacións anteriores: bórranse
+// ao instalar (para non ter dous) e ao desinstalar.
+const nomeAtalloWindows = "Lúa.lnk"
+
+var atallosWindowsVellos = []string{"Lua.lnk"}
+
 // icona é a propia de lua.exe (IconLocation="ruta,0"): non fai falla xerar
 // un .ico á parte coma o logoPNG que se escribe en /usr/share/pixmaps.
 func createShortcutsWindows() error {
 	exePath := filepath.Join(destDir, nomeExecutable())
 
-	startMenu := filepath.Join(programDataDir(), "Microsoft", "Windows", "Start Menu", "Programs", "Lua.lnk")
+	desinstalarAccesosDirectosWindows() // tamén os vellos (Lua.lnk)
+	startMenu := filepath.Join(programDataDir(), "Microsoft", "Windows", "Start Menu", "Programs", nomeAtalloWindows)
 	if err := crearAtalloWindows(startMenu, exePath); err != nil {
 		return fmt.Errorf("creando atallo de Inicio: %w", err)
 	}
 
 	_, home := getRealUser()
-	desktop := filepath.Join(home, "Desktop", "Lua.lnk")
+	desktop := filepath.Join(home, "Desktop", nomeAtalloWindows)
 	crearAtalloWindows(desktop, exePath) // non crítico: o de Inicio xa abonda se este falla
 
 	return nil
@@ -527,7 +543,7 @@ func crearAtalloWindows(lnkPath, targetPath string) error {
 			"$sc.Save()",
 		esc(lnkPath), esc(targetPath), esc(filepath.Dir(targetPath)), esc(targetPath),
 	)
-	out, err := exec.Command("powershell", "-NoProfile", "-NonInteractive", "-Command", script).CombinedOutput()
+	out, err := exec.Command("powershell", argsPowerShell(script)...).CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("%w: %s", err, strings.TrimSpace(string(out)))
 	}
@@ -536,9 +552,11 @@ func crearAtalloWindows(lnkPath, targetPath string) error {
 
 // desinstalarAccesosDirectosWindows reverte createShortcutsWindows.
 func desinstalarAccesosDirectosWindows() {
-	os.Remove(filepath.Join(programDataDir(), "Microsoft", "Windows", "Start Menu", "Programs", "Lua.lnk"))
 	_, home := getRealUser()
-	os.Remove(filepath.Join(home, "Desktop", "Lua.lnk"))
+	for _, nome := range append([]string{nomeAtalloWindows}, atallosWindowsVellos...) {
+		os.Remove(filepath.Join(programDataDir(), "Microsoft", "Windows", "Start Menu", "Programs", nome))
+		os.Remove(filepath.Join(home, "Desktop", nome))
+	}
 }
 
 func desinstalarAccesosDirectos() {
@@ -604,4 +622,16 @@ func runWithLog(cmd *exec.Cmd, log func(string)) error {
 	cmd.Stdout = lw
 	cmd.Stderr = lw
 	return cmd.Run()
+}
+
+// argsPowerShell pasa o script codificado en UTF-16LE e base64
+// (-EncodedCommand): así o til de «Lúa.lnk» e de calquera ruta chega intacto,
+// sen depender da páxina de códigos da consola.
+func argsPowerShell(script string) []string {
+	u := utf16.Encode([]rune(script))
+	b := make([]byte, 2*len(u))
+	for i, c := range u {
+		b[2*i], b[2*i+1] = byte(c), byte(c>>8)
+	}
+	return []string{"-NoProfile", "-NonInteractive", "-EncodedCommand", base64.StdEncoding.EncodeToString(b)}
 }

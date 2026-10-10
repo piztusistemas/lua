@@ -1,6 +1,6 @@
 # lua_yang
 
-Produto: **Lua** (`lua/lua`), que absorbe Yang e usa `edicion/` e `buxo/`. Lede a constitución antes de cambiar nada.
+Produto: **Lúa** (`lua/lua`), que absorbe Yang e usa `edicion/` e `buxo/`. Lede a constitución antes de cambiar nada.
 
 ## Knowledge map
 

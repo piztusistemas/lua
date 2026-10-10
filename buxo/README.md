@@ -1,6 +1,6 @@
 # Buxo
 
-Módulo común de Lua (e, máis adiante, Yang) que constrúe unha **bóveda de
+Módulo común de Lúa (e, máis adiante, Yang) que constrúe unha **bóveda de
 Obsidian** co método de Karpathy («LLM Wiki») a partir de PDF.
 
 ```
@@ -40,13 +40,13 @@ sigue co seguinte. Unha URL dunha páxina (non dun PDF) pásalla á IA, que busc
 nela os PDF que valen para o proxecto. «Construír a bóveda» fai que a IA lea
 cada fonte de `raw/` e escriba a wiki.
 
-## Como funciona con Lua
+## Como funciona con Lúa
 
-Buxo non garda a clave da IA nin toca máis ca a súa bóveda: Lua lánzao
+Buxo non garda a clave da IA nin toca máis ca a súa bóveda: Lúa lánzao
 (`buxo --boveda <cartafol> --materia <texto> --id <id>`) con `PIZTU_API_URL` e
 `PIZTU_API_TOKEN`, e todo o que precisa (turnos de IA, ferramentas `boveda_*`)
-pídeo á API local de Lua (`edicion/api`). Sen esa API, ou sen unha IA
-configurada, Buxo avisa e non fai nada: Lua só o ofrece cando hai IA.
+pídeo á API local de Lúa (`edicion/api`). Sen esa API, ou sen unha IA
+configurada, Buxo avisa e non fai nada: Lúa só o ofrece cando hai IA.
 
 ## Compilar e empaquetar
 
@@ -56,7 +56,7 @@ PATH=$PATH:$HOME/go/bin task build EXTRA_TAGS=gtk3
 ./package.sh                          # dist/buxo_<versión>.zip + .sha256
 ```
 
-Publica os dous ficheiros nunha Release de `piztusistemas/lua`: Lua instala
+Publica os dous ficheiros nunha Release de `piztusistemas/lua`: Lúa instala
 sozo `buxo_<versión>.zip` (comprobando o SHA-256) no seu cartafol de módulos.
 
 ## Licenza
@@ -69,8 +69,8 @@ consultar desde Buxo co botón «Licenza».
 
 ## Versións e Releases
 
-Buxo viaxa na Release de Lua coa **mesma versión**: cada Release de
-`piztusistemas/lua` leva, ademais dos ficheiros de Lua, o módulo
-`buxo_<versión>_<so>_<arq>.zip` e o seu `.sha256`. Lua (e Yang) miran só a
+Buxo viaxa na Release de Lúa coa **mesma versión**: cada Release de
+`piztusistemas/lua` leva, ademais dos ficheiros de Lúa, o módulo
+`buxo_<versión>_<so>_<arq>.zip` e o seu `.sha256`. Lúa (e Yang) miran só a
 **última** Release publicada e, dentro dela, o zip da súa plataforma; se esa
 Release non o leva, non se descarga nada.

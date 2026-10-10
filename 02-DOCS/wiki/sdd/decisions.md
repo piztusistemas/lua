@@ -68,3 +68,8 @@ Why        — Non se debilita un test para avanzar, e cada commit queda verde.
 - Decisión do usuario: na interface o aplicativo chámase «Lúa» (nome galego) e no apartado Sobre «Piztu Lúa». Cartafoles, rutas, ligazóns e identificadores seguen sendo «lua».
 - Cambia a «Lúa»: textos dos catro idiomas (Lua, Buxo e instalador), título da xanela, CFBundleName de macOS, ProductName de Windows, textos de reserva no código e descricións para a IA.
 - Queda «Lua»: `/Applications/Lua.app`, `Piztu/Lua`, `<config>/Lua/informes`, os accesos directos (`Lua.lnk`, `Name=Lua` do .desktop), `Options.Name` de Wails (identificador en Linux), a marca LaTeX `% --- engadido por Lua …`, o User-Agent e o repositorio.
+
+## 2026-10-10 — Accesos directos e documentación tamén «Lúa»
+- Decisión do usuario: corrixe a entrada anterior. Os accesos directos levan o nome visible «Lúa» (`Lúa.lnk` en Windows, `Name=Lúa` no .desktop de Linux) e o nome que ve Piztu no selector de módulos (`modulo.json` → "nome") tamén. A documentación viva (README, wiki, blog, constitución v1.2.1) di «Lúa».
+- Seguen «lua»: rutas, cartafoles, executables, `lua.desktop`, `"id": "lua"` e os rexistros históricos do método SDD (specs, plans, análises, progreso, decisións), que describen o traballo tal como se fixo.
+- Detalle técnico: ao instalar e desinstalar bórranse tamén os `Lua.lnk` de instalacións anteriores; o atallo créase con PowerShell `-EncodedCommand` (UTF-16) para que o til chegue intacto.

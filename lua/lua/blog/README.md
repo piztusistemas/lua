@@ -1,6 +1,6 @@
-# Entrada de blog — módulo Lua
+# Entrada de blog — módulo Lúa
 
-Este cartafol é o paquete completo da entrada de blog sobre o **módulo Lua**:
+Este cartafol é o paquete completo da entrada de blog sobre o **módulo Lúa**:
 o texto, os dous documentos de mostra e as dúas plantillas (estilos) de mostra,
 ademais das imaxes listas para publicar.
 
@@ -16,7 +16,7 @@ blog/
 │   ├── cronograma IES.json        # Plantilla (estilo) do cronograma
 │   └── actas IES.json             # Plantilla (estilo) das actas
 └── imaxes/
-    ├── logo.png                   # Logotipo de Lua (imaxe de cabeceira)
+    ├── logo.png                   # Logotipo de Lúa (imaxe de cabeceira)
     ├── lua-cronograma-portada.png # Portada do cronograma (páx. 1)
     ├── lua-cronograma-anual.png   # Cronograma por trimestres (páx. 4)
     ├── lua-actas-portada.png      # Portada das actas (páx. 1)
@@ -29,8 +29,8 @@ As catro imaxes `lua-*.png` están renderizadas a partir dos PDF de mostra
 ## Que son os `.json`
 
 **Non son cursos**: son **plantillas** (estilos) no formato de intercambio de
-Lua (`"formato": "lua-plantilla"`). Importaranse desde a **biblioteca de
-plantillas** do editor de Lua. A descrición de cada unha:
+Lúa (`"formato": "lua-plantilla"`). Importaranse desde a **biblioteca de
+plantillas** do editor de Lúa. A descrición de cada unha:
 
 | Ficheiro | Plantilla | Que fai |
 |---|---|---|

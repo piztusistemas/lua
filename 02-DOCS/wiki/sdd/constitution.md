@@ -5,20 +5,20 @@ description: Regras non negociables que obedecen todas as fases SDD.
 tags: [sdd, constitution]
 timestamp: 2026-10-10T00:00:00Z
 topic: sdd
-version: v1.2.0
+version: v1.2.1
 ratified: 2026-10-10
 last_amended: 2026-10-10
 ---
 
 # lua_yang — Constitución
 
-> **v1.2.0 — ratificada o 2026-10-10.** Emendas: só engadir, coa versión e o porqué no rexistro.
+> **v1.2.1 — ratificada o 2026-10-10.** Emendas: só engadir, coa versión e o porqué no rexistro.
 > Cada regra é comprobable: `analyze`, `verify` e `review` cítana como «constitución vX.Y.Z, regra N».
 
 ## Feitos de partida
 
-- Obxectivo: **o programa Lua** (`lua/lua`). Lua absorbe Yang (Maxima, problemas, sementes); non hai app LuaYang separada.
-  Lua depende de `edicion/` (motor común) e de `buxo/` (módulo de lectura de documentos); os tres forman o produto.
+- Obxectivo: **o programa Lúa** (`lua/lua`). Lúa absorbe Yang (Maxima, problemas, sementes); non hai app LuaYang separada.
+  Lúa depende de `edicion/` (motor común) e de `buxo/` (módulo de lectura de documentos); os tres forman o produto.
   Yang mantense só como fonte da que se migran capacidades.
 - Tipo: software, en crecemento. Os cambios van directos á rama principal.
 - Módulos: `edicion/` (motor común), `lua/lua`, `yang/yang`, `buxo/`, instaladores; `markitdown/` é código de terceiros.
@@ -57,7 +57,7 @@ last_amended: 2026-10-10
 
 1. ~~O traballo vai directo á rama `main` de cada repositorio (raíz e `lua/`).~~ Substituída en v1.1.0.
 1b. Un só repositorio, `github.com/piztusistemas/lua`: harness, `lua/`, `edicion/` e `buxo/` xuntos, e o traballo vai directo á súa rama `main`. `markitdown/` tamén vai dentro (regra 1.5b). Só `yang/` conserva o seu propio repositorio.
-2. A versión é CalVer `AA.MM.N`. En Lua escríbese igual en `VERSION`, `wails.json`, `modulo.json`, `build/config.yml` e `build/darwin/Info*.plist`; unha release cambia todos á vez.
+2. A versión é CalVer `AA.MM.N`. En Lúa escríbese igual en `VERSION`, `wails.json`, `modulo.json`, `build/config.yml` e `build/darwin/Info*.plist`; unha release cambia todos á vez.
 3. A autoría dos commits e PR é só de Martín Pardiñas Fondo: sen `Co-Authored-By` dunha IA nin pé «generated with». Compróbase na fase `ship`.
 
 ## 5. Seguridade e privacidade
@@ -100,3 +100,4 @@ last_amended: 2026-10-10
 | 2026-10-10 | v1.0.0 | Ratificada: obxectivo = Lua (absorbe Yang, usa `edicion` e `buxo`); autoría só humana; dous repositorios git; excepcións de tests medidas. | Ratificación explícita do usuario. |
 | 2026-10-10 | v1.1.0 | Regra 4.1 substituída pola 4.1b (un só repositorio en GitHub); excepcións de tests pechadas. | Decisión do usuario; os tests de Lua e `edicion` xa pasan. |
 | 2026-10-10 | v1.2.0 | Regra 1.5 substituída pola 1.5b (markitdown dentro do repositorio); a 4.1b inclúe markitdown. O instalador xa usa Wails v3, así que a regra 1.1 é exacta. | Decisión do usuario: que se poidan compilar Lua e Buxo desde un só clon. |
+| 2026-10-10 | v1.2.1 | Redacción: o nome visible do aplicativo é «Lúa»; os nomes técnicos seguen «lua». Sen cambio de regras. | Decisión do usuario sobre o nome. |
