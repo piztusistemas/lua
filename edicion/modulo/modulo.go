@@ -8,6 +8,7 @@
 package modulo
 
 import (
+	"edicion/idioma"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -169,7 +170,7 @@ func (x *Xestor) instalarSeFalta() error {
 				return fmt.Errorf("a Release %s de %s non leva ningún «%s*.zip» para esta plataforma (¿sen rede?)", x.Axustes.Release, x.Axustes.Repo, x.Axustes.PrefixoAsset)
 			}
 			if x.Axustes.SoUltimaRelease {
-				return fmt.Errorf("a última Release de %s non leva ningún «%s*.zip» para esta plataforma (¿sen rede?)", x.Axustes.Repo, x.Axustes.PrefixoAsset)
+				return idioma.Errorf("go.modulo.sen_zip", "a última Release de %s non leva ningún «%s*.zip» para esta plataforma (¿sen rede?)", x.Axustes.Repo, x.Axustes.PrefixoAsset)
 			}
 			return fmt.Errorf("non se atopou ningún «%s*.zip» para esta plataforma nas Releases de %s (¿sen rede?)", x.Axustes.PrefixoAsset, x.Axustes.Repo)
 		}

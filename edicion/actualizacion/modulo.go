@@ -7,6 +7,7 @@ package actualizacion
 
 import (
 	"archive/zip"
+	"edicion/idioma"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -37,7 +38,7 @@ func VersionDeModulo(dirModulo string) string {
 func extraerTodo(zipRuta, destino string) error {
 	zr, err := zip.OpenReader(zipRuta)
 	if err != nil {
-		return fmt.Errorf("o ficheiro descargado non é un zip válido: %w", err)
+		return idioma.Errorf("go.act.zip_non_valido", "o ficheiro descargado non é un zip válido: %w", err)
 	}
 	defer zr.Close()
 
@@ -175,7 +176,7 @@ func InstalarModulo(ax Axustes, dirModulo, urlZip, urlChecksum, versionNova stri
 		if teniaAnterior {
 			_ = os.Rename(anterior, dirModulo)
 		}
-		return fmt.Errorf("non se puido instalar o módulo: %w", err)
+		return idioma.Errorf("go.modulo.non_instalado", "non se puido instalar o módulo: %w", err)
 	}
 	_ = os.RemoveAll(anterior)
 	return nil

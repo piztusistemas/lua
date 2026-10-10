@@ -1110,5 +1110,19 @@
   "go.formulario.taboa_sen_columnas": "the table “%s” has no columns",
   "go.cartafol.repetido": "there is already a folder called “%s”",
   "go.cartafol.sen_nome": "the folder needs a name",
-  "go.formulario.desenador_aberto": "this form's designer is open with unsaved changes: save them or close it before moving it to production"
+  "go.formulario.desenador_aberto": "this form's designer is open with unsaved changes: save them or close it before moving it to production",
+  "go.act.descarga": "the update could not be downloaded: %w",
+  "go.act.descarga_http": "the update could not be downloaded: HTTP %d",
+  "go.act.zip_non_valido": "the downloaded file is not a valid zip: %w",
+  "go.act.sen_sha256": "this Release does not publish a .sha256 for the .zip — its integrity cannot be verified, so the update is cancelled for safety",
+  "go.act.sha256_distinto": "the SHA-256 of the downloaded .zip does not match the one published in the Release — it could have been tampered with; the update is cancelled",
+  "go.act.windows": "automatic updates are not yet supported on Windows",
+  "go.act.binario": "the new binary could not be installed: %w",
+  "go.act.reiniciar": "%s could not be restarted: %w",
+  "go.act.ningunha": "there is no update available",
+  "go.buxo.sen_ia": "Buxo needs an AI configured in Options: %w",
+  "go.buxo.non_instalado": "Buxo is not installed yet (it is downloaded when Lua starts; see Options)",
+  "go.buxo.non_lanza": "Buxo could not be launched: %w",
+  "go.modulo.sen_zip": "the latest %s Release has no “%s*.zip” for this platform (no network?)",
+  "go.modulo.non_instalado": "the module could not be installed: %w"
 }

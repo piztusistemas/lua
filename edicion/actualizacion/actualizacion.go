@@ -16,6 +16,7 @@ package actualizacion
 import (
 	"archive/zip"
 	"crypto/sha256"
+	"edicion/idioma"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -346,11 +347,11 @@ func descargar(url, destinoDir, nomeFicheiro string) (string, error) {
 	cliente := http.Client{Timeout: timeoutDescarga}
 	resp, err := cliente.Get(url)
 	if err != nil {
-		return "", fmt.Errorf("non se puido descargar a actualización: %w", err)
+		return "", idioma.Errorf("go.act.descarga", "non se puido descargar a actualización: %w", err)
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("non se puido descargar a actualización: HTTP %d", resp.StatusCode)
+		return "", idioma.Errorf("go.act.descarga_http", "non se puido descargar a actualización: HTTP %d", resp.StatusCode)
 	}
 
 	f, err := os.Create(destino)
@@ -367,7 +368,7 @@ func descargar(url, destinoDir, nomeFicheiro string) (string, error) {
 func extraerExecutable(ax Axustes, zipRuta, destDir string) (string, error) {
 	zr, err := zip.OpenReader(zipRuta)
 	if err != nil {
-		return "", fmt.Errorf("o ficheiro descargado non é un zip válido: %w", err)
+		return "", idioma.Errorf("go.act.zip_non_valido", "o ficheiro descargado non é un zip válido: %w", err)
 	}
 	defer zr.Close()
 
@@ -414,7 +415,7 @@ func lerHashEsperado(r io.Reader) (string, error) {
 // algo sen verificar.
 func comprobarChecksum(ficheiroRuta, urlChecksum string) error {
 	if urlChecksum == "" {
-		return fmt.Errorf("esta Release non publica un .sha256 do .zip — non se pode verificar a súa integridade, así que se cancela a actualización por seguridade")
+		return idioma.Errorf("go.act.sen_sha256", "esta Release non publica un .sha256 do .zip — non se pode verificar a súa integridade, así que se cancela a actualización por seguridade")
 	}
 
 	cliente := http.Client{Timeout: timeoutComprobar}
@@ -443,7 +444,7 @@ func comprobarChecksum(ficheiroRuta, urlChecksum string) error {
 	obtido := hex.EncodeToString(h.Sum(nil))
 
 	if obtido != esperado {
-		return fmt.Errorf("o SHA-256 do .zip descargado non coincide co publicado na Release — podería estar adulterado; cancélase a actualización")
+		return idioma.Errorf("go.act.sha256_distinto", "o SHA-256 do .zip descargado non coincide co publicado na Release — podería estar adulterado; cancélase a actualización")
 	}
 	return nil
 }
@@ -506,7 +507,7 @@ func actualizarVersionModuloJSON(dirModulo, versionNova string) {
 // tamén unha copia coma "<executable>.anterior".
 func AplicarEnCaliente(ax Axustes, urlZip, urlChecksum, versionNova string) error {
 	if runtime.GOOS == "windows" {
-		return fmt.Errorf("a actualización automática aínda non está soportada en Windows")
+		return idioma.Errorf("go.act.windows", "a actualización automática aínda non está soportada en Windows")
 	}
 
 	exeActual, err := os.Executable()
@@ -545,7 +546,7 @@ func AplicarEnCaliente(ax Axustes, urlZip, urlChecksum, versionNova string) erro
 	_ = copiarFicheiro(exeActual, exeActual+".anterior") // copia de reserva; non crítico se falla
 
 	if err := os.Rename(swapTmp, exeActual); err != nil {
-		return fmt.Errorf("non se puido instalar o binario novo: %w", err)
+		return idioma.Errorf("go.act.binario", "non se puido instalar o binario novo: %w", err)
 	}
 
 	// En macOS substituír o executable rompe a sinatura do .app enteiro e a
@@ -588,7 +589,7 @@ func Reiniciar(ax Axustes) error {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Start(); err != nil {
-		return fmt.Errorf("non se puido reiniciar %s: %w", ax.Nome, err)
+		return idioma.Errorf("go.act.reiniciar", "non se puido reiniciar %s: %w", ax.Nome, err)
 	}
 	return nil
 }

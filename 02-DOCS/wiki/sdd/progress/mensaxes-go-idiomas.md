@@ -76,3 +76,9 @@ Fallbacks: sen `02-DOCS/wiki/sdd/config.yaml` (ordes da constitución: gofmt, go
 - red: TestFicheiroNonValidoEnCastelan (erros en galego)
 - green: verde e executado; `go test ./...` en edicion e lua/lua verde; garda verde
 - claves: 21 (go.ficheiro.*, go.formulario.*, go.plantilla.*, go.cartafol.*), 27 sitios; tamén `errors.New` → `idioma.Errorf`
+
+## T011 — 2026-10-10
+- status: complete
+- green: `go test ./...` e `go vet` en edicion (tamén GOOS=windows e linux) e lua/lua verdes; garda verde
+- claves: 14 (go.act.*, go.buxo.*, go.modulo.*), 15 sitios
+- nota: a mensaxe 56 do plan estaba cortada na lista; o texto real remata «…por seguridade», e tradúcese enteiro

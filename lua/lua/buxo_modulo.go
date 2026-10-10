@@ -15,6 +15,7 @@ package main
 // que non ve a clave da IA nin toca outra cousa ca a súa bóveda.
 
 import (
+	"edicion/idioma"
 	"fmt"
 	"os"
 	"os/exec"
@@ -152,11 +153,11 @@ func (a *App) abrirBuxo(raiz, materia, id string) error {
 		return fmt.Errorf("o módulo Buxo está desactivado (actívao en Opcións)")
 	}
 	if _, _, _, err := resolverIA(a.settings); err != nil {
-		return fmt.Errorf("Buxo precisa unha IA configurada en Opcións: %w", err)
+		return idioma.Errorf("go.buxo.sen_ia", "Buxo precisa unha IA configurada en Opcións: %w", err)
 	}
 	dir := a.dirBuxoInstalado()
 	if dir == "" {
-		return fmt.Errorf("Buxo aínda non está instalado (descárgase ao arrincar Lua; mira Opcións)")
+		return idioma.Errorf("go.buxo.non_instalado", "Buxo aínda non está instalado (descárgase ao arrincar Lua; mira Opcións)")
 	}
 	if strings.TrimSpace(raiz) == "" {
 		return fmt.Errorf("falta o cartafol da bóveda")
@@ -179,7 +180,7 @@ func (a *App) abrirBuxo(raiz, materia, id string) error {
 	if err := cmd.Start(); err != nil {
 		a.registrarBovedaAPI(id, "")
 		a.api.Revogar("buxo:" + id)
-		return fmt.Errorf("non se puido lanzar Buxo: %w", err)
+		return idioma.Errorf("go.buxo.non_lanza", "non se puido lanzar Buxo: %w", err)
 	}
 	buxoAbertos.Add(1)
 	go func() {

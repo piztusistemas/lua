@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"edicion/idioma"
 	"edicion/xerar"
 	"fmt"
 	"os"
@@ -153,7 +154,7 @@ func (a *App) GetActualizacionLua() EstadoActualizacionLua {
 func (a *App) AplicarActualizacionLua() error {
 	estado := a.GetActualizacionLua()
 	if !estado.Disponible {
-		return fmt.Errorf("non hai ningunha actualización dispoñible")
+		return idioma.Errorf("go.act.ningunha", "non hai ningunha actualización dispoñible")
 	}
 	if err := AplicarActualizacionLuaEnCaliente(estado.URLDescarga, estado.URLChecksum, estado.VersionRemota); err != nil {
 		return err

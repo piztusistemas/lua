@@ -1110,5 +1110,19 @@
   "go.formulario.taboa_sen_columnas": "a tabela «%s» não tem colunas",
   "go.cartafol.repetido": "já existe uma pasta chamada «%s»",
   "go.cartafol.sen_nome": "a pasta precisa de um nome",
-  "go.formulario.desenador_aberto": "o desenhador deste formulário está aberto com alterações por guardar: guarde-as ou feche-o antes de o passar a produção"
+  "go.formulario.desenador_aberto": "o desenhador deste formulário está aberto com alterações por guardar: guarde-as ou feche-o antes de o passar a produção",
+  "go.act.descarga": "não foi possível descarregar a atualização: %w",
+  "go.act.descarga_http": "não foi possível descarregar a atualização: HTTP %d",
+  "go.act.zip_non_valido": "o ficheiro descarregado não é um zip válido: %w",
+  "go.act.sen_sha256": "esta Release não publica um .sha256 do .zip — não é possível verificar a sua integridade, por isso a atualização é cancelada por segurança",
+  "go.act.sha256_distinto": "o SHA-256 do .zip descarregado não coincide com o publicado na Release — pode ter sido adulterado; a atualização é cancelada",
+  "go.act.windows": "a atualização automática ainda não é suportada no Windows",
+  "go.act.binario": "não foi possível instalar o novo binário: %w",
+  "go.act.reiniciar": "não foi possível reiniciar o %s: %w",
+  "go.act.ningunha": "não há nenhuma atualização disponível",
+  "go.buxo.sen_ia": "o Buxo precisa de uma IA configurada nas Opções: %w",
+  "go.buxo.non_instalado": "o Buxo ainda não está instalado (é descarregado ao iniciar o Lua; veja as Opções)",
+  "go.buxo.non_lanza": "não foi possível abrir o Buxo: %w",
+  "go.modulo.sen_zip": "a última Release do %s não tem nenhum «%s*.zip» para esta plataforma (sem rede?)",
+  "go.modulo.non_instalado": "não foi possível instalar o módulo: %w"
 }
