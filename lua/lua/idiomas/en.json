@@ -1077,5 +1077,17 @@
   "go.problemas.condicion_maxima": "“%s” does not hold (Maxima says %s)",
   "go.problemas.variable_inexistente": "%s: {%s} is in a formula but is not a variable",
   "go.problemas.sen_solucion": "question %s: no solution yet",
-  "go.instalar.sen_pkexec": "'pkexec' was not found to request administrator permissions. Install manually in a terminal with the %s commands."
+  "go.instalar.sen_pkexec": "'pkexec' was not found to request administrator permissions. Install manually in a terminal with the %s commands.",
+  "go.ler.sen_pdftotext": "pdftotext (poppler-utils package) was not found to read the PDF",
+  "go.ler.sen_libreoffice": "reading “%s” needs LibreOffice, which is not installed: convert it to PDF, DOCX or ODT",
+  "go.ler.libreoffice_fallou": "LibreOffice could not convert “%s”: %w",
+  "go.vista.sen_pdftoppm": "pdftoppm (poppler-utils package) was not found to draw the preview",
+  "go.ler.sen_pdftoppm": "pdftoppm (poppler-utils package) was not found to view the pages",
+  "go.ofi.imaxe_non_usada": "the image “%s” could not be used (%v): skipped",
+  "go.ofi.logotipo": "the logo could not be used (%v): skipped",
+  "go.ofi.imaxe_deseno": "the template's Word/OpenDocument design uses the image “%s”, which could not be used (%v): skipped",
+  "go.ofi.sen_imaxes": "the template has no images yet (save it first)",
+  "go.ofi.cor": "invalid colour: %q (use a hexadecimal value such as 1F3864)",
+  "go.markdown.sen_pandoc": "pandoc was not found (needed for Markdown sheets)",
+  "go.ler.ficheiro_danado": "the file is damaged or is not a valid document: %w"
 }

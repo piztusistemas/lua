@@ -1077,5 +1077,17 @@
   "go.problemas.condicion_maxima": "não se cumpre «%s» (o Maxima diz %s)",
   "go.problemas.variable_inexistente": "%s: {%s} está numa fórmula mas não é nenhuma variável",
   "go.problemas.sen_solucion": "pergunta %s: ainda não tem solução",
-  "go.instalar.sen_pkexec": "Não se encontrou o 'pkexec' para pedir permissões de administrador. Instale manualmente num terminal com os comandos de %s."
+  "go.instalar.sen_pkexec": "Não se encontrou o 'pkexec' para pedir permissões de administrador. Instale manualmente num terminal com os comandos de %s.",
+  "go.ler.sen_pdftotext": "não se encontrou o pdftotext (pacote poppler-utils) para ler o PDF",
+  "go.ler.sen_libreoffice": "para ler «%s» é preciso o LibreOffice, que não está instalado: converta-o para PDF, DOCX ou ODT",
+  "go.ler.libreoffice_fallou": "o LibreOffice não conseguiu converter «%s»: %w",
+  "go.vista.sen_pdftoppm": "não se encontrou o pdftoppm (pacote poppler-utils) para desenhar a pré-visualização",
+  "go.ler.sen_pdftoppm": "não se encontrou o pdftoppm (pacote poppler-utils) para ver as páginas",
+  "go.ofi.imaxe_non_usada": "não foi possível usar a imagem «%s» (%v): omitida",
+  "go.ofi.logotipo": "não foi possível usar o logótipo (%v): omitido",
+  "go.ofi.imaxe_deseno": "o design de Word/OpenDocument do modelo usa a imagem «%s», que não foi possível usar (%v): omitida",
+  "go.ofi.sen_imaxes": "o modelo ainda não tem imagens (guarde-o primeiro)",
+  "go.ofi.cor": "cor inválida: %q (use um valor hexadecimal como 1F3864)",
+  "go.markdown.sen_pandoc": "não se encontrou o pandoc (é necessário para as fichas em Markdown)",
+  "go.ler.ficheiro_danado": "o ficheiro está danificado ou não é um documento válido: %w"
 }

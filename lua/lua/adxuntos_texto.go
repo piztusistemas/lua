@@ -11,6 +11,7 @@ import (
 	"archive/zip"
 	"bytes"
 	"context"
+	"edicion/idioma"
 	"encoding/xml"
 	"fmt"
 	"io"
@@ -181,7 +182,7 @@ func textoPlanoUTF8(d []byte) string {
 
 func textoDePDFAdxunto(d []byte) (string, error) {
 	if !commandExists("pdftotext") {
-		return "", fmt.Errorf("non se atopou pdftotext (paquete poppler-utils) para ler o PDF")
+		return "", idioma.Errorf("go.ler.sen_pdftotext", "non se atopou pdftotext (paquete poppler-utils) para ler o PDF")
 	}
 	ruta, limpar, err := escribirTemp(d, "doc.pdf")
 	if err != nil {
@@ -204,7 +205,7 @@ func textoDePDFAdxunto(d []byte) (string, error) {
 func abrirZip(d []byte) (*zip.Reader, error) {
 	zr, err := zip.NewReader(bytes.NewReader(d), int64(len(d)))
 	if err != nil {
-		return nil, fmt.Errorf("o ficheiro está danado ou non é un documento válido: %w", err)
+		return nil, idioma.Errorf("go.ler.ficheiro_danado", "o ficheiro está danado ou non é un documento válido: %w", err)
 	}
 	return zr, nil
 }
@@ -653,7 +654,7 @@ func comandoLibreOffice() string {
 func converterAPDFLibreOffice(ax Adxunto, datos []byte) (string, func(), error) {
 	cmd := comandoLibreOffice()
 	if cmd == "" {
-		return "", nil, fmt.Errorf("para ler «%s» fai falta LibreOffice, que non está instalado: convérteo a PDF, DOCX ou ODT", ax.Nome)
+		return "", nil, idioma.Errorf("go.ler.sen_libreoffice", "para ler «%s» fai falta LibreOffice, que non está instalado: convérteo a PDF, DOCX ou ODT", ax.Nome)
 	}
 	dir, err := os.MkdirTemp("", "lua-lo-*")
 	if err != nil {
@@ -672,7 +673,7 @@ func converterAPDFLibreOffice(ax Adxunto, datos []byte) (string, func(), error) 
 	perfil := "-env:UserInstallation=file://" + filepath.ToSlash(filepath.Join(dir, "perfil"))
 	if _, err := executarComTempo(120, cmd, perfil, "--headless", "--convert-to", "pdf", "--outdir", dir, ruta); err != nil {
 		limpar()
-		return "", nil, fmt.Errorf("LibreOffice non puido converter «%s»: %w", ax.Nome, err)
+		return "", nil, idioma.Errorf("go.ler.libreoffice_fallou", "LibreOffice non puido converter «%s»: %w", ax.Nome, err)
 	}
 	pdf := filepath.Join(dir, strings.TrimSuffix(nome, filepath.Ext(nome))+".pdf")
 	if _, err := os.Stat(pdf); err != nil {
@@ -763,7 +764,7 @@ func imaxesDePDF(datos []byte, max int) ([]imaxeExtraida, error) {
 // calquera documento de oficina (convertido antes con LibreOffice), como PNG.
 func renderizarPaxina(ax Adxunto, datos []byte, pax int) ([]byte, error) {
 	if !commandExists("pdftoppm") {
-		return nil, fmt.Errorf("non se atopou pdftoppm (paquete poppler-utils) para ver as páxinas")
+		return nil, idioma.Errorf("go.ler.sen_pdftoppm", "non se atopou pdftoppm (paquete poppler-utils) para ver as páxinas")
 	}
 	if pax < 1 {
 		pax = 1

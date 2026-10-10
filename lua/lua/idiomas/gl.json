@@ -1077,5 +1077,17 @@
   "go.problemas.condicion_maxima": "non se cumpre «%s» (Maxima di %s)",
   "go.problemas.variable_inexistente": "%s: {%s} está nunha fórmula pero non é ningunha variable",
   "go.problemas.sen_solucion": "pregunta %s: aínda non ten solución",
-  "go.instalar.sen_pkexec": "Non se atopou 'pkexec' para pedir permisos de administrador. Instala manualmente nun terminal cos comandos de %s."
+  "go.instalar.sen_pkexec": "Non se atopou 'pkexec' para pedir permisos de administrador. Instala manualmente nun terminal cos comandos de %s.",
+  "go.ler.sen_pdftotext": "non se atopou pdftotext (paquete poppler-utils) para ler o PDF",
+  "go.ler.sen_libreoffice": "para ler «%s» fai falta LibreOffice, que non está instalado: convérteo a PDF, DOCX ou ODT",
+  "go.ler.libreoffice_fallou": "LibreOffice non puido converter «%s»: %w",
+  "go.vista.sen_pdftoppm": "non se atopou pdftoppm (paquete poppler-utils) para debuxar a vista previa",
+  "go.ler.sen_pdftoppm": "non se atopou pdftoppm (paquete poppler-utils) para ver as páxinas",
+  "go.ofi.imaxe_non_usada": "a imaxe «%s» non se puido usar (%v): omitiuse",
+  "go.ofi.logotipo": "o logotipo non se puido usar (%v): omitiuse",
+  "go.ofi.imaxe_deseno": "o deseño de Word/OpenDocument da plantilla usa a imaxe «%s», que non se puido usar (%v): omitiuse",
+  "go.ofi.sen_imaxes": "a plantilla aínda non ten imaxes (gárdaa primeiro)",
+  "go.ofi.cor": "cor non válida: %q (usa un valor hexadecimal coma 1F3864)",
+  "go.markdown.sen_pandoc": "non se atopou pandoc (precísase para as fichas en Markdown)",
+  "go.ler.ficheiro_danado": "o ficheiro está danado ou non é un documento válido: %w"
 }

@@ -13,6 +13,7 @@ package main
 
 import (
 	"bytes"
+	"edicion/idioma"
 	"fmt"
 	"image"
 	"image/gif"
@@ -81,7 +82,7 @@ func resolverImaxeOfi(ref string, imaxes map[string]string, avisos *[]string) *i
 	}
 	im, err := imaxeOfiDeURI(uri)
 	if err != nil {
-		*avisos = engadirSenRepetir(*avisos, []string{fmt.Sprintf("a imaxe «%s» non se puido usar (%v): omitiuse", ref, err)})
+		*avisos = engadirSenRepetir(*avisos, []string{idioma.T("go.ofi.imaxe_non_usada", "a imaxe «%s» non se puido usar (%v): omitiuse", ref, err)})
 		return nil
 	}
 	return im
@@ -176,7 +177,7 @@ func baseOfimatica(plantilla *PlantillaLatex, vars map[string]string, tx textosD
 	if logo != "" {
 		im, err := imaxeOfiDeURI(logo)
 		if err != nil {
-			d.Avisos = append(d.Avisos, fmt.Sprintf("o logotipo non se puido usar (%v): omitiuse", err))
+			d.Avisos = append(d.Avisos, idioma.T("go.ofi.logotipo", "o logotipo non se puido usar (%v): omitiuse", err))
 		} else {
 			d.Logo = im
 		}
@@ -188,7 +189,7 @@ func baseOfimatica(plantilla *PlantillaLatex, vars map[string]string, tx textosD
 		}
 		im, err := imaxeDaPlantillaOfi(pl, nome)
 		if err != nil {
-			d.Avisos = append(d.Avisos, fmt.Sprintf("o deseño de Word/OpenDocument da plantilla usa a imaxe «%s», que non se puido usar (%v): omitiuse", nome, err))
+			d.Avisos = append(d.Avisos, idioma.T("go.ofi.imaxe_deseno", "o deseño de Word/OpenDocument da plantilla usa a imaxe «%s», que non se puido usar (%v): omitiuse", nome, err))
 			continue
 		}
 		d.ImaxesPlantilla[nome] = im
@@ -229,7 +230,7 @@ func prepararOfimatica(req XerarInformeCronogramaRequest, plantilla *PlantillaLa
 // imaxeDaPlantillaOfi le unha imaxe do cartafol de imaxes da plantilla.
 func imaxeDaPlantillaOfi(p *PlantillaLatex, nome string) (*imaxeOfi, error) {
 	if strings.TrimSpace(p.ID) == "" {
-		return nil, fmt.Errorf("a plantilla aínda non ten imaxes (gárdaa primeiro)")
+		return nil, idioma.Errorf("go.ofi.sen_imaxes", "a plantilla aínda non ten imaxes (gárdaa primeiro)")
 	}
 	dir, err := plantillaImaxesDir(p.ID)
 	if err != nil {

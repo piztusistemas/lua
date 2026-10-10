@@ -31,6 +31,7 @@ package main
 // Ao pé engádese despois o número de páxina.
 
 import (
+	"edicion/idioma"
 	"encoding/base64"
 	"fmt"
 	"os"
@@ -83,7 +84,7 @@ func normalizarCorHex(s string) (string, error) {
 		s = string([]byte{s[0], s[0], s[1], s[1], s[2], s[2]})
 	}
 	if !corHexRe.MatchString(s) {
-		return "", fmt.Errorf("cor non válida: %q (usa un valor hexadecimal coma 1F3864)", s)
+		return "", idioma.Errorf("go.ofi.cor", "cor non válida: %q (usa un valor hexadecimal coma 1F3864)", s)
 	}
 	return strings.ToUpper(s), nil
 }
@@ -392,7 +393,7 @@ func (a *App) previsualizarOfimaticaPedido(p PlantillaLatex, formato string, ped
 		return GeneratePDFResult{}, err
 	}
 	if !commandExists("pdftoppm") {
-		return GeneratePDFResult{}, fmt.Errorf("non se atopou pdftoppm (paquete poppler-utils) para debuxar a vista previa")
+		return GeneratePDFResult{}, idioma.Errorf("go.vista.sen_pdftoppm", "non se atopou pdftoppm (paquete poppler-utils) para debuxar a vista previa")
 	}
 	pdf, limpar, err := converterAPDFLibreOffice(Adxunto{ID: "previa", Nome: "previa." + formato, Tipo: tipo}, datos)
 	if err != nil {

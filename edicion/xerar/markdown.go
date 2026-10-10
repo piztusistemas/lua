@@ -14,6 +14,7 @@ package xerar
 
 import (
 	"bytes"
+	"edicion/idioma"
 	"fmt"
 	"os/exec"
 	"regexp"
@@ -280,7 +281,7 @@ func mdALatex(md string) (string, error) {
 		return "", nil
 	}
 	if !plataforma.CommandExists("pandoc") {
-		return "", fmt.Errorf("non se atopou pandoc (precísase para as fichas en Markdown)")
+		return "", idioma.Errorf("go.markdown.sen_pandoc", "non se atopou pandoc (precísase para as fichas en Markdown)")
 	}
 	cmd := exec.Command("pandoc", "-f", "markdown+tex_math_dollars+raw_tex-implicit_figures", "-t", "latex", "--wrap=preserve")
 	plataforma.OcultarConsola(cmd)

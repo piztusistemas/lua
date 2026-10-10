@@ -1077,5 +1077,17 @@
   "go.problemas.condicion_maxima": "no se cumple «%s» (Maxima dice %s)",
   "go.problemas.variable_inexistente": "%s: {%s} está en una fórmula pero no es ninguna variable",
   "go.problemas.sen_solucion": "pregunta %s: aún no tiene solución",
-  "go.instalar.sen_pkexec": "No se encontró 'pkexec' para pedir permisos de administrador. Instala manualmente en un terminal con los comandos de %s."
+  "go.instalar.sen_pkexec": "No se encontró 'pkexec' para pedir permisos de administrador. Instala manualmente en un terminal con los comandos de %s.",
+  "go.ler.sen_pdftotext": "no se encontró pdftotext (paquete poppler-utils) para leer el PDF",
+  "go.ler.sen_libreoffice": "para leer «%s» hace falta LibreOffice, que no está instalado: conviértelo a PDF, DOCX u ODT",
+  "go.ler.libreoffice_fallou": "LibreOffice no pudo convertir «%s»: %w",
+  "go.vista.sen_pdftoppm": "no se encontró pdftoppm (paquete poppler-utils) para dibujar la vista previa",
+  "go.ler.sen_pdftoppm": "no se encontró pdftoppm (paquete poppler-utils) para ver las páginas",
+  "go.ofi.imaxe_non_usada": "la imagen «%s» no se pudo usar (%v): se omitió",
+  "go.ofi.logotipo": "el logotipo no se pudo usar (%v): se omitió",
+  "go.ofi.imaxe_deseno": "el diseño de Word/OpenDocument de la plantilla usa la imagen «%s», que no se pudo usar (%v): se omitió",
+  "go.ofi.sen_imaxes": "la plantilla aún no tiene imágenes (guárdala primero)",
+  "go.ofi.cor": "color no válido: %q (usa un valor hexadecimal como 1F3864)",
+  "go.markdown.sen_pandoc": "no se encontró pandoc (se necesita para las fichas en Markdown)",
+  "go.ler.ficheiro_danado": "el archivo está dañado o no es un documento válido: %w"
 }

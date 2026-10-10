@@ -65,3 +65,8 @@ Fallbacks: sen `02-DOCS/wiki/sdd/config.yaml` (ordes da constitución: gofmt, go
 - status: complete
 - green: `go test ./...` e `go vet` en lua/lua verdes; `GOOS=windows go vet` limpo (linux non se pode comprobar desde macOS: Wails precisa cgo)
 - claves: 1 (go.instalar.sen_pkexec), 2 sitios (installer.go, maxima.go)
+
+## T009 — 2026-10-10
+- status: complete
+- green: `go test ./...` e `go vet` en edicion e lua/lua verdes; garda verde
+- claves: 12 (go.ler.*, go.vista.*, go.ofi.*, go.markdown.*), 12 sitios
