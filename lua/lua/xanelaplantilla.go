@@ -64,7 +64,7 @@ func (a *App) AbrirXanelaPlantilla(id, datos string) (bool, error) {
 
 	w := app.Window.NewWithOptions(application.WebviewWindowOptions{
 		Name:                nome,
-		Title:               "Lua — Editar plantilla",
+		Title:               "Piztu Lúa — Editar plantilla",
 		URL:                 "/?plantilla=" + idLimpo,
 		Width:               1500,
 		Height:              900,

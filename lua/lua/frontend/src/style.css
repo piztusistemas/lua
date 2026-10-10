@@ -135,14 +135,6 @@ html, body, #app {
     margin: -7px 0;
 }
 
-#brandName {
-    font-weight: 800;
-    font-size: 1.05rem;
-    letter-spacing: -0.01em;
-    color: var(--text-dark);
-    white-space: nowrap;
-}
-
 .sep {
     width: 1px;
     height: 1.6rem;

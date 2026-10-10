@@ -78,3 +78,7 @@ Why        — Non se debilita un test para avanzar, e cada commit queda verde.
 - «Tuberías» pasa a «Tubaxes» en galego (interface, textos para a IA e documentación viva). Claves e identificadores (`fluxo`, `tuberias`) non cambian; castelán, inglés e portugués seguen igual.
 - A pestana Tubaxes amosa directamente o deseño, sen texto explicativo nin botón. O deseño do cableado automático é unha vista previa: o formulario segue en automático ata o primeiro cambio, que o personaliza. Por que: se se personalizase só por abrir a pestana, todo formulario que se mirase deixaría de seguir os campos novos sen que a persoa o decidise. «Volver ao cableado automático» só sae cando xa está personalizado.
 - As iconas saen do deseñador. Cámbianse co botón dereito sobre o formulario na columna esquerda (ou no «⋯» da biblioteca) → «Cambiar icona…», nunha xanela propia. Novo método Go `GardarIconaFormulario(id, icona)`, que só toca a icona e vale tamén en produción (coma a descrición).
+
+## 2026-10-10 — Título «Piztu Lúa» e cores dos formularios
+- Decisión do usuario: o título das xanelas é «Piztu Lúa» (a principal) e «Piztu Lúa — …» (deseñador, plantilla, resultado, tarefa). A barra superior xa non repite o nome: só leva a mascota, sen recadro e a 48 px. O resto do nome visible segue sendo «Lúa».
+- Cada formulario ten icona e cor propias (8 cores, ningunha vermella nin verde); o modo vai nun punto na esquina do botón. `GardarIconaFormulario(id, icona, cor)` garda as dúas. Os formularios sen cor gardada reparten as libres por orde de id, de xeito estable.

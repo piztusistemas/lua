@@ -48,7 +48,7 @@ func main() {
 	// Xanela principal ("editor") - maximizada dende o arranque.
 	wailsApp.Window.NewWithOptions(application.WebviewWindowOptions{
 		Name:             nomeXanelaEditor,
-		Title:            "Lúa",
+		Title:            "Piztu Lúa",
 		Width:            1024,
 		Height:           768,
 		StartState:       application.WindowStateMaximised,

@@ -73,7 +73,7 @@ func (a *App) AbrirXanelaFormulario(id, datos string) (bool, error) {
 
 	w := app.Window.NewWithOptions(application.WebviewWindowOptions{
 		Name:                nome,
-		Title:               "Lua — Deseñar formulario",
+		Title:               "Piztu Lúa — Deseñar formulario",
 		URL:                 "/?formulario=" + idLimpo,
 		Width:               1500,
 		Height:              900,

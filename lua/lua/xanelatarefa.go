@@ -89,7 +89,7 @@ func (a *App) AbrirXanelaTarefa(id, datos string) (bool, error) {
 
 	w := app.Window.NewWithOptions(application.WebviewWindowOptions{
 		Name:             nome,
-		Title:            "Lua — Editar tarefa",
+		Title:            "Piztu Lúa — Editar tarefa",
 		URL:              "/?tarefa=" + idLimpo,
 		Width:            1280,
 		Height:           860,

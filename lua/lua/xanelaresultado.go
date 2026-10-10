@@ -183,7 +183,7 @@ func (a *App) AbrirXanelaResultado() error {
 	// arrastrala a onde lle interese.
 	w := app.Window.NewWithOptions(application.WebviewWindowOptions{
 		Name:             nomeXanelaResultado,
-		Title:            "Lua — Resultado",
+		Title:            "Piztu Lúa — Resultado",
 		URL:              "/?resultado=1",
 		Width:            900,
 		Height:           700,
