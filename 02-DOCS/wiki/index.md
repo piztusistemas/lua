@@ -13,8 +13,8 @@ topic: index
 |-----|------|
 | Constitución (regras non negociables) | [sdd/constitution.md](sdd/constitution.md) |
 | Rexistro de decisións | [sdd/decisions.md](sdd/decisions.md) |
-| Spec: Buxo no idioma de Lua (draft) | [sdd/specs/buxo-idiomas.md](sdd/specs/buxo-idiomas.md) |
-| Spec: mensaxes frecuentes de Lua no idioma activo (draft) | [sdd/specs/mensaxes-go-idiomas.md](sdd/specs/mensaxes-go-idiomas.md) |
+| Spec: Buxo no idioma de Lua (clarified) | [sdd/specs/buxo-idiomas.md](sdd/specs/buxo-idiomas.md) |
+| Spec: mensaxes frecuentes de Lua no idioma activo (clarified) | [sdd/specs/mensaxes-go-idiomas.md](sdd/specs/mensaxes-go-idiomas.md) |
 | Arquitectura: pezas, paquetes, ferramentas externas, versións | [arquitectura.md](arquitectura.md) |
 | Desenvolvemento: preparar, probar, compilar, publicar, trampas | [desenvolvemento.md](desenvolvemento.md) |
 | Que fai Lua, ferramenta a ferramenta | [../../lua/README.md](../../lua/README.md) |
