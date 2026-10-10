@@ -222,6 +222,7 @@ func (a *App) SaveSettings(s Settings) error {
 	s.BuxoDesactivado = a.settings.BuxoDesactivado // non o xestiona o diálogo de Opcións
 	cambiaMaxima := s.MaximaPath != a.settings.MaximaPath || s.MaximaDecimais != a.settings.MaximaDecimais
 	a.settings = s
+	a.aplicarIdiomaGo()
 	if cambiaMaxima {
 		a.pecharMotorProblemas()
 	}

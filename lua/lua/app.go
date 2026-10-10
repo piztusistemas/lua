@@ -89,6 +89,7 @@ func (a *App) startup(ctx context.Context) {
 	if pctx, ok := lerContextoLanzamento(); ok {
 		a.idiomaPiztu = pctx.Idioma
 	}
+	a.aplicarIdiomaGo()
 }
 
 // ServiceStartup é o hook de ciclo de vida que Wails v3 chama unha soa vez
