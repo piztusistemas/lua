@@ -1,0 +1,932 @@
+[
+  {
+    "nome": "conversa/anthropic/max0",
+    "peticions": [
+      {
+        "metodo": "POST",
+        "ruta": "/messages",
+        "query": "",
+        "cabeceiras": {
+          "Anthropic-Version": "2023-06-01",
+          "Content-Type": "application/json",
+          "X-Api-Key": "clave"
+        },
+        "corpo": {
+          "max_tokens": 8192,
+          "messages": [
+            {
+              "content": [
+                {
+                  "source": {
+                    "data": "QUJD",
+                    "media_type": "image/png",
+                    "type": "base64"
+                  },
+                  "type": "image"
+                },
+                {
+                  "text": "mira isto",
+                  "type": "text"
+                }
+              ],
+              "role": "user"
+            },
+            {
+              "content": [
+                {
+                  "text": "vou mirar",
+                  "type": "text"
+                },
+                {
+                  "id": "c1",
+                  "input": {
+                    "a": 1
+                  },
+                  "name": "f",
+                  "type": "tool_use"
+                }
+              ],
+              "role": "assistant"
+            },
+            {
+              "content": [
+                {
+                  "source": {
+                    "data": "QUJD",
+                    "media_type": "image/png",
+                    "type": "base64"
+                  },
+                  "type": "image"
+                },
+                {
+                  "text": "",
+                  "type": "text"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "model": "modelo",
+          "system": [
+            {
+              "cache_control": {
+                "type": "ephemeral"
+              },
+              "text": "sistema",
+              "type": "text"
+            }
+          ],
+          "tools": [
+            {
+              "description": "unha ferramenta",
+              "input_schema": {
+                "properties": {
+                  "a": {
+                    "type": "number"
+                  }
+                },
+                "type": "object"
+              },
+              "name": "f"
+            },
+            {
+              "description": "sen parámetros",
+              "input_schema": {
+                "properties": {},
+                "type": "object"
+              },
+              "name": "g"
+            }
+          ]
+        }
+      }
+    ],
+    "resultado": {
+      "erro": "",
+      "turno": {
+        "texto": "```\nola claude\n```",
+        "chamadas": [
+          {
+            "id": "t1",
+            "nome": "f",
+            "args": "{\"a\":1}"
+          }
+        ],
+        "bruto": "[{\"type\":\"text\",\"text\":\"```\\nola claude\\n```\"},{\"type\":\"tool_use\",\"id\":\"t1\",\"name\":\"f\",\"input\":{\"a\":1}}]",
+        "provedor": "anthropic",
+        "truncado": false
+      }
+    }
+  },
+  {
+    "nome": "conversa/anthropic/max1234",
+    "peticions": [
+      {
+        "metodo": "POST",
+        "ruta": "/messages",
+        "query": "",
+        "cabeceiras": {
+          "Anthropic-Version": "2023-06-01",
+          "Content-Type": "application/json",
+          "X-Api-Key": "clave"
+        },
+        "corpo": {
+          "max_tokens": 1234,
+          "messages": [
+            {
+              "content": [
+                {
+                  "source": {
+                    "data": "QUJD",
+                    "media_type": "image/png",
+                    "type": "base64"
+                  },
+                  "type": "image"
+                },
+                {
+                  "text": "mira isto",
+                  "type": "text"
+                }
+              ],
+              "role": "user"
+            },
+            {
+              "content": [
+                {
+                  "text": "vou mirar",
+                  "type": "text"
+                },
+                {
+                  "id": "c1",
+                  "input": {
+                    "a": 1
+                  },
+                  "name": "f",
+                  "type": "tool_use"
+                }
+              ],
+              "role": "assistant"
+            },
+            {
+              "content": [
+                {
+                  "source": {
+                    "data": "QUJD",
+                    "media_type": "image/png",
+                    "type": "base64"
+                  },
+                  "type": "image"
+                },
+                {
+                  "text": "",
+                  "type": "text"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "model": "modelo",
+          "system": [
+            {
+              "cache_control": {
+                "type": "ephemeral"
+              },
+              "text": "sistema",
+              "type": "text"
+            }
+          ],
+          "tools": [
+            {
+              "description": "unha ferramenta",
+              "input_schema": {
+                "properties": {
+                  "a": {
+                    "type": "number"
+                  }
+                },
+                "type": "object"
+              },
+              "name": "f"
+            },
+            {
+              "description": "sen parámetros",
+              "input_schema": {
+                "properties": {},
+                "type": "object"
+              },
+              "name": "g"
+            }
+          ]
+        }
+      }
+    ],
+    "resultado": {
+      "erro": "",
+      "turno": {
+        "texto": "```\nola claude\n```",
+        "chamadas": [
+          {
+            "id": "t1",
+            "nome": "f",
+            "args": "{\"a\":1}"
+          }
+        ],
+        "bruto": "[{\"type\":\"text\",\"text\":\"```\\nola claude\\n```\"},{\"type\":\"tool_use\",\"id\":\"t1\",\"name\":\"f\",\"input\":{\"a\":1}}]",
+        "provedor": "anthropic",
+        "truncado": false
+      }
+    }
+  },
+  {
+    "nome": "conversa/gemini/max0",
+    "peticions": [
+      {
+        "metodo": "POST",
+        "ruta": "/models/modelo:generateContent",
+        "query": "",
+        "cabeceiras": {
+          "Content-Type": "application/json",
+          "X-Goog-Api-Key": "clave"
+        },
+        "corpo": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "mira isto"
+                },
+                {
+                  "inlineData": {
+                    "data": "QUJD",
+                    "mimeType": "image/png"
+                  }
+                }
+              ],
+              "role": "user"
+            },
+            {
+              "parts": [
+                {
+                  "text": "vou mirar"
+                },
+                {
+                  "functionCall": {
+                    "args": {
+                      "a": 1
+                    },
+                    "name": "f"
+                  }
+                }
+              ],
+              "role": "model"
+            },
+            {
+              "parts": [
+                {
+                  "text": ""
+                },
+                {
+                  "inlineData": {
+                    "data": "QUJD",
+                    "mimeType": "image/png"
+                  }
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "systemInstruction": {
+            "parts": [
+              {
+                "text": "sistema"
+              }
+            ],
+            "role": "user"
+          },
+          "tools": [
+            {
+              "functionDeclarations": [
+                {
+                  "description": "unha ferramenta",
+                  "name": "f",
+                  "parameters": {
+                    "properties": {
+                      "a": {
+                        "type": "number"
+                      }
+                    },
+                    "type": "object"
+                  }
+                },
+                {
+                  "description": "sen parámetros",
+                  "name": "g"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "resultado": {
+      "erro": "",
+      "turno": {
+        "texto": "ola gemini",
+        "chamadas": [
+          {
+            "id": "chamada_1",
+            "nome": "f",
+            "args": "{\"a\":1}"
+          }
+        ],
+        "bruto": "[{\"text\":\"ola gemini\"},{\"functionCall\":{\"name\":\"f\",\"args\":{\"a\":1}}}]",
+        "provedor": "gemini",
+        "truncado": false
+      }
+    }
+  },
+  {
+    "nome": "conversa/gemini/max1234",
+    "peticions": [
+      {
+        "metodo": "POST",
+        "ruta": "/models/modelo:generateContent",
+        "query": "",
+        "cabeceiras": {
+          "Content-Type": "application/json",
+          "X-Goog-Api-Key": "clave"
+        },
+        "corpo": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "mira isto"
+                },
+                {
+                  "inlineData": {
+                    "data": "QUJD",
+                    "mimeType": "image/png"
+                  }
+                }
+              ],
+              "role": "user"
+            },
+            {
+              "parts": [
+                {
+                  "text": "vou mirar"
+                },
+                {
+                  "functionCall": {
+                    "args": {
+                      "a": 1
+                    },
+                    "name": "f"
+                  }
+                }
+              ],
+              "role": "model"
+            },
+            {
+              "parts": [
+                {
+                  "text": ""
+                },
+                {
+                  "inlineData": {
+                    "data": "QUJD",
+                    "mimeType": "image/png"
+                  }
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "generationConfig": {
+            "maxOutputTokens": 1234
+          },
+          "systemInstruction": {
+            "parts": [
+              {
+                "text": "sistema"
+              }
+            ],
+            "role": "user"
+          },
+          "tools": [
+            {
+              "functionDeclarations": [
+                {
+                  "description": "unha ferramenta",
+                  "name": "f",
+                  "parameters": {
+                    "properties": {
+                      "a": {
+                        "type": "number"
+                      }
+                    },
+                    "type": "object"
+                  }
+                },
+                {
+                  "description": "sen parámetros",
+                  "name": "g"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "resultado": {
+      "erro": "",
+      "turno": {
+        "texto": "ola gemini",
+        "chamadas": [
+          {
+            "id": "chamada_1",
+            "nome": "f",
+            "args": "{\"a\":1}"
+          }
+        ],
+        "bruto": "[{\"text\":\"ola gemini\"},{\"functionCall\":{\"name\":\"f\",\"args\":{\"a\":1}}}]",
+        "provedor": "gemini",
+        "truncado": false
+      }
+    }
+  },
+  {
+    "nome": "conversa/openai/max0",
+    "peticions": [
+      {
+        "metodo": "POST",
+        "ruta": "/chat/completions",
+        "query": "",
+        "cabeceiras": {
+          "Authorization": "Bearer clave",
+          "Content-Type": "application/json"
+        },
+        "corpo": {
+          "messages": [
+            {
+              "content": "sistema",
+              "role": "system"
+            },
+            {
+              "content": [
+                {
+                  "text": "mira isto",
+                  "type": "text"
+                },
+                {
+                  "image_url": {
+                    "url": "data:image/png;base64,QUJD"
+                  },
+                  "type": "image_url"
+                }
+              ],
+              "role": "user"
+            },
+            {
+              "content": "vou mirar",
+              "role": "assistant",
+              "tool_calls": [
+                {
+                  "function": {
+                    "arguments": "{\"a\":1}",
+                    "name": "f"
+                  },
+                  "id": "c1",
+                  "type": "function"
+                }
+              ]
+            },
+            {
+              "content": [
+                {
+                  "text": "",
+                  "type": "text"
+                },
+                {
+                  "image_url": {
+                    "url": "data:image/png;base64,QUJD"
+                  },
+                  "type": "image_url"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "model": "modelo",
+          "tools": [
+            {
+              "function": {
+                "description": "unha ferramenta",
+                "name": "f",
+                "parameters": {
+                  "properties": {
+                    "a": {
+                      "type": "number"
+                    }
+                  },
+                  "type": "object"
+                }
+              },
+              "type": "function"
+            },
+            {
+              "function": {
+                "description": "sen parámetros",
+                "name": "g",
+                "parameters": {
+                  "properties": {},
+                  "type": "object"
+                }
+              },
+              "type": "function"
+            }
+          ]
+        }
+      }
+    ],
+    "resultado": {
+      "erro": "",
+      "turno": {
+        "texto": "ola openai",
+        "chamadas": [
+          {
+            "id": "c1",
+            "nome": "f",
+            "args": "{\"a\":1}"
+          }
+        ],
+        "bruto": "{\"content\":\"ola openai\",\"role\":\"assistant\",\"tool_calls\":[{\"function\":{\"arguments\":\"{\\\"a\\\":1}\",\"name\":\"f\"},\"id\":\"c1\",\"type\":\"function\"}]}",
+        "provedor": "openai",
+        "truncado": false
+      }
+    }
+  },
+  {
+    "nome": "conversa/openai/max1234",
+    "peticions": [
+      {
+        "metodo": "POST",
+        "ruta": "/chat/completions",
+        "query": "",
+        "cabeceiras": {
+          "Authorization": "Bearer clave",
+          "Content-Type": "application/json"
+        },
+        "corpo": {
+          "max_tokens": 1234,
+          "messages": [
+            {
+              "content": "sistema",
+              "role": "system"
+            },
+            {
+              "content": [
+                {
+                  "text": "mira isto",
+                  "type": "text"
+                },
+                {
+                  "image_url": {
+                    "url": "data:image/png;base64,QUJD"
+                  },
+                  "type": "image_url"
+                }
+              ],
+              "role": "user"
+            },
+            {
+              "content": "vou mirar",
+              "role": "assistant",
+              "tool_calls": [
+                {
+                  "function": {
+                    "arguments": "{\"a\":1}",
+                    "name": "f"
+                  },
+                  "id": "c1",
+                  "type": "function"
+                }
+              ]
+            },
+            {
+              "content": [
+                {
+                  "text": "",
+                  "type": "text"
+                },
+                {
+                  "image_url": {
+                    "url": "data:image/png;base64,QUJD"
+                  },
+                  "type": "image_url"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "model": "modelo",
+          "tools": [
+            {
+              "function": {
+                "description": "unha ferramenta",
+                "name": "f",
+                "parameters": {
+                  "properties": {
+                    "a": {
+                      "type": "number"
+                    }
+                  },
+                  "type": "object"
+                }
+              },
+              "type": "function"
+            },
+            {
+              "function": {
+                "description": "sen parámetros",
+                "name": "g",
+                "parameters": {
+                  "properties": {},
+                  "type": "object"
+                }
+              },
+              "type": "function"
+            }
+          ]
+        }
+      }
+    ],
+    "resultado": {
+      "erro": "",
+      "turno": {
+        "texto": "ola openai",
+        "chamadas": [
+          {
+            "id": "c1",
+            "nome": "f",
+            "args": "{\"a\":1}"
+          }
+        ],
+        "bruto": "{\"content\":\"ola openai\",\"role\":\"assistant\",\"tool_calls\":[{\"function\":{\"arguments\":\"{\\\"a\\\":1}\",\"name\":\"f\"},\"id\":\"c1\",\"type\":\"function\"}]}",
+        "provedor": "openai",
+        "truncado": false
+      }
+    }
+  },
+  {
+    "nome": "erros/configuracion",
+    "peticions": null,
+    "resultado": {
+      "conversa": "falta o modelo de IA (configúrao en Opcións)",
+      "simple": "falta a clave da API de IA (configúraa en Opcións)"
+    }
+  },
+  {
+    "nome": "erros/http/anthropic",
+    "peticions": null,
+    "resultado": {
+      "conversa": "erro da IA: cota esgotada",
+      "simple": "erro da IA: cota esgotada"
+    }
+  },
+  {
+    "nome": "erros/http/gemini",
+    "peticions": null,
+    "resultado": {
+      "conversa": "erro da IA: cota esgotada",
+      "simple": "erro da IA: cota esgotada"
+    }
+  },
+  {
+    "nome": "erros/http/openai",
+    "peticions": null,
+    "resultado": {
+      "conversa": "erro da IA: cota esgotada",
+      "simple": "erro da IA: cota esgotada"
+    }
+  },
+  {
+    "nome": "simple/anthropic/max0",
+    "peticions": [
+      {
+        "metodo": "POST",
+        "ruta": "/messages",
+        "query": "",
+        "cabeceiras": {
+          "Anthropic-Version": "2023-06-01",
+          "Content-Type": "application/json",
+          "X-Api-Key": "clave"
+        },
+        "corpo": {
+          "max_tokens": 8192,
+          "messages": [
+            {
+              "content": "petición",
+              "role": "user"
+            }
+          ],
+          "model": "modelo",
+          "system": [
+            {
+              "cache_control": {
+                "type": "ephemeral"
+              },
+              "text": "sistema",
+              "type": "text"
+            }
+          ]
+        }
+      }
+    ],
+    "resultado": {
+      "erro": "",
+      "texto": "ola claude"
+    }
+  },
+  {
+    "nome": "simple/anthropic/max1234",
+    "peticions": [
+      {
+        "metodo": "POST",
+        "ruta": "/messages",
+        "query": "",
+        "cabeceiras": {
+          "Anthropic-Version": "2023-06-01",
+          "Content-Type": "application/json",
+          "X-Api-Key": "clave"
+        },
+        "corpo": {
+          "max_tokens": 1234,
+          "messages": [
+            {
+              "content": "petición",
+              "role": "user"
+            }
+          ],
+          "model": "modelo",
+          "system": [
+            {
+              "cache_control": {
+                "type": "ephemeral"
+              },
+              "text": "sistema",
+              "type": "text"
+            }
+          ]
+        }
+      }
+    ],
+    "resultado": {
+      "erro": "",
+      "texto": "ola claude"
+    }
+  },
+  {
+    "nome": "simple/gemini/max0",
+    "peticions": [
+      {
+        "metodo": "POST",
+        "ruta": "/models/modelo:generateContent",
+        "query": "",
+        "cabeceiras": {
+          "Content-Type": "application/json",
+          "X-Goog-Api-Key": "clave"
+        },
+        "corpo": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "petición"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "systemInstruction": {
+            "parts": [
+              {
+                "text": "sistema"
+              }
+            ],
+            "role": "user"
+          }
+        }
+      }
+    ],
+    "resultado": {
+      "erro": "",
+      "texto": "ola gemini"
+    }
+  },
+  {
+    "nome": "simple/gemini/max1234",
+    "peticions": [
+      {
+        "metodo": "POST",
+        "ruta": "/models/modelo:generateContent",
+        "query": "",
+        "cabeceiras": {
+          "Content-Type": "application/json",
+          "X-Goog-Api-Key": "clave"
+        },
+        "corpo": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "petición"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "generationConfig": {
+            "maxOutputTokens": 1234
+          },
+          "systemInstruction": {
+            "parts": [
+              {
+                "text": "sistema"
+              }
+            ],
+            "role": "user"
+          }
+        }
+      }
+    ],
+    "resultado": {
+      "erro": "",
+      "texto": "ola gemini"
+    }
+  },
+  {
+    "nome": "simple/openai/max0",
+    "peticions": [
+      {
+        "metodo": "POST",
+        "ruta": "/chat/completions",
+        "query": "",
+        "cabeceiras": {
+          "Authorization": "Bearer clave",
+          "Content-Type": "application/json"
+        },
+        "corpo": {
+          "messages": [
+            {
+              "content": "sistema",
+              "role": "system"
+            },
+            {
+              "content": "petición",
+              "role": "user"
+            }
+          ],
+          "model": "modelo"
+        }
+      }
+    ],
+    "resultado": {
+      "erro": "",
+      "texto": "ola openai"
+    }
+  },
+  {
+    "nome": "simple/openai/max1234",
+    "peticions": [
+      {
+        "metodo": "POST",
+        "ruta": "/chat/completions",
+        "query": "",
+        "cabeceiras": {
+          "Authorization": "Bearer clave",
+          "Content-Type": "application/json"
+        },
+        "corpo": {
+          "max_tokens": 1234,
+          "messages": [
+            {
+              "content": "sistema",
+              "role": "system"
+            },
+            {
+              "content": "petición",
+              "role": "user"
+            }
+          ],
+          "model": "modelo"
+        }
+      }
+    ],
+    "resultado": {
+      "erro": "",
+      "texto": "ola openai"
+    }
+  }
+]
