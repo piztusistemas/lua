@@ -56,7 +56,7 @@ func toS(v any) string {
 // A API local deixa que un módulo (Buxo) mande imaxes nos turnos.
 func TestImaxesDaAPI(t *testing.T) {
 	msgs := []IAMensaxe{{Rol: "user", Texto: "le", Imaxes: []string{"data:image/png;base64,iVBORw0KGgo="}}}
-	if err := imaxesDaAPI(msgs); err != nil || len(msgs[0].imaxes) != 1 || msgs[0].imaxes[0].Mime != "image/png" || msgs[0].Imaxes != nil {
+	if err := imaxesDaAPI(msgs); err != nil || len(msgs[0].ImaxesIA) != 1 || msgs[0].ImaxesIA[0].Mime != "image/png" || msgs[0].Imaxes != nil {
 		t.Fatalf("%v %+v", err, msgs[0])
 	}
 	if err := imaxesDaAPI([]IAMensaxe{{Imaxes: []string{"/etc/passwd"}}}); err == nil {

@@ -25,7 +25,7 @@ type Settings struct {
 	IAModel    string `json:"iaModel"`
 	// IABaseURL só fai falla para un provedor "compatible con OpenAI" que
 	// non sexa a propia OpenAI (Qwen, Perplexity...) - baleiro = enderezo
-	// oficial do provedor (ver baseURLPorDefecto). O selector do frontend xa
+	// oficial do provedor (ver ia.BaseURLPorDefecto en edicion/ia). O selector do frontend xa
 	// o prerreche cos presets coñecidos, o profesorado non ten por que velo.
 	IABaseURL string `json:"iaBaseUrl"`
 	// IAPreset non o le ningunha chamada á IA - é só o valor do selector do
@@ -116,8 +116,8 @@ func (s Settings) ExportarMarkdownResolto() bool {
 }
 
 // IAMaxTokensResolto devolve IAMaxTokens coa regra de "<=0 -> 0" (omitir o
-// parámetro por completo) - para chamarGemini/chamarOpenAICompatible
-// (ia_client.go), cuxas APIs aceptan omitir o límite de resposta e deixar
+// parámetro por completo) - para Gemini e «compatible con OpenAI»
+// (edicion/ia, a través de configDe en ia_conversa.go), cuxas APIs aceptan omitir o límite de resposta e deixar
 // que o decida o propio modelo.
 func (s Settings) IAMaxTokensResolto() int {
 	if s.IAMaxTokens <= 0 {
@@ -137,7 +137,7 @@ func (s Settings) IATimeoutResolto() time.Duration {
 }
 
 // IAMaxTokensAnthropicResolto devolve IAMaxTokens coa regra de "<=0 ->
-// 8192" - para chamarAnthropic (ia_client.go), cuxa API esixe SEMPRE un
+// 8192" - para Anthropic (configDe, ia_conversa.go), cuxa API esixe SEMPRE un
 // valor numérico en max_tokens (non se pode omitir coma en Gemini/OpenAI).
 func (s Settings) IAMaxTokensAnthropicResolto() int {
 	if s.IAMaxTokens <= 0 {

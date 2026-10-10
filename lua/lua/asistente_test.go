@@ -73,7 +73,7 @@ func TestTurnoOpenAIChamadasAFerramentas(t *testing.T) {
 	defer srv.Close()
 
 	bruto := `{"role":"assistant","content":"Vou mirar.","reasoning_content":"pensei","tool_calls":[{"id":"c1","type":"function","function":{"name":"curso_ler","arguments":"{\"mes\":\"2025-09\"}"}}]}`
-	tr, err := turnoOpenAI(srv.URL, "clave", "m", "sistema", conversaProba(bruto, "openai"), ferramentaProba(), 0, nil)
+	tr, err := chamarIAConversa(Settings{IAProvedor: "openai", IABaseURL: srv.URL, IAAPIKey: "clave", IAModel: "m"}, "sistema", conversaProba(bruto, "openai"), ferramentaProba())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -99,7 +99,7 @@ func TestTurnoOpenAIReconstruyeSenBruto(t *testing.T) {
 		w.Write([]byte(`{"choices":[{"finish_reason":"stop","message":{"role":"assistant","content":"feito"}}]}`))
 	}))
 	defer srv.Close()
-	tr, err := turnoOpenAI(srv.URL, "clave", "m", "s", conversaProba(`{"rexeitado":true}`, "gemini"), nil, 100, nil)
+	tr, err := chamarIAConversa(Settings{IAProvedor: "openai", IABaseURL: srv.URL, IAAPIKey: "clave", IAModel: "m", IAMaxTokens: 100}, "s", conversaProba(`{"rexeitado":true}`, "gemini"), nil)
 	if err != nil || tr.Texto != "feito" || len(tr.Chamadas) != 0 {
 		t.Fatalf("%v %+v", err, tr)
 	}
@@ -130,7 +130,7 @@ func TestTurnoAnthropicChamadasAFerramentas(t *testing.T) {
 	defer srv.Close()
 
 	bruto := `[{"type":"text","text":"Vou mirar."},{"type":"tool_use","id":"c1","name":"curso_ler","input":{"mes":"2025-09"}}]`
-	tr, err := turnoAnthropic(srv.URL, "clave", "m", "sistema", conversaProba(bruto, "anthropic"), ferramentaProba(), 4096, nil)
+	tr, err := chamarIAConversa(Settings{IAProvedor: "anthropic", IABaseURL: srv.URL, IAAPIKey: "clave", IAModel: "m", IAMaxTokens: 4096}, "sistema", conversaProba(bruto, "anthropic"), ferramentaProba())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -144,7 +144,7 @@ func TestTurnoAnthropicTruncado(t *testing.T) {
 		w.Write([]byte(`{"stop_reason":"max_tokens","content":[{"type":"text","text":"cortado"}]}`))
 	}))
 	defer srv.Close()
-	tr, err := turnoAnthropic(srv.URL, "c", "m", "", []IAMensaxe{{Rol: "user", Texto: "hola"}}, nil, 10, nil)
+	tr, err := chamarIAConversa(Settings{IAProvedor: "anthropic", IABaseURL: srv.URL, IAAPIKey: "c", IAModel: "m", IAMaxTokens: 10}, "", []IAMensaxe{{Rol: "user", Texto: "hola"}}, nil)
 	if err != nil || !tr.Truncado || tr.Texto != "cortado" {
 		t.Fatalf("%v %+v", err, tr)
 	}
@@ -176,7 +176,7 @@ func TestTurnoGeminiChamadasAFerramentas(t *testing.T) {
 	defer srv.Close()
 
 	bruto := `[{"functionCall":{"name":"curso_ler","args":{"mes":"2025-09"}},"thoughtSignature":"SIG"}]`
-	tr, err := turnoGemini(srv.URL, "clave", "m", "sistema", conversaProba(bruto, "gemini"), ferramentaProba(), 0, nil)
+	tr, err := chamarIAConversa(Settings{IAProvedor: "gemini", IABaseURL: srv.URL, IAAPIKey: "clave", IAModel: "m"}, "sistema", conversaProba(bruto, "gemini"), ferramentaProba())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -199,9 +199,18 @@ func TestTurnoErrosDoProvedor(t *testing.T) {
 	defer srv.Close()
 	msgs := []IAMensaxe{{Rol: "user", Texto: "hola"}}
 	for nome, fn := range map[string]func() error{
-		"openai":    func() error { _, e := turnoOpenAI(srv.URL, "c", "m", "s", msgs, nil, 0, nil); return e },
-		"anthropic": func() error { _, e := turnoAnthropic(srv.URL, "c", "m", "s", msgs, nil, 10, nil); return e },
-		"gemini":    func() error { _, e := turnoGemini(srv.URL, "c", "m", "s", msgs, nil, 0, nil); return e },
+		"openai": func() error {
+			_, e := chamarIAConversa(Settings{IAProvedor: "openai", IABaseURL: srv.URL, IAAPIKey: "c", IAModel: "m"}, "s", msgs, nil)
+			return e
+		},
+		"anthropic": func() error {
+			_, e := chamarIAConversa(Settings{IAProvedor: "anthropic", IABaseURL: srv.URL, IAAPIKey: "c", IAModel: "m", IAMaxTokens: 10}, "s", msgs, nil)
+			return e
+		},
+		"gemini": func() error {
+			_, e := chamarIAConversa(Settings{IAProvedor: "gemini", IABaseURL: srv.URL, IAAPIKey: "c", IAModel: "m"}, "s", msgs, nil)
+			return e
+		},
 	} {
 		if err := fn(); err == nil || !strings.Contains(err.Error(), "modelo inexistente") {
 			t.Errorf("%s: erro = %v", nome, err)

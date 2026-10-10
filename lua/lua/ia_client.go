@@ -1,363 +1,42 @@
 package main
 
 import (
-	"bytes"
-	"edicion/idioma"
-	"encoding/json"
-	"io"
-	"net/http"
 	"strings"
-	"time"
+
+	"edicion/ia"
 )
 
-// Cliente de IA xenérico: fala con calquera provedor que use un destes tres
+// Cliente de IA de Lúa: fala con calquera provedor que use un destes tres
 // formatos de fío (case a inmensa maioría do mercado):
 //   - "gemini": API nativa de Google Gemini (systemInstruction + contents).
 //   - "anthropic": API nativa de Claude (x-api-key + system + messages).
-//   - "openai": formato "chat completions" de OpenAI - o que tamén falan de
-//     fábrica moitos outros provedores en modo "compatible con OpenAI"
-//     (Qwen/DashScope, Perplexity, Groq, Mistral, DeepSeek, Ollama en
-//     local...), así que este mesmo camiño cobre ChatGPT E calquera destes
-//     só cambiando o enderezo do servidor (ver baseURLPorDefecto/Settings.
-//     IABaseURL) - por iso "xenérico/universal": non hai que escribir un
-//     adaptador novo por cada marca, só para os poucos formatos de fío
-//     realmente distintos que existen.
+//   - "openai": formato "chat completions" de OpenAI, que tamén falan moitos
+//     outros provedores en modo "compatible con OpenAI" (Qwen, Perplexity,
+//     Groq, Mistral, DeepSeek, Ollama...): só cambia o enderezo do servidor.
 //
-// O profesorado escolle un provedor por nome nun selector (Opcións, ver
-// frontend/index.html) que xa pon o formato de fío e o enderezo por
-// defecto correctos - nunca ten que sabelo nin escribilo á man.
+// O código que fala con eles vive unha soa vez en edicion/ia (constitución,
+// regra 1.3). Aquí só queda o que é de Lúa: o tipo do provedor que garda
+// Settings, a tradución de Settings a ia.Config (ia_conversa.go) e as
+// chamadas que usa o resto de Lúa.
 type ProvedorIA string
 
 const (
-	ProvedorGemini    ProvedorIA = "gemini"
-	ProvedorAnthropic ProvedorIA = "anthropic"
-	ProvedorOpenAI    ProvedorIA = "openai" // tamén calquera "compatible con OpenAI"
+	ProvedorGemini    ProvedorIA = ia.ProvedorGemini
+	ProvedorAnthropic ProvedorIA = ia.ProvedorAnthropic
+	ProvedorOpenAI    ProvedorIA = ia.ProvedorOpenAI // tamén calquera "compatible con OpenAI"
 )
 
-// iaHTTPClient é o cliente por defecto (fallback dos tests e de calquera
-// chamada sen cliente propio). chamarIA constrúe un cliente por chamada co
-// timeout de Settings.IATimeoutResolto (Opcións).
-var iaHTTPClient = &http.Client{Timeout: 90 * time.Second}
-
-// baseURLPorDefecto devolve o enderezo oficial do provedor cando
-// Settings.IABaseURL queda baleiro - só fai falla escribir un enderezo á
-// man para un provedor "compatible con OpenAI" que non sexa a propia
-// OpenAI (Qwen, Perplexity...), e aínda así o selector do frontend xa trae
-// eses enderezos coma preset.
-func baseURLPorDefecto(provedor ProvedorIA) string {
-	switch provedor {
-	case ProvedorGemini:
-		return "https://generativelanguage.googleapis.com/v1beta"
-	case ProvedorAnthropic:
-		return "https://api.anthropic.com/v1"
-	default:
-		return "https://api.openai.com/v1"
-	}
-}
-
-// chamarIA é o punto de entrada único que usa XerarPlantillaIA
-// (plantillas_ia.go): decide o formato de fío polo
-// provedor configurado e devolve o texto de resposta xa limpo de valados
-// Markdown. `s` é a configuración completa (non só as claves) para que
-// engadir un catro provedor no futuro só toque este switch, non cada
-// chamador.
+// chamarIA fai unha soa pregunta, sen ferramentas, e devolve o texto da
+// resposta limpo de valados Markdown (a usa a IA das plantillas). Envía
+// exactamente o mesmo ca unha volta de conversa cunha soa mensaxe
+// (comprobado na caracterización); unha resposta cortada polo límite de
+// tokens devólvese tal cal, sen erro, coma sempre.
 func chamarIA(s Settings, sistema, peticion string) (string, error) {
-	// Timeout por chamada (Opcións -> "Tempo máximo de espera pola IA").
-	provedor, baseURL, cliente, err := resolverIA(s)
+	t, err := chamarIAConversa(s, sistema, []IAMensaxe{{Rol: "user", Texto: peticion}}, nil)
 	if err != nil {
 		return "", err
 	}
-
-	// IAMaxTokens (Opcións): límite de tokens de resposta configurable pola
-	// usuaria - 0/sen configurar deixa cada provedor no seu comportamento de
-	// sempre (ver Settings.IAMaxTokens/IAMaxTokensAnthropicResolto,
-	// settings.go). Anthropic esixe sempre un número en max_tokens
-	// (herdando os 8192 antes fixos coma valor por defecto); Gemini/
-	// "compatible con OpenAI" simplemente OMITEN o parámetro cando é 0,
-	// coma antes desta opción existir.
-	switch provedor {
-	case ProvedorAnthropic:
-		return chamarAnthropic(baseURL, s.IAAPIKey, s.IAModel, sistema, peticion, s.IAMaxTokensAnthropicResolto(), cliente)
-	case ProvedorGemini:
-		return chamarGemini(baseURL, s.IAAPIKey, s.IAModel, sistema, peticion, s.IAMaxTokensResolto(), cliente)
-	default:
-		return chamarOpenAICompatible(baseURL, s.IAAPIKey, s.IAModel, sistema, peticion, s.IAMaxTokensResolto(), cliente)
-	}
-}
-
-// ── Gemini (nativo) ──────────────────────────────────────────────────────
-
-type geminiPeticion struct {
-	SystemInstruction *geminiContido          `json:"systemInstruction,omitempty"`
-	Contents          []geminiContido         `json:"contents"`
-	GenerationConfig  *geminiGenerationConfig `json:"generationConfig,omitempty"`
-}
-
-// geminiGenerationConfig só leva MaxOutputTokens por agora - Lua non
-// expón ningún outro parámetro de xeración (temperature, topP...) na UI,
-// así que non fai falla modelar máis ca isto.
-type geminiGenerationConfig struct {
-	MaxOutputTokens int `json:"maxOutputTokens,omitempty"`
-}
-
-type geminiContido struct {
-	Role  string        `json:"role,omitempty"`
-	Parts []geminiParte `json:"parts"`
-}
-
-type geminiParte struct {
-	Text string `json:"text,omitempty"`
-}
-
-type geminiResposta struct {
-	Candidates []struct {
-		Content geminiContido `json:"content"`
-	} `json:"candidates"`
-	Error *struct {
-		Message string `json:"message"`
-	} `json:"error"`
-}
-
-// chamarGemini envía `sistema` coma systemInstruction e `peticion` coma único
-// contido do usuario. Idéntica xestión de erros ca en Xesta (mesmas
-// mensaxes, mesmo comportamento comprobado empiricamente contra a API real:
-// systemInstruction precisa Role:"user" ou a API devolve 400 sen máis
-// detalle). maxTokens <= 0 omite generationConfig por completo (deixa o
-// límite de resposta por defecto do propio modelo, comportamento previo a
-// que isto fose configurable - ver Settings.IAMaxTokens).
-func chamarGemini(baseURL, apiKey, model, sistema, peticion string, maxTokens int, cliente *http.Client) (string, error) {
-	if cliente == nil {
-		cliente = iaHTTPClient
-	}
-	corpo := geminiPeticion{
-		SystemInstruction: &geminiContido{Role: "user", Parts: []geminiParte{{Text: sistema}}},
-		Contents: []geminiContido{
-			{Role: "user", Parts: []geminiParte{{Text: peticion}}},
-		},
-	}
-	if maxTokens > 0 {
-		corpo.GenerationConfig = &geminiGenerationConfig{MaxOutputTokens: maxTokens}
-	}
-	dados, err := json.Marshal(corpo)
-	if err != nil {
-		return "", err
-	}
-
-	url := baseURL + "/models/" + model + ":generateContent"
-	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(dados))
-	if err != nil {
-		return "", err
-	}
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("x-goog-api-key", apiKey)
-
-	resp, err := cliente.Do(req)
-	if err != nil {
-		return "", idioma.Errorf("go.ia.sen_conexion", "non se puido contactar coa IA: %w", err)
-	}
-	defer resp.Body.Close()
-
-	corpoResposta, _ := io.ReadAll(resp.Body)
-	var r geminiResposta
-	if err := json.Unmarshal(corpoResposta, &r); err != nil {
-		return "", idioma.Errorf("go.ia.resposta_http", "resposta non válida da IA (HTTP %d)", resp.StatusCode)
-	}
-	if r.Error != nil {
-		return "", idioma.Errorf("go.ia.erro", "erro da IA: %s", r.Error.Message)
-	}
-	if resp.StatusCode != http.StatusOK || len(r.Candidates) == 0 || len(r.Candidates[0].Content.Parts) == 0 {
-		return "", idioma.Errorf("go.ia.sen_resultado", "a IA non devolveu resultado (HTTP %d)", resp.StatusCode)
-	}
-
-	return limparValadosMarkdown(r.Candidates[0].Content.Parts[0].Text), nil
-}
-
-// ── Anthropic (nativo, Claude) ───────────────────────────────────────────
-
-type anthropicPeticion struct {
-	Model     string                  `json:"model"`
-	MaxTokens int                     `json:"max_tokens"`
-	System    []anthropicSystemBloque `json:"system,omitempty"`
-	Messages  []anthropicMensaxe      `json:"messages"`
-}
-
-// anthropicSystemBloque é un anaco do "system" da API de Claude. Vai en
-// slice (en vez de string simple) para poder marcar CacheControl: o
-// "sistema" que mandamos (chuletaLua/chuletaLuaPara + instrución) é
-// idéntico en moitas chamadas seguidas (mesmo tipo de anaco, mesmo
-// provedor) - marcándoo coma "ephemeral" Claude cachea eses tokens no seu
-// lado e cobra ~un 10% neles nas chamadas seguintes en vez do prezo enteiro,
-// sen cambiar en nada a resposta (non é compresión con perdas, é caché
-// exacta). Gemini/OpenAI non necesitan isto: cachean prefixos repetidos
-// automaticamente sen que o cliente marque nada.
-type anthropicSystemBloque struct {
-	Type         string                 `json:"type"`
-	Text         string                 `json:"text"`
-	CacheControl *anthropicCacheControl `json:"cache_control,omitempty"`
-}
-
-type anthropicCacheControl struct {
-	Type string `json:"type"`
-}
-
-type anthropicMensaxe struct {
-	Role    string `json:"role"`
-	Content string `json:"content"`
-}
-
-type anthropicResposta struct {
-	Content []struct {
-		Type string `json:"type"`
-		Text string `json:"text"`
-	} `json:"content"`
-	Error *struct {
-		Message string `json:"message"`
-	} `json:"error"`
-}
-
-// chamarAnthropic fala coa API de Messages de Claude (api.anthropic.com) -
-// autenticación por cabeceira x-api-key (non Bearer) e cabeceira obrigatoria
-// anthropic-version, a diferenza dos outros dous formatos. maxTokens chega
-// xa resolto (Settings.IAMaxTokensAnthropicResolto) - a diferenza de
-// Gemini/OpenAI, esta API esixe SEMPRE un valor numérico en max_tokens, non
-// se pode omitir.
-func chamarAnthropic(baseURL, apiKey, model, sistema, peticion string, maxTokens int, cliente *http.Client) (string, error) {
-	if cliente == nil {
-		cliente = iaHTTPClient
-	}
-	corpo := anthropicPeticion{
-		Model:     model,
-		MaxTokens: maxTokens,
-		Messages:  []anthropicMensaxe{{Role: "user", Content: peticion}},
-	}
-	if sistema != "" {
-		// CacheControl "ephemeral": chuletaLua/chuletaLuaPara + a
-		// instrución que segue son idénticas en moitas chamadas seguidas
-		// (mesmo tipo de anaco) - Claude cachea eses tokens no seu lado
-		// (5 min de TTL por defecto) e cobra menos por eles nas chamadas
-		// seguintes. Se sistema queda por baixo do mínimo cacheable do
-		// modelo (~1024-2048 tokens), a API simplemente ignora a marca e
-		// segue igual, sen erro.
-		corpo.System = []anthropicSystemBloque{{
-			Type:         "text",
-			Text:         sistema,
-			CacheControl: &anthropicCacheControl{Type: "ephemeral"},
-		}}
-	}
-	dados, err := json.Marshal(corpo)
-	if err != nil {
-		return "", err
-	}
-
-	req, err := http.NewRequest(http.MethodPost, baseURL+"/messages", bytes.NewReader(dados))
-	if err != nil {
-		return "", err
-	}
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("x-api-key", apiKey)
-	req.Header.Set("anthropic-version", "2023-06-01")
-
-	resp, err := cliente.Do(req)
-	if err != nil {
-		return "", idioma.Errorf("go.ia.sen_conexion", "non se puido contactar coa IA: %w", err)
-	}
-	defer resp.Body.Close()
-
-	corpoResposta, _ := io.ReadAll(resp.Body)
-	var r anthropicResposta
-	if err := json.Unmarshal(corpoResposta, &r); err != nil {
-		return "", idioma.Errorf("go.ia.resposta_http", "resposta non válida da IA (HTTP %d)", resp.StatusCode)
-	}
-	if r.Error != nil {
-		return "", idioma.Errorf("go.ia.erro", "erro da IA: %s", r.Error.Message)
-	}
-	if resp.StatusCode != http.StatusOK || len(r.Content) == 0 {
-		return "", idioma.Errorf("go.ia.sen_resultado", "a IA non devolveu resultado (HTTP %d)", resp.StatusCode)
-	}
-
-	var texto strings.Builder
-	for _, bloque := range r.Content {
-		if bloque.Type == "text" {
-			texto.WriteString(bloque.Text)
-		}
-	}
-	return limparValadosMarkdown(texto.String()), nil
-}
-
-// ── OpenAI / "compatible con OpenAI" (ChatGPT, Qwen, Perplexity, Groq...) ──
-
-type openAIPeticion struct {
-	Model     string          `json:"model"`
-	Messages  []openAIMensaxe `json:"messages"`
-	MaxTokens int             `json:"max_tokens,omitempty"`
-}
-
-type openAIMensaxe struct {
-	Role    string `json:"role"`
-	Content string `json:"content"`
-}
-
-type openAIResposta struct {
-	Choices []struct {
-		Message struct {
-			Content string `json:"content"`
-		} `json:"message"`
-	} `json:"choices"`
-	Error *struct {
-		Message string `json:"message"`
-	} `json:"error"`
-}
-
-// chamarOpenAICompatible fala o formato "chat completions" (POST
-// {baseURL}/chat/completions, Authorization: Bearer <clave>) - o mesmo que
-// falan de fábrica moitos outros provedores cando se lles pasa o enderezo
-// axeitado (ver baseURLPorDefecto e os presets do selector no frontend).
-// maxTokens <= 0 omite max_tokens por completo (omitempty, openAIPeticion) -
-// deixa o límite de resposta por defecto do propio modelo, comportamento
-// previo a que isto fose configurable (ver Settings.IAMaxTokens).
-func chamarOpenAICompatible(baseURL, apiKey, model, sistema, peticion string, maxTokens int, cliente *http.Client) (string, error) {
-	if cliente == nil {
-		cliente = iaHTTPClient
-	}
-	corpo := openAIPeticion{
-		Model: model,
-		Messages: []openAIMensaxe{
-			{Role: "system", Content: sistema},
-			{Role: "user", Content: peticion},
-		},
-		MaxTokens: maxTokens,
-	}
-	dados, err := json.Marshal(corpo)
-	if err != nil {
-		return "", err
-	}
-
-	req, err := http.NewRequest(http.MethodPost, baseURL+"/chat/completions", bytes.NewReader(dados))
-	if err != nil {
-		return "", err
-	}
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", "Bearer "+apiKey)
-
-	resp, err := cliente.Do(req)
-	if err != nil {
-		return "", idioma.Errorf("go.ia.sen_conexion", "non se puido contactar coa IA: %w", err)
-	}
-	defer resp.Body.Close()
-
-	corpoResposta, _ := io.ReadAll(resp.Body)
-	var r openAIResposta
-	if err := json.Unmarshal(corpoResposta, &r); err != nil {
-		return "", idioma.Errorf("go.ia.resposta_http", "resposta non válida da IA (HTTP %d)", resp.StatusCode)
-	}
-	if r.Error != nil {
-		return "", idioma.Errorf("go.ia.erro", "erro da IA: %s", r.Error.Message)
-	}
-	if resp.StatusCode != http.StatusOK || len(r.Choices) == 0 {
-		return "", idioma.Errorf("go.ia.sen_resultado", "a IA non devolveu resultado (HTTP %d)", resp.StatusCode)
-	}
-
-	return limparValadosMarkdown(r.Choices[0].Message.Content), nil
+	return limparValadosMarkdown(t.Texto), nil
 }
 
 // limparValadosMarkdown quita un posible cerco ```...``` que a IA engada

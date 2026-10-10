@@ -45,7 +45,7 @@ func resolverAdxuntosMensaxes(msgs []IAMensaxe) []IAMensaxe {
 			}
 			nota, imaxes := describirAdxuntosDaMensaxe(m.Adxuntos, &restantes)
 			m.Texto = strings.TrimSpace(m.Texto + "\n\n" + nota)
-			m.imaxes = imaxes
+			m.ImaxesIA = imaxes
 			out[i] = m
 		case "tool":
 			rs := make([]IAResultado, len(m.Resultados))
@@ -65,7 +65,7 @@ func resolverAdxuntosMensaxes(msgs []IAMensaxe) []IAMensaxe {
 						continue
 					}
 					restantes--
-					rs[j].imaxesIA = append(rs[j].imaxesIA, im)
+					rs[j].ImaxesIA = append(rs[j].ImaxesIA, im)
 				}
 			}
 			m.Resultados = rs

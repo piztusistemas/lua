@@ -108,11 +108,11 @@ func (a *App) IATurnoAsistente(req IATurnoRequest) (IATurno, error) {
 
 func mensaxesLevanImaxes(msgs []IAMensaxe) bool {
 	for _, m := range msgs {
-		if len(m.imaxes) > 0 {
+		if len(m.ImaxesIA) > 0 {
 			return true
 		}
 		for _, r := range m.Resultados {
-			if len(r.imaxesIA) > 0 {
+			if len(r.ImaxesIA) > 0 {
 				return true
 			}
 		}

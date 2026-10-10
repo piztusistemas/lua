@@ -76,9 +76,9 @@ func servidorIAProba(t *testing.T) (*httptest.Server, func() []peticionGravada) 
 // conImaxesIA pon imaxes xa resoltas nunha mensaxe e nos seus resultados (o
 // que fai resolverAdxuntosMensaxes antes de cada turno).
 func conImaxesIA(m IAMensaxe, ims []imaxeIA) IAMensaxe {
-	m.imaxes = ims
+	m.ImaxesIA = ims
 	for i := range m.Resultados {
-		m.Resultados[i].imaxesIA = ims
+		m.Resultados[i].ImaxesIA = ims
 	}
 	return m
 }

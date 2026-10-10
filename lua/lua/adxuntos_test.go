@@ -364,10 +364,10 @@ func TestResolverAdxuntosMensaxes(t *testing.T) {
 	msgs := []IAMensaxe{{Rol: "user", Texto: "mira isto", Adxuntos: []string{img.ID, curto.ID, longo.ID, "a99999", "../../x"}}}
 	out := resolverAdxuntosMensaxes(msgs)
 	m := out[0]
-	if len(m.imaxes) != 1 || m.imaxes[0].Mime != "image/png" && m.imaxes[0].Mime != "image/jpeg" {
-		t.Fatalf("imaxes: %+v", m.imaxes)
+	if len(m.ImaxesIA) != 1 || m.ImaxesIA[0].Mime != "image/png" && m.ImaxesIA[0].Mime != "image/jpeg" {
+		t.Fatalf("imaxes: %+v", m.ImaxesIA)
 	}
-	raw, _ := base64.StdEncoding.DecodeString(m.imaxes[0].B64)
+	raw, _ := base64.StdEncoding.DecodeString(m.ImaxesIA[0].B64)
 	if cfg, _, _ := image.DecodeConfig(bytes.NewReader(raw)); max(cfg.Width, cfg.Height) != imaxeIAMaxLado {
 		t.Errorf("a imaxe non se reduciu: %dx%d", cfg.Width, cfg.Height)
 	}
@@ -377,7 +377,7 @@ func TestResolverAdxuntosMensaxes(t *testing.T) {
 		}
 	}
 	// O historial orixinal non se modifica.
-	if msgs[0].Texto != "mira isto" || len(msgs[0].imaxes) != 0 {
+	if msgs[0].Texto != "mira isto" || len(msgs[0].ImaxesIA) != 0 {
 		t.Error("resolverAdxuntosMensaxes mutou a mensaxe orixinal")
 	}
 }
@@ -394,12 +394,12 @@ func TestResolverAdxuntosLimitaAsImaxesEDeixaAsNovas(t *testing.T) {
 		{Rol: "user", Texto: "nova", Adxuntos: ids[5:]},
 	}
 	out := resolverAdxuntosMensaxes(msgs)
-	if len(out[2].imaxes) != maxImaxesPorPeticion-2+2-0 && len(out[2].imaxes) != 10 {
-		t.Errorf("as novas deberían entrar todas: %d", len(out[2].imaxes))
+	if len(out[2].ImaxesIA) != maxImaxesPorPeticion-2+2-0 && len(out[2].ImaxesIA) != 10 {
+		t.Errorf("as novas deberían entrar todas: %d", len(out[2].ImaxesIA))
 	}
 	total := 0
 	for _, m := range out {
-		total += len(m.imaxes)
+		total += len(m.ImaxesIA)
 	}
 	if total != maxImaxesPorPeticion {
 		t.Errorf("total de imaxes = %d, o máximo é %d", total, maxImaxesPorPeticion)
@@ -419,10 +419,10 @@ func TestResultadosDeFerramentasCoImaxes(t *testing.T) {
 	}
 	out := resolverAdxuntosMensaxes(msgs)
 	r := out[2].Resultados[0]
-	if len(r.imaxesIA) != 1 || !strings.Contains(r.Contido, "non dispoñible") {
+	if len(r.ImaxesIA) != 1 || !strings.Contains(r.Contido, "non dispoñible") {
 		t.Errorf("%+v", r)
 	}
-	if len(msgs[2].Resultados[0].imaxesIA) != 0 || strings.Contains(msgs[2].Resultados[0].Contido, "non dispoñible") {
+	if len(msgs[2].Resultados[0].ImaxesIA) != 0 || strings.Contains(msgs[2].Resultados[0].Contido, "non dispoñible") {
 		t.Error("o historial orixinal mutou")
 	}
 }
@@ -452,11 +452,11 @@ func TestOpenAILevaImaxesDoUsuarioEDasFerramentas(t *testing.T) {
 	defer srv.Close()
 	im := []imaxeIA{{Mime: "image/png", B64: "QUJD"}}
 	msgs := []IAMensaxe{
-		{Rol: "user", Texto: "mira", imaxes: im},
+		{Rol: "user", Texto: "mira", ImaxesIA: im},
 		{Rol: "assistant", Chamadas: []IAChamada{{ID: "c1", Nome: "adxunto_ver", Args: "{}"}}},
-		{Rol: "tool", Resultados: []IAResultado{{ChamadaID: "c1", Nome: "adxunto_ver", Contido: "ok", imaxesIA: im}}},
+		{Rol: "tool", Resultados: []IAResultado{{ChamadaID: "c1", Nome: "adxunto_ver", Contido: "ok", ImaxesIA: im}}},
 	}
-	if _, err := turnoOpenAI(srv.URL, "k", "m", "s", msgs, nil, 0, nil); err != nil {
+	if _, err := chamarIAConversa(Settings{IAProvedor: "openai", IABaseURL: srv.URL, IAAPIKey: "k", IAModel: "m"}, "s", msgs, nil); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -479,11 +479,11 @@ func TestAnthropicLevaImaxesDoUsuarioEDentroDoToolResult(t *testing.T) {
 	defer srv.Close()
 	im := []imaxeIA{{Mime: "image/png", B64: "QUJD"}}
 	msgs := []IAMensaxe{
-		{Rol: "user", Texto: "mira", imaxes: im},
+		{Rol: "user", Texto: "mira", ImaxesIA: im},
 		{Rol: "assistant", Chamadas: []IAChamada{{ID: "c1", Nome: "adxunto_ver", Args: "{}"}}},
-		{Rol: "tool", Resultados: []IAResultado{{ChamadaID: "c1", Nome: "adxunto_ver", Contido: "ok", imaxesIA: im}}},
+		{Rol: "tool", Resultados: []IAResultado{{ChamadaID: "c1", Nome: "adxunto_ver", Contido: "ok", ImaxesIA: im}}},
 	}
-	if _, err := turnoAnthropic(srv.URL, "k", "m", "s", msgs, nil, 100, nil); err != nil {
+	if _, err := chamarIAConversa(Settings{IAProvedor: "anthropic", IABaseURL: srv.URL, IAAPIKey: "k", IAModel: "m", IAMaxTokens: 100}, "s", msgs, nil); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -508,11 +508,11 @@ func TestGeminiLevaImaxesComoInlineData(t *testing.T) {
 	defer srv.Close()
 	im := []imaxeIA{{Mime: "image/jpeg", B64: "QUJD"}}
 	msgs := []IAMensaxe{
-		{Rol: "user", Texto: "mira", imaxes: im},
+		{Rol: "user", Texto: "mira", ImaxesIA: im},
 		{Rol: "assistant", Chamadas: []IAChamada{{ID: "c1", Nome: "adxunto_ver", Args: "{}"}}},
-		{Rol: "tool", Resultados: []IAResultado{{ChamadaID: "c1", Nome: "adxunto_ver", Contido: "ok", imaxesIA: im}}},
+		{Rol: "tool", Resultados: []IAResultado{{ChamadaID: "c1", Nome: "adxunto_ver", Contido: "ok", ImaxesIA: im}}},
 	}
-	if _, err := turnoGemini(srv.URL, "k", "m", "s", msgs, nil, 0, nil); err != nil {
+	if _, err := chamarIAConversa(Settings{IAProvedor: "gemini", IABaseURL: srv.URL, IAAPIKey: "k", IAModel: "m"}, "s", msgs, nil); err != nil {
 		t.Fatal(err)
 	}
 }

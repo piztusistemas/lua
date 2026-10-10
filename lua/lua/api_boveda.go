@@ -245,7 +245,7 @@ func (a *App) rexistrarRutasAPI(s *api.Servidor) {
 	})
 	// IA: a clave nunca sae de Lua; os módulos piden turnos de conversa.
 	s.Rexistrar("GET /ia/estado", permisoIA, func(p *api.Peticion) (any, error) {
-		_, _, _, err := resolverIA(a.settings)
+		err := comprobarIA(a.settings)
 		res := map[string]any{"configurada": err == nil, "modelo": a.settings.IAModel}
 		if err != nil {
 			res["erro"] = err.Error()
@@ -306,7 +306,7 @@ func imaxesDaAPI(msgs []IAMensaxe) error {
 			if n++; n > maxImaxesAPI {
 				return fmt.Errorf("demasiadas imaxes nun turno (máximo %d)", maxImaxesAPI)
 			}
-			msgs[i].imaxes = append(msgs[i].imaxes, im)
+			msgs[i].ImaxesIA = append(msgs[i].ImaxesIA, im)
 		}
 		msgs[i].Imaxes = nil
 	}

@@ -25,3 +25,10 @@ Autopiloto (aprobación do usuario: «Autopiloto»). Rama `refactor-duplicados` 
 - status: complete
 - red: `ia.IAMensaxe` sen campo `Imaxes` (build failed)
 - green: TestIAMensaxeLevaImaxesEnJSON verde; `go test ./...` en edicion verde
+
+## T004 — 2026-10-10
+- status: complete
+- green: TestCaracterizacionClienteIA verde (16 casos idénticos á referencia); `go test ./...` en lua/lua e edicion verdes
+- cambios: Lúa usa edicion/ia (alias de tipos, configDe, chamarIA = 1 volta + limpeza de valados, chamarIAConversa = ia.Turno); `imaxeIA = ia.Imaxe`; novo `ia.Config.Validar()` para `comprobarIA`
+- tests: os que chamaban ás funcións internas borradas (formato de fío por provedor, imaxes, asistente) pasan agora pola entrada pública chamarIA/chamarIAConversa coas mesmas comprobacións; ningún eliminado
+- resultado: ia_client.go + ia_conversa.go de Lúa pasan de ~900 a 180 liñas, sen código de envío propio

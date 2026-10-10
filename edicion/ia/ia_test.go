@@ -94,3 +94,17 @@ func TestIAMensaxeLevaImaxesEnJSON(t *testing.T) {
 		t.Errorf("sen imaxes, o campo non debe saír: %s", b2)
 	}
 }
+
+// Validar dá os mesmos erros ca unha chamada sen clave ou sen modelo, sen
+// chegar á rede: as aplicacións úsano para avisar antes de abrir nada.
+func TestConfigValidar(t *testing.T) {
+	if err := (Config{Modelo: "m"}).Validar(); err == nil || !strings.Contains(err.Error(), "clave") {
+		t.Errorf("sen clave: %v", err)
+	}
+	if err := (Config{APIKey: "k"}).Validar(); err == nil || !strings.Contains(err.Error(), "modelo") {
+		t.Errorf("sen modelo: %v", err)
+	}
+	if err := (Config{APIKey: "k", Modelo: "m"}).Validar(); err != nil {
+		t.Errorf("completa: %v", err)
+	}
+}

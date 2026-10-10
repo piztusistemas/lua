@@ -20,6 +20,7 @@ package main
 import (
 	"bytes"
 	"crypto/rand"
+	"edicion/ia"
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
@@ -477,10 +478,7 @@ func redimensionarImaxe(datos []byte, maxLado int, formato string) (out []byte, 
 }
 
 // imaxeIA é unha imaxe lista para mandarlle á IA (base64 + tipo).
-type imaxeIA struct {
-	Mime string
-	B64  string
-}
+type imaxeIA = ia.Imaxe
 
 // imaxeDoAdxuntoParaIA le unha imaxe do almacén, reducida para a IA.
 func imaxeDoAdxuntoParaIA(id string) (imaxeIA, Adxunto, error) {

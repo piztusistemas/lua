@@ -312,7 +312,7 @@ func resolverCon(s Settings, m *xerar.Motor, p PedidoResolverProblema) (Resultad
 	sistema := sistemaResolverProblema(p.Modo, m.TenMaxima(), p.Idioma)
 	primeira := IAMensaxe{Rol: "user", Texto: mensaxeProblema(p, actual)}
 	if im, ok := imaxeParaIA(p.Problema.Imaxe); ok {
-		primeira.imaxes = []imaxeIA{im}
+		primeira.ImaxesIA = []imaxeIA{im}
 	}
 	msgs := []IAMensaxe{primeira}
 	var res ResultadoResolverProblema

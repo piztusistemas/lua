@@ -63,6 +63,13 @@ func BaseURLPorDefecto(provedor string) string {
 	}
 }
 
+// Validar comproba que hai clave e modelo, cos mesmos erros que daría unha
+// chamada, sen tocar a rede.
+func (c Config) Validar() error {
+	_, _, _, err := c.resolver()
+	return err
+}
+
 func (c Config) resolver() (string, string, *http.Client, error) {
 	if strings.TrimSpace(c.APIKey) == "" {
 		return "", "", nil, idioma.Errorf("go.ia.sen_clave", "falta a clave da API de IA (configúraa en Opcións)")

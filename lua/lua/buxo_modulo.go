@@ -93,7 +93,7 @@ func (a *App) BuxoEstadoActual() BuxoEstado {
 		Activo: a.buxoActivo(), Instalado: m.Instalado, Version: m.Version, VersionRemota: m.VersionRemota,
 		Descargando: m.Descargando, Erro: m.Erro,
 	}
-	_, _, _, err := resolverIA(a.settings)
+	err := comprobarIA(a.settings)
 	e.IAConfigurada = err == nil
 	return e
 }
@@ -152,7 +152,7 @@ func (a *App) abrirBuxo(raiz, materia, id string) error {
 	if !a.buxoActivo() {
 		return fmt.Errorf("o módulo Buxo está desactivado (actívao en Opcións)")
 	}
-	if _, _, _, err := resolverIA(a.settings); err != nil {
+	if err := comprobarIA(a.settings); err != nil {
 		return idioma.Errorf("go.buxo.sen_ia", "Buxo precisa unha IA configurada en Opcións: %w", err)
 	}
 	dir := a.dirBuxoInstalado()

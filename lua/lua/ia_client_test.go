@@ -8,9 +8,26 @@ import (
 	"testing"
 )
 
-// TestChamarGeminiFormatoFio comproba que chamarGemini fala o formato de
-// fío exacto que espera a API de Gemini (URL .../models/<model>:generate
-// Content, cabeceira x-goog-api-key) e que sabe ler unha resposta real.
+// Os formatos de fío viven en edicion/ia; estes tests comproban, a través
+// de chamarIA (a entrada que usa Lúa), que cada provedor recibe a forma que
+// espera a súa API. A caracterización (ia_caracterizacion_test.go) fixa
+// ademais cada byte do que se envía.
+
+func corpoJSON(t *testing.T, r *http.Request) map[string]any {
+	t.Helper()
+	var c map[string]any
+	if err := json.NewDecoder(r.Body).Decode(&c); err != nil {
+		t.Fatalf("corpo non válido: %v", err)
+	}
+	return c
+}
+
+func settingsProba(provedor, url string) Settings {
+	return Settings{IAProvedor: provedor, IABaseURL: url, IAAPIKey: "clave-proba", IAModel: "modelo-proba"}
+}
+
+// TestChamarGeminiFormatoFio: URL .../models/<model>:generateContent,
+// cabeceira x-goog-api-key e systemInstruction.
 func TestChamarGeminiFormatoFio(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/models/modelo-proba:generateContent" {
@@ -19,32 +36,22 @@ func TestChamarGeminiFormatoFio(t *testing.T) {
 		if r.Header.Get("x-goog-api-key") != "clave-proba" {
 			t.Errorf("falta ou é incorrecta a cabeceira x-goog-api-key: %q", r.Header.Get("x-goog-api-key"))
 		}
-		var corpo geminiPeticion
-		if err := json.NewDecoder(r.Body).Decode(&corpo); err != nil {
-			t.Fatalf("corpo non válido: %v", err)
+		si, _ := corpoJSON(t, r)["systemInstruction"].(map[string]any)
+		partes, _ := si["parts"].([]any)
+		if len(partes) == 0 || partes[0].(map[string]any)["text"] != "sistema-proba" {
+			t.Errorf("systemInstruction non chegou coma se esperaba: %+v", si)
 		}
-		if corpo.SystemInstruction == nil || corpo.SystemInstruction.Parts[0].Text != "sistema-proba" {
-			t.Errorf("systemInstruction non chegou coma se esperaba: %+v", corpo.SystemInstruction)
-		}
-		json.NewEncoder(w).Encode(geminiResposta{
-			Candidates: []struct {
-				Content geminiContido `json:"content"`
-			}{{Content: geminiContido{Parts: []geminiParte{{Text: "resposta da IA"}}}}},
-		})
+		io.WriteString(w, `{"candidates":[{"content":{"parts":[{"text":"resposta da IA"}]}}]}`)
 	}))
 	defer srv.Close()
-
-	texto, err := chamarGemini(srv.URL, "clave-proba", "modelo-proba", "sistema-proba", "peticion-proba", 0, nil)
-	if err != nil {
-		t.Fatalf("chamarGemini: %v", err)
-	}
-	if texto != "resposta da IA" {
-		t.Errorf("resposta = %q, quería %q", texto, "resposta da IA")
+	texto, err := chamarIA(settingsProba("gemini", srv.URL), "sistema-proba", "peticion-proba")
+	if err != nil || texto != "resposta da IA" {
+		t.Errorf("resposta = %q, %v", texto, err)
 	}
 }
 
-// TestChamarAnthropicFormatoFio comproba o formato de fío de Claude:
-// POST .../messages, cabeceiras x-api-key + anthropic-version (non Bearer).
+// TestChamarAnthropicFormatoFio: POST .../messages, cabeceiras x-api-key +
+// anthropic-version (non Bearer) e o sistema nun bloque con cache_control.
 func TestChamarAnthropicFormatoFio(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/messages" {
@@ -56,40 +63,28 @@ func TestChamarAnthropicFormatoFio(t *testing.T) {
 		if r.Header.Get("anthropic-version") == "" {
 			t.Error("falta a cabeceira anthropic-version")
 		}
-		var corpo anthropicPeticion
-		if err := json.NewDecoder(r.Body).Decode(&corpo); err != nil {
-			t.Fatalf("corpo non válido: %v", err)
+		system, _ := corpoJSON(t, r)["system"].([]any)
+		if len(system) != 1 {
+			t.Fatalf("system = %+v, quería exactamente un bloque", system)
 		}
-		if len(corpo.System) != 1 {
-			t.Fatalf("system = %+v, quería exactamente un bloque", corpo.System)
+		b := system[0].(map[string]any)
+		if b["text"] != "sistema-proba" {
+			t.Errorf("system[0].text = %v", b["text"])
 		}
-		if corpo.System[0].Text != "sistema-proba" {
-			t.Errorf("system[0].text = %q, quería %q", corpo.System[0].Text, "sistema-proba")
+		if cc, _ := b["cache_control"].(map[string]any); cc["type"] != "ephemeral" {
+			t.Errorf("system[0].cache_control = %+v, quería {ephemeral} (para aforrar tokens en chamadas repetidas)", b["cache_control"])
 		}
-		if corpo.System[0].CacheControl == nil || corpo.System[0].CacheControl.Type != "ephemeral" {
-			t.Errorf("system[0].cache_control = %+v, quería {ephemeral} (para aforrar tokens en chamadas repetidas)", corpo.System[0].CacheControl)
-		}
-		json.NewEncoder(w).Encode(anthropicResposta{
-			Content: []struct {
-				Type string `json:"type"`
-				Text string `json:"text"`
-			}{{Type: "text", Text: "resposta da IA"}},
-		})
+		io.WriteString(w, `{"content":[{"type":"text","text":"resposta da IA"}]}`)
 	}))
 	defer srv.Close()
-
-	texto, err := chamarAnthropic(srv.URL, "clave-proba", "modelo-proba", "sistema-proba", "peticion-proba", 0, nil)
-	if err != nil {
-		t.Fatalf("chamarAnthropic: %v", err)
-	}
-	if texto != "resposta da IA" {
-		t.Errorf("resposta = %q, quería %q", texto, "resposta da IA")
+	texto, err := chamarIA(settingsProba("anthropic", srv.URL), "sistema-proba", "peticion-proba")
+	if err != nil || texto != "resposta da IA" {
+		t.Errorf("resposta = %q, %v", texto, err)
 	}
 }
 
-// TestChamarOpenAICompatibleFormatoFio comproba o formato "chat
-// completions" - o que fala tanto a propia OpenAI coma Qwen/Perplexity/
-// calquera outro "compatible con OpenAI" (só cambia o enderezo).
+// TestChamarOpenAICompatibleFormatoFio: formato "chat completions", o que
+// fala tanto a propia OpenAI coma calquera «compatible con OpenAI».
 func TestChamarOpenAICompatibleFormatoFio(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/chat/completions" {
@@ -98,31 +93,16 @@ func TestChamarOpenAICompatibleFormatoFio(t *testing.T) {
 		if r.Header.Get("Authorization") != "Bearer clave-proba" {
 			t.Errorf("falta ou é incorrecta a cabeceira Authorization: %q", r.Header.Get("Authorization"))
 		}
-		var corpo openAIPeticion
-		if err := json.NewDecoder(r.Body).Decode(&corpo); err != nil {
-			t.Fatalf("corpo non válido: %v", err)
+		msgs, _ := corpoJSON(t, r)["messages"].([]any)
+		if len(msgs) != 2 || msgs[0].(map[string]any)["role"] != "system" || msgs[1].(map[string]any)["role"] != "user" {
+			t.Errorf("messages non teñen a forma esperada: %+v", msgs)
 		}
-		if len(corpo.Messages) != 2 || corpo.Messages[0].Role != "system" || corpo.Messages[1].Role != "user" {
-			t.Errorf("messages non teñen a forma esperada: %+v", corpo.Messages)
-		}
-		json.NewEncoder(w).Encode(openAIResposta{
-			Choices: []struct {
-				Message struct {
-					Content string `json:"content"`
-				} `json:"message"`
-			}{{Message: struct {
-				Content string `json:"content"`
-			}{Content: "resposta da IA"}}},
-		})
+		io.WriteString(w, `{"choices":[{"message":{"content":"resposta da IA"}}]}`)
 	}))
 	defer srv.Close()
-
-	texto, err := chamarOpenAICompatible(srv.URL, "clave-proba", "modelo-proba", "sistema-proba", "peticion-proba", 0, nil)
-	if err != nil {
-		t.Fatalf("chamarOpenAICompatible: %v", err)
-	}
-	if texto != "resposta da IA" {
-		t.Errorf("resposta = %q, quería %q", texto, "resposta da IA")
+	texto, err := chamarIA(settingsProba("openai", srv.URL), "sistema-proba", "peticion-proba")
+	if err != nil || texto != "resposta da IA" {
+		t.Errorf("resposta = %q, %v", texto, err)
 	}
 }
 

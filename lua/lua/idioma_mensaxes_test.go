@@ -73,7 +73,7 @@ func TestFicheiroNonValidoEnCastelan(t *testing.T) {
 // o erro do asistente está en inglés.
 func TestIASenClaveEnIngles(t *testing.T) {
 	conIdioma(t, "en")
-	_, _, _, err := resolverIA(Settings{})
+	err := comprobarIA(Settings{})
 	if err == nil {
 		t.Fatal("sen clave de API debería dar erro")
 	}
