@@ -10,7 +10,7 @@
   <Identity 
     Name="gal.omeu.piztu.lua-installer"
     Publisher="CN=Piztu"
-    Version="26.10.3.0" 
+    Version="26.10.4.0" 
     ProcessorArchitecture="arm64" />
   
   <Properties>

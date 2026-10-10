@@ -8,7 +8,7 @@
   "frontend:dev:serverUrl": "auto",
   "info": {
     "productName": "Buxo",
-    "productVersion": "26.10.3",
+    "productVersion": "26.10.4",
     "comments": "Bóveda de coñecemento a partir de PDF"
   }
 }

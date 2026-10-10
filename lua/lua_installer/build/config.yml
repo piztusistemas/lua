@@ -12,7 +12,7 @@ info:
   description: "Instalador de Lua e das súas dependencias (LaTeX)" # The application description
   copyright: "Copyright © Piztu" # Copyright text
   comments: "Instalador de Lua — xerador de informes para centros educativos (LaTeX)" # Comments
-  version: "26.10.3" # The application version
+  version: "26.10.4" # The application version
   # cfBundleIconName: "appicon" # The macOS icon name in Assets.car icon bundles (optional)
   #                               # Should match the name of your .icon file without the extension
   #                               # If not set and Assets.car exists, defaults to "appicon"

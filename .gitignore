@@ -38,3 +38,6 @@
 /lua/lua/lua-wails
 /lua/lua_installer/dist/
 Thumbs.db
+
+# Cartafoles de traballo illados (git worktree)
+/.worktrees/
