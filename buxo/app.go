@@ -117,6 +117,9 @@ func (a *App) refrescarIA(ctx context.Context) {
 }
 
 // Estado devolve o estado actual.
+// Idioma devolve o idioma da interface (o de Lua), para o frontend.
+func (a *App) Idioma() string { return idioma.Actual() }
+
 func (a *App) Estado() EstadoApp {
 	a.mu.Lock()
 	defer a.mu.Unlock()
@@ -183,7 +186,7 @@ func (a *App) EscollerPDFs() (int, error) {
 		dialogo = dialogo.AttachToWindow(w)
 	}
 	rutas, err := dialogo.
-		SetTitle("Escolle ficheiros").
+		SetTitle(idioma.T("dialogo.escoller", "Escolle ficheiros")).
 		AddFilter("PDF, imaxes, Markdown e documentos", patronsAceptados()).
 		AddFilter("Ficheiros PDF (*.pdf)", "*.pdf;*.PDF").
 		PromptForMultipleSelection()

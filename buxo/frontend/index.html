@@ -12,9 +12,9 @@
         <div id="marca"><span id="marca-nome">Buxo</span><span id="materia"></span></div>
         <div id="cabeceira-accions">
             <span id="estado-ia" class="chip"></span>
-            <button id="btn-construir" class="primario" title="A IA le os documentos convertidos e constrúe a wiki">Construír a bóveda</button>
-            <button id="btn-parar" class="perigo" hidden>Parar</button>
-            <button id="btn-licenza" title="Licenza de Buxo (MIT) e avisos de terceiros">Licenza</button>
+            <button id="btn-construir" class="primario" data-i18n="ui.construir" data-i18n-title="ui.estado.listo" title="A IA le os documentos convertidos e constrúe a wiki">Construír a bóveda</button>
+            <button id="btn-parar" class="perigo" hidden data-i18n="ui.parar">Parar</button>
+            <button id="btn-licenza" data-i18n="ui.licenza" data-i18n-title="ui.licenza.title" title="Licenza de Buxo (MIT) e avisos de terceiros">Licenza</button>
         </div>
     </header>
 
@@ -22,52 +22,52 @@
 
     <main id="zonas">
         <section class="zona" id="zona-seleccion">
-            <h2>Seleccionar ficheiros</h2>
+            <h2 data-i18n="ui.seleccion">Seleccionar ficheiros</h2>
             <div class="zona-corpo">
-                <button id="btn-pdfs" class="grande">📄 Engadir ficheiros do computador…</button>
-                <p class="axuda">PDF, imaxes (fotos de exames, esquemas), Markdown, Word, PowerPoint, Excel, HTML ou EPUB.</p>
-                <label for="modo" class="rotulo">Fórmulas, debuxos e documentos escaneados</label>
-                <select id="modo" title="Como se le cada ficheiro">
-                    <option value="auto">Automático: a IA le as páxinas só se ten fórmulas, debuxos ou está escaneado</option>
-                    <option value="vision">Sempre coa IA: o mellor resultado (máis lento e custa máis)</option>
-                    <option value="texto">Só texto: gratis e rápido, pero pérdense fórmulas e debuxos</option>
+                <button id="btn-pdfs" class="grande" data-i18n="ui.engadir_ficheiros">📄 Engadir ficheiros do computador…</button>
+                <p class="axuda" data-i18n="ui.formatos">PDF, imaxes (fotos de exames, esquemas), Markdown, Word, PowerPoint, Excel, HTML ou EPUB.</p>
+                <label for="modo" class="rotulo" data-i18n="ui.modo.rotulo">Fórmulas, debuxos e documentos escaneados</label>
+                <select id="modo" data-i18n-title="ui.modo.title" title="Como se le cada ficheiro">
+                    <option value="auto" data-i18n="ui.modo.auto">Automático: a IA le as páxinas só se ten fórmulas, debuxos ou está escaneado</option>
+                    <option value="vision" data-i18n="ui.modo.vision">Sempre coa IA: o mellor resultado (máis lento e custa máis)</option>
+                    <option value="texto" data-i18n="ui.modo.texto">Só texto: gratis e rápido, pero pérdense fórmulas e debuxos</option>
                 </select>
-                <label for="urls" class="rotulo">Ou URL (dun PDF ou dunha páxina onde buscalos)</label>
-                <textarea id="urls" rows="5" spellcheck="false" placeholder="https://exemplo.org/documento.pdf&#10;https://exemplo.org/recursos/"></textarea>
-                <label for="instrucion" class="rotulo">Instrución para filtrar (opcional): que PDF da páxina queres</label>
-                <textarea id="instrucion" rows="3" placeholder="Ex.: só os exames de 2023 en adiante; ignora as solucións"></textarea>
-                <button id="btn-urls" class="grande">🌐 Engadir URL</button>
+                <label for="urls" class="rotulo" data-i18n="ui.urls.rotulo">Ou URL (dun PDF ou dunha páxina onde buscalos)</label>
+                <textarea id="urls" rows="5" spellcheck="false" data-i18n-placeholder="ui.urls.ph" placeholder="https://exemplo.org/documento.pdf&#10;https://exemplo.org/recursos/"></textarea>
+                <label for="instrucion" class="rotulo" data-i18n="ui.instrucion.rotulo">Instrución para filtrar (opcional): que PDF da páxina queres</label>
+                <textarea id="instrucion" rows="3" data-i18n-placeholder="ui.instrucion.ph" placeholder="Ex.: só os exames de 2023 en adiante; ignora as solucións"></textarea>
+                <button id="btn-urls" class="grande" data-i18n="ui.engadir_urls">🌐 Engadir URL</button>
                 <p class="axuda" id="axuda-urls"></p>
             </div>
         </section>
         <section class="zona" id="zona-cola">
-            <h2>Ficheiros a tratar <span id="conta" class="chip"></span></h2>
+            <h2><span data-i18n="ui.cola">Ficheiros a tratar</span> <span id="conta" class="chip"></span></h2>
             <div class="zona-corpo" id="cola"></div>
         </section>
     </main>
 
-    <section id="progreso" hidden aria-label="Progreso da construción">
+    <section id="progreso" hidden data-i18n-aria-label="ui.progreso.aria" aria-label="Progreso da construción">
         <div class="prog-total">
-            <strong id="prog-titulo">Progreso</strong>
+            <strong id="prog-titulo" data-i18n="ui.progreso">Progreso</strong>
             <div id="prog-segmentos" class="prog-segmentos" role="progressbar" aria-valuemin="0" aria-valuemax="100"></div>
             <span id="prog-pct" class="prog-pct"></span>
         </div>
         <div id="prog-lista" class="prog-lista"></div>
     </section>
 
-    <div id="licenza" class="superposicion" hidden role="dialog" aria-modal="true" aria-label="Licenza">
+    <div id="licenza" class="superposicion" hidden role="dialog" aria-modal="true" data-i18n-aria-label="ui.licenza" aria-label="Licenza">
         <div class="caixa-licenza">
-            <header><strong>Licenza</strong><button id="btn-licenza-pechar" aria-label="Pechar">✕</button></header>
+            <header><strong data-i18n="ui.licenza">Licenza</strong><button id="btn-licenza-pechar" data-i18n-aria-label="ui.pechar" aria-label="Pechar">✕</button></header>
             <pre id="licenza-texto"></pre>
         </div>
     </div>
 
     <div id="log-panel">
         <div class="log-header">
-            <span>▸ <span>Rexistro</span></span>
+            <span>▸ <span data-i18n="ui.rexistro">Rexistro</span></span>
             <div class="log-header-actions">
-                <button id="btn-clear-log" title="Limpar o rexistro">⌫</button>
-                <button id="btn-toggle-log" title="Minimizar/ampliar">–</button>
+                <button id="btn-clear-log" data-i18n-title="ui.limpar_rexistro" title="Limpar o rexistro">⌫</button>
+                <button id="btn-toggle-log" data-i18n-title="ui.minimizar" title="Minimizar/ampliar">–</button>
             </div>
         </div>
         <div id="log-output"></div>

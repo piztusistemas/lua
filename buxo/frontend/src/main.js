@@ -1,8 +1,9 @@
 import { Events } from '@wailsio/runtime'
 import {
-  Estado, Cola, Historial, Tarefas, LicenzaTexto, EscollerPDFs, EngadirURLs, Quitar, Construir, Parar, CambiarModo,
+  Estado, Cola, Historial, Tarefas, LicenzaTexto, EscollerPDFs, EngadirURLs, Quitar, Construir, Parar, CambiarModo, Idioma,
 } from '../bindings/buxo/app.js'
 import { textoEstado, textoAxudaURLs, resumoProgreso, fraccionTarefa } from './util.js'
+import { t, fixarIdioma, idiomaActual, aplicarTraducions } from './i18n.js'
 
 const $ = (id) => document.getElementById(id)
 const el = (tag, props = {}, ...fillos) => {
@@ -23,7 +24,7 @@ function pintarEstado(e) {
   estado = e
   $('materia').textContent = e.materia || ''
   const ia = $('estado-ia')
-  ia.textContent = e.iaConfigurada ? `IA: ${e.modelo}` : 'IA sen configurar'
+  ia.textContent = e.iaConfigurada ? t('ui.ia_modelo', 'IA: {modelo}', { modelo: e.modelo }) : t('ui.ia_sen_configurar', 'IA sen configurar')
   ia.className = 'chip ' + (e.iaConfigurada ? 'on' : 'off')
   const aviso = $('aviso')
   if (e.erro && !e.iaConfigurada) {
@@ -34,7 +35,7 @@ function pintarEstado(e) {
   }
   $('btn-construir').hidden = e.construindo
   ia.classList.toggle('traballando', !!e.construindo)
-  if (e.construindo) ia.textContent = `IA: ${e.modelo} · traballando…`
+  if (e.construindo) ia.textContent = t('ui.ia_traballando', 'IA: {modelo} · traballando…', { modelo: e.modelo })
   $('btn-parar').hidden = !e.construindo
   $('btn-construir').disabled = !e.iaConfigurada || e.fontes === 0
   $('btn-construir').title = textoEstado(e)
@@ -44,7 +45,13 @@ function pintarEstado(e) {
   $('btn-urls').disabled = !podeEngadir
 }
 
-const ETIQUETA = { pendente: 'Pendente', descargando: 'Descargando', convertendo: 'Convertendo', feito: 'Feito', erro: 'Erro' }
+const ETIQUETA = () => ({
+  pendente: t('ui.est.pendente', 'Pendente'),
+  descargando: t('ui.est.descargando', 'Descargando'),
+  convertendo: t('ui.est.convertendo', 'Convertendo'),
+  feito: t('ui.est.feito', 'Feito'),
+  erro: t('ui.est.erro', 'Erro'),
+})
 
 function pintarCola(items) {
   const cola = $('cola')
@@ -52,23 +59,28 @@ function pintarCola(items) {
   const feitos = items.filter((i) => i.estado === 'feito').length
   $('conta').textContent = items.length ? `${feitos}/${items.length}` : ''
   if (!items.length) {
-    cola.append(el('div', { class: 'baleiro', text: 'Aínda non hai ficheiros. Engade PDF, imaxes, Markdown ou URL á esquerda: converteranse a Markdown (coas fórmulas en LaTeX) automaticamente.' }))
+    cola.append(el('div', { class: 'baleiro', text: t('ui.cola.baleira', 'Aínda non hai ficheiros. Engade PDF, imaxes, Markdown ou URL á esquerda: converteranse a Markdown (coas fórmulas en LaTeX) automaticamente.') }))
     return
   }
   for (const it of items) {
     const nome = it.nome || it.fonte
     cola.append(el('div', { class: 'fila' },
-      el('span', { class: 'est ' + it.estado, text: ETIQUETA[it.estado] || it.estado }),
+      el('span', { class: 'est ' + it.estado, text: ETIQUETA()[it.estado] || it.estado }),
       el('div', { class: 'fila-nome' },
         el('strong', { text: nome, title: it.fonte }),
         it.erro ? el('small', { class: 'erro', text: it.erro }) : el('small', { text: it.detalle || (it.orixe === 'url' ? it.fonte : '') }),
         // Leuno a IA (fórmulas, debuxos, escaneado): dise por que.
-        it.vision && !it.erro ? el('small', { class: 'vision', text: `✦ Lido coa IA: ${it.vision}` }) : ''),
-      el('button', { text: '✕', title: 'Quitar da lista', onclick: () => Quitar(it.id) })))
+        it.vision && !it.erro ? el('small', { class: 'vision', text: t('ui.lido_ia', '✦ Lido coa IA: {motivo}', { motivo: it.vision }) }) : ''),
+      el('button', { text: '✕', title: t('ui.quitar', 'Quitar da lista'), onclick: () => Quitar(it.id) })))
   }
 }
 
-const ETQ_TAREFA = { pendente: 'Pendente', executando: 'A IA traballa', feita: 'Feita', erro: 'Erro' }
+const ETQ_TAREFA = () => ({
+  pendente: t('ui.tarefa.pendente', 'Pendente'),
+  executando: t('ui.tarefa.executando', 'A IA traballa'),
+  feita: t('ui.tarefa.feita', 'Feita'),
+  erro: t('ui.tarefa.erro', 'Erro'),
+})
 
 // Progreso múltiple: unha barra total en segmentos (un por tarefa, coa cor do
 // seu estado) e, debaixo, unha barra por tarefa co seu camiño.
@@ -77,17 +89,18 @@ function pintarTarefas(tarefas) {
   sec.hidden = !tarefas.length
   if (!tarefas.length) return
   const r = resumoProgreso(tarefas)
-  $('prog-titulo').textContent = `Progreso · ${r.rematadas}/${r.total} tarefas` + (r.erros ? ` · ${r.erros} con erro` : '')
+  $('prog-titulo').textContent = t('ui.progreso.titulo', 'Progreso · {rematadas}/{total} tarefas', { rematadas: r.rematadas, total: r.total }) +
+    (r.erros ? t('ui.progreso.erros', ' · {erros} con erro', { erros: r.erros }) : '')
   $('prog-pct').textContent = `${r.pct} %`
   const seg = $('prog-segmentos')
   seg.setAttribute('aria-valuenow', String(r.pct))
-  seg.replaceChildren(...tarefas.map((t) => el('span', { class: 'prog-seg ' + t.estado, title: `${t.nome} · ${ETQ_TAREFA[t.estado]}` })))
+  seg.replaceChildren(...tarefas.map((ta) => el('span', { class: 'prog-seg ' + ta.estado, title: `${ta.nome} · ${ETQ_TAREFA()[ta.estado]}` })))
   const lista = $('prog-lista')
   const abaixo = lista.scrollHeight - lista.scrollTop - lista.clientHeight < 40
-  lista.replaceChildren(...tarefas.map((t) => el('div', { class: 'prog-fila ' + t.estado },
-    el('span', { class: 'prog-nome', text: t.nome, title: t.erro || t.nome }),
-    el('div', { class: 'prog-barra' }, el('span', { class: 'prog-enche', style: `width:${Math.round(fraccionTarefa(t) * 100)}%` })),
-    el('span', { class: 'prog-estado', text: t.estado === 'executando' ? `${ETQ_TAREFA[t.estado]} · ${t.pasos} pasos` : ETQ_TAREFA[t.estado] }))))
+  lista.replaceChildren(...tarefas.map((ta) => el('div', { class: 'prog-fila ' + ta.estado },
+    el('span', { class: 'prog-nome', text: ta.nome, title: ta.erro || ta.nome }),
+    el('div', { class: 'prog-barra' }, el('span', { class: 'prog-enche', style: `width:${Math.round(fraccionTarefa(ta) * 100)}%` })),
+    el('span', { class: 'prog-estado', text: ta.estado === 'executando' ? t('ui.tarefa.pasos', '{estado} · {pasos} pasos', { estado: ETQ_TAREFA()[ta.estado], pasos: ta.pasos }) : ETQ_TAREFA()[ta.estado] }))))
   // Segue a tarefa que corre, se non se estaba lendo máis arriba.
   const activa = lista.querySelector('.prog-fila.executando')
   if (activa && abaixo) activa.scrollIntoView({ block: 'nearest' })
@@ -104,7 +117,7 @@ function pintarLinha(l) {
 
 async function erroVisible(f) {
   try { return await f() } catch (e) {
-    pintarLinha({ hora: new Date().toLocaleTimeString('gl'), nivel: 'erro', texto: e?.message || String(e) })
+    pintarLinha({ hora: new Date().toLocaleTimeString(idiomaActual()), nivel: 'erro', texto: e?.message || String(e) })
   }
 }
 
@@ -146,6 +159,8 @@ Events.On('buxo:estado', (e) => pintarEstado(e.data))
 Events.On('buxo:tarefas', (e) => pintarTarefas(e.data || []))
 
 ;(async () => {
+  try { fixarIdioma(await Idioma()) } catch { /* sen idioma: galego */ }
+  aplicarTraducions()
   pintarEstado(await Estado())
   pintarCola(await Cola())
   pintarTarefas(await Tarefas())

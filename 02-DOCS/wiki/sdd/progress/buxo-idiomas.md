@@ -41,3 +41,10 @@ Fallbacks: sen config.yaml (ordes da constitución); sen subaxentes.
 - decision: motivoVision devolve un erro traducible (nil = sen motivo) e `fallar` recibe un erro: así o panel e a cola van no idioma de Lua e buxo.log en galego; TestMotivoVision adaptado ao tipo novo, mesmas comprobacións
 - decision: `desc` («páxina N de M») segue en galego na petición á IA; `descVisible` traducible no progreso, no rexistro e nos erros
 - nota: os erros que só le a IA (ferramentas, recadro, «sen IA») seguen con fmt.Errorf en galego
+
+## T006 — 2026-10-10
+- status: complete
+- red: `npx vitest run src/i18n.test.js` → non existe ./i18n.js (antes: faltaba jsdom; instalado coma en Lua)
+- green: 8/8 tests vitest; `npm run build` ok; `go test ./...` e `go vet` en buxo verdes; bindings rexenerados con `Idioma()`
+- files: frontend/src/{i18n.js,i18n.test.js,main.js,util.js}, frontend/index.html (24 data-i18n*), frontend/vitest.config.js, frontend/package.json (jsdom), app.go (Idioma(), título do diálogo), idiomas/*.json (48 claves ui.*/dialogo.*)
+- decision: i18n.js importa só es/en/pt; o galego vai no propio código (t(clave, galego)), coma en Lua
