@@ -31,6 +31,14 @@ describe('deseñador de formularios', () => {
     expect(document.querySelector('.dis-overlay')).toBeNull()
   })
 
+  it('a paleta vai na orde pedida e destaca o campo de cálculo', async () => {
+    abrirDisenador({ esquema: null, api })
+    expect(qa('.dis-tipo').map((b) => b.dataset.tipo)).toEqual(
+      ['seccion', 'taboa', 'texto', 'textolongo', 'numero', 'data', 'escolla', 'verificacion', 'imaxe', 'problemas'])
+    expect(qa('.dis-tipo--destacado').map((b) => b.dataset.tipo)).toEqual(['problemas'])
+    expect(tipo('problemas').textContent).toBe('Cálculo')
+  })
+
   it('non garda sen nome nin cun campo sen etiqueta, e di por que', async () => {
     const p = abrirDisenador({ esquema: null, api })
     tipo('texto').click()

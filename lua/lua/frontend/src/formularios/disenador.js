@@ -108,7 +108,13 @@ export function abrirDisenador({ t: tIn, esquema, api, confirmar, obterDatos = (
     paleta.append(el('h3', { class: 'dis-tit', text: t('formularios.dis.campos', 'Campos') }),
       el('p', { class: 'dis-axuda', text: t('formularios.dis.campos.axuda', 'Arrastra un campo ao formulario, ou preme nel para engadilo ao final.') }))
     for (const tipo of TIPOS) {
-      const b = el('button', { type: 'button', class: 'dis-tipo', 'data-tipo': tipo, html: `${svgTipo(tipo)}<span>${nome(tipo)}</span>` })
+      // O de cálculo (tipo interno «problemas»: problemas, contas, fórmulas
+      // con valores que calcula Maxima) vai destacado e cunha explicación.
+      const destacado = tipo === 'problemas'
+      const b = el('button', {
+        type: 'button', class: 'dis-tipo' + (destacado ? ' dis-tipo--destacado' : ''), 'data-tipo': tipo, html: `${svgTipo(tipo)}<span>${nome(tipo)}</span>`,
+        title: destacado ? t('formularios.tipo.problemas.title', 'Problemas, contas e fórmulas (matemáticas, física, tecnoloxía…) con valores que calcula Lúa') : undefined,
+      })
       b.addEventListener('click', () => engadir(tipo, est.campos.length))
       b.addEventListener('pointerdown', (ev) => iniciarArrastre(ev, {
         texto: nome(tipo),

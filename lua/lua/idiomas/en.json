@@ -665,6 +665,8 @@
   "formularios.tipo.imaxe": "Image",
   "formularios.tipo.taboa": "Table",
   "formularios.tipo.seccion": "Section",
+  "formularios.tipo.problemas": "Calculation",
+  "formularios.tipo.problemas.title": "Problems, sums and formulas (maths, physics, technology…) with values that Lúa calculates",
   "formularios.icona.formulario": "Document",
   "formularios.icona.lista": "List",
   "formularios.icona.calendario": "Calendar",

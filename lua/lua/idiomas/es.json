@@ -665,6 +665,8 @@
   "formularios.tipo.imaxe": "Imagen",
   "formularios.tipo.taboa": "Tabla",
   "formularios.tipo.seccion": "Sección",
+  "formularios.tipo.problemas": "Cálculo",
+  "formularios.tipo.problemas.title": "Problemas, cuentas y fórmulas (matemáticas, física, tecnología…) con valores que calcula Lúa",
   "formularios.icona.formulario": "Documento",
   "formularios.icona.lista": "Lista",
   "formularios.icona.calendario": "Calendario",

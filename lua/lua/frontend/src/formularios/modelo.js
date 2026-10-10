@@ -5,14 +5,16 @@
 //
 // Todo é inmutable: cada función devolve un obxecto novo.
 
-export const TIPOS = ['texto', 'textolongo', 'numero', 'data', 'escolla', 'verificacion', 'imaxe', 'taboa', 'problemas', 'seccion']
+// Orde da paleta do deseñador: primeiro a estrutura (sección, táboa), despois
+// os datos simples e ao final o cálculo (o campo «problemas»), destacado.
+export const TIPOS = ['seccion', 'taboa', 'texto', 'textolongo', 'numero', 'data', 'escolla', 'verificacion', 'imaxe', 'problemas']
 // Tipos que poden ser columna dunha táboa (Go valida o mesmo).
 export const TIPOS_COLUMNA = ['texto', 'numero', 'data', 'escolla', 'verificacion']
 
 // Nome por defecto de cada tipo (a interface traduce con t('formularios.tipo.<tipo>')).
 export const NOME_TIPO = {
   texto: 'Texto curto', textolongo: 'Texto longo', numero: 'Número', data: 'Data', escolla: 'Escolla',
-  verificacion: 'Si / Non', imaxe: 'Imaxe', taboa: 'Táboa', problemas: 'Problemas', seccion: 'Sección',
+  verificacion: 'Si / Non', imaxe: 'Imaxe', taboa: 'Táboa', problemas: 'Cálculo', seccion: 'Sección',
 }
 
 const SEN_ACENTO = { á: 'a', à: 'a', â: 'a', ã: 'a', ä: 'a', é: 'e', è: 'e', ê: 'e', ë: 'e', í: 'i', ì: 'i', î: 'i', ï: 'i', ó: 'o', ò: 'o', ô: 'o', õ: 'o', ö: 'o', ú: 'u', ù: 'u', û: 'u', ü: 'u', ñ: 'n', ç: 'c' }

@@ -150,6 +150,15 @@
 }
 .dis-tipo svg { width: 18px; height: 18px; color: var(--primary); flex: none; }
 .dis-tipo:hover { border-color: var(--primary); background: var(--primary-soft); }
+/* O campo de cálculo destaca na paleta (é o máis potente): ámbar, en negra. */
+.dis-tipo--destacado {
+    --destaque: oklch(62% 0.16 60);
+    color: oklch(42% 0.11 55); font-weight: 700;
+    background: color-mix(in oklab, var(--destaque) 16%, var(--panel-bg));
+    border-color: color-mix(in oklab, var(--destaque) 60%, transparent);
+}
+.dis-tipo--destacado svg { color: var(--destaque); }
+.dis-tipo--destacado:hover { border-color: var(--destaque); background: color-mix(in oklab, var(--destaque) 26%, var(--panel-bg)); }
 
 .dis-lenzo { padding: 0.9rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.45rem; align-content: flex-start; }
 .dis-lenzo--sobre { background: color-mix(in oklch, var(--primary-soft) 45%, transparent); }
