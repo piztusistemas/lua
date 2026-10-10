@@ -20,3 +20,8 @@ Autopiloto (aprobación do usuario: «Autopiloto»). Rama `refactor-duplicados` 
 ## T002 — 2026-10-10
 - status: complete
 - caracterización LaTeX: 141 entradas (tipografía, motores, pistas e erros de LaTeX) en `lua/lua/testdata/latex_caracterizacion.golden.json`; estable
+
+## T003 — 2026-10-10
+- status: complete
+- red: `ia.IAMensaxe` sen campo `Imaxes` (build failed)
+- green: TestIAMensaxeLevaImaxesEnJSON verde; `go test ./...` en edicion verde
