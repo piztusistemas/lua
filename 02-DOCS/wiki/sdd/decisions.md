@@ -82,3 +82,9 @@ Why        — Non se debilita un test para avanzar, e cada commit queda verde.
 ## 2026-10-10 — Título «Piztu Lúa» e cores dos formularios
 - Decisión do usuario: o título das xanelas é «Piztu Lúa» (a principal) e «Piztu Lúa — …» (deseñador, plantilla, resultado, tarefa). A barra superior xa non repite o nome: só leva a mascota, sen recadro e a 48 px. O resto do nome visible segue sendo «Lúa».
 - Cada formulario ten icona e cor propias (8 cores, ningunha vermella nin verde); o modo vai nun punto na esquina do botón. `GardarIconaFormulario(id, icona, cor)` garda as dúas. Os formularios sen cor gardada reparten as libres por orde de id, de xeito estable.
+
+## 2026-10-11 — Trasladar: modelo de gardado, exportación e importación (spec `trasladar`)
+- Decisións do usuario: (1) os datos pertencen sempre a un proxecto (fóra o traballo solto; migra só a «O meu traballo» con copia previa); (2) fóra o ficheiro vinculado con Ctrl+S, pero un documento pódese sacar como `.json` editable e volver meter ofrecendo «Actualizar»; (3) formato propio `.lua` que pode levar calquera combinación, sen deixar de ler os `.json` vellos.
+- Un documento viaxa autosuficiente: datos, estrutura do formulario e plantilla. Ficheiros con varios cursos: lista marcada, un proxecto por curso.
+- Opcións descartadas: só renomear botóns (non dá copia de proxecto nin bóveda); un tipo de ficheiro por contido (obriga ao usuario a saber que ficheiro é cada un).
+- Risco anotado: a migración do traballo solto é o punto con máis perigo de perda de datos.
