@@ -17,6 +17,7 @@ topic: index
 | Spec: mensaxes frecuentes de Lúa no idioma activo (clarified) | [sdd/specs/mensaxes-go-idiomas.md](sdd/specs/mensaxes-go-idiomas.md) |
 | Spec: Trasladar — un só sitio para exportar e importar (clarified) | [sdd/specs/trasladar.md](sdd/specs/trasladar.md) |
 | Plan: Trasladar | [sdd/plans/trasladar.md](sdd/plans/trasladar.md) |
+| Spec: proxectos lixeiros, ventá de formularios e solucións só co resultado (draft) | [sdd/specs/reutilizar-formularios.md](sdd/specs/reutilizar-formularios.md) |
 | Plan: Buxo no idioma de Lúa (draft) | [sdd/plans/buxo-idiomas.md](sdd/plans/buxo-idiomas.md) |
 | Plan: mensaxes frecuentes, coa lista de 74 (draft) | [sdd/plans/mensaxes-go-idiomas.md](sdd/plans/mensaxes-go-idiomas.md) |
 | Análise: mensaxes-go-idiomas (PASS) | [sdd/analysis/mensaxes-go-idiomas.md](sdd/analysis/mensaxes-go-idiomas.md) |
