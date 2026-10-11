@@ -6,12 +6,12 @@ tags: [sdd, spec, proxectos, formularios, problemas]
 timestamp: 2026-10-11T00:00:00Z
 topic: sdd
 slug: reutilizar-formularios
-status: draft
+status: planned (aprobada polo usuario o 2026-10-11; resto da cadea en autopiloto)
 ---
 
 # Spec — Proxectos lixeiros, ventá de formularios e solucións só co resultado
 
-> Slug: `reutilizar-formularios` · Status: draft · Creada: 2026-10-11
+> Slug: `reutilizar-formularios` · Status: planned · Creada: 2026-10-11
 > Inherits: [constitution](../constitution.md) v1.2.1 · Continúa: [trasladar](trasladar.md) (os datos sempre nun proxecto)
 
 ## Problem & why
