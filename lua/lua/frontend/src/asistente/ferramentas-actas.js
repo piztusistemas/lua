@@ -19,10 +19,9 @@ const nonBaleiro = (v, nome) => {
 const norm = (s) => String(s || '').trim().toLowerCase()
 
 // vistaActas: o curso de actas en forma lixeira para a IA (sen o logotipo en base64).
-export function vistaActas(plan, { mes, ruta = null } = {}) {
+export function vistaActas(plan, { mes } = {}) {
   const c = plan.config
   const out = {
-    ficheiro: ruta,
     curso: {
       anoAcademico: plan.academicYear, dataInicio: c.startDate, dataFin: c.endDate, centro: c.schoolName, localidade: c.location,
       departamento: c.department, xefe: c.headOfDepartment, secretario: c.secretary, cargoSinatura: c.signatoryRole,
@@ -97,7 +96,7 @@ export function crearFerramentasActas({ informes, ui }) {
 
     actas_ler(a) {
       soActas()
-      return vistaActas(plan(), { mes: txt(a.mes), ruta: informes.ruta() })
+      return vistaActas(plan(), { mes: txt(a.mes) })
     },
 
     actas_configurar(a) {

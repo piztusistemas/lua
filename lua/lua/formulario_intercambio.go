@@ -1,10 +1,9 @@
 package main
 
-// Intercambio de FORMULARIOS entre compañeiros: exportar un formulario da
-// biblioteca a un ficheiro .json (con ou sen os datos que ten escritos) e
-// importalo noutro equipo. Segue o patrón do intercambio de plantillas
-// (plantillas_intercambio.go): a lóxica é pura (bytes -> bytes) e os diálogos
-// de Wails só viven nos dous bindings do final.
+// Formato .json dun FORMULARIO para pasalo entre compañeiros (o das versións
+// anteriores a Trasladar). Lúa xa non o escribe: un formulario sae dentro dun
+// paquete .lua ou do .json editable dun documento (trasladar.go). Pero segue
+// léndoo, así que aquí queda a súa lóxica pura (bytes -> bytes).
 //
 // O ficheiro é DATOS, nunca código: un paquete co marcador «lua-formulario»,
 // a versión do formato, o esquema (campos e tubería) e, se o docente o pide,
@@ -25,8 +24,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-
-	"github.com/wailsapp/wails/v3/pkg/application"
 )
 
 const (
@@ -259,65 +256,4 @@ func escribirBorradorImportado(id string, d *DatosIntercambioFormulario) error {
 		return err
 	}
 	return escribirAtomicoCrono(ruta, raw)
-}
-
-// ---------- Bindings ----------
-
-// ExportarFormulario garda un formulario da biblioteca nun ficheiro .json para
-// compartilo. `datosJSON` son os datos que hai escritos ({contexto, valores,
-// proba}) ou "" para exportar só o formulario. Devolve a ruta escollida, ou ""
-// se se cancelou o diálogo.
-func (a *App) ExportarFormulario(id, datosJSON string) (string, error) {
-	f, err := lerFormulario(id)
-	if err != nil {
-		return "", err
-	}
-	var datos *DatosIntercambioFormulario
-	if strings.TrimSpace(datosJSON) != "" {
-		datos = &DatosIntercambioFormulario{}
-		if err := json.Unmarshal([]byte(datosJSON), datos); err != nil {
-			return "", fmt.Errorf("os datos que se ían exportar non son válidos: %w", err)
-		}
-	}
-	data, err := escribirBundleFormulario(construirBundleFormulario(f, datos))
-	if err != nil {
-		return "", err
-	}
-	base := slugFormulario(f.Nome)
-	if base == "" {
-		base = f.ID
-	}
-	path, err := saveFileDialogCompat("Exportar formulario", "", base+extensionBundleFormulario,
-		"Formulario de Lúa (*.json)", "*.json")
-	if err != nil || path == "" {
-		return "", err
-	}
-	if !strings.HasSuffix(strings.ToLower(path), ".json") {
-		path += extensionBundleFormulario
-	}
-	if err := os.WriteFile(path, data, 0o644); err != nil {
-		return "", err
-	}
-	return path, nil
-}
-
-// ImportarFormulario abre un diálogo para escoller un ficheiro de formulario e
-// engádeo á biblioteca (ver importarBundleFormulario). Se se cancela devolve un
-// resultado co formulario sen ID, sen erro, para que o frontend o distinga.
-func (a *App) ImportarFormulario() (ResultadoImportacionFormulario, error) {
-	path, err := application.Get().Dialog.OpenFile().
-		SetTitle("Importar formulario").
-		AddFilter("Formulario de Lúa (*.json)", "*.json").
-		PromptForSingleSelection()
-	if err != nil || path == "" {
-		return ResultadoImportacionFormulario{}, err
-	}
-	if fi, err := os.Stat(path); err == nil && fi.Size() > maxBytesBundleFormulario {
-		return ResultadoImportacionFormulario{}, idioma.Errorf("go.ficheiro.grande", "o ficheiro é demasiado grande (máximo %d MB)", maxBytesBundleFormulario>>20)
-	}
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return ResultadoImportacionFormulario{}, err
-	}
-	return importarBundleFormulario(data)
 }

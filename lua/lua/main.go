@@ -46,7 +46,7 @@ func main() {
 	})
 
 	// Xanela principal ("editor") - maximizada dende o arranque.
-	wailsApp.Window.NewWithOptions(application.WebviewWindowOptions{
+	xanela := wailsApp.Window.NewWithOptions(application.WebviewWindowOptions{
 		Name:             nomeXanelaEditor,
 		Title:            "Piztu Lúa",
 		Width:            1024,
@@ -58,7 +58,10 @@ func main() {
 		// resultado (ver xanelaresultado.go) - por consistencia entre as
 		// dúas xanelas.
 		ZoomControlEnabled: true,
+		// Soltar un ficheiro ou cartafol en Lúa abre Trasladar (trasladar_app.go).
+		EnableFileDrop: true,
 	})
+	rexistrarSoltarFicheiros(wailsApp, xanela)
 
 	if err := wailsApp.Run(); err != nil {
 		println("Error:", err.Error())

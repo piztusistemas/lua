@@ -2,8 +2,8 @@ package main
 
 // Intercambio de PLANTILLAS entre compañeiros: a lóxica (o bundle .json con
 // todo dentro, o marcador de formato, as imaxes en base64) vive unha soa vez en
-// edicion/plantilla, compartida con Yang. Aquí queda o encaixe coa aplicación:
-// os diálogos de Wails e os dous bindings.
+// edicion/plantilla, compartida con Yang. Aquí queda o encaixe coa aplicación.
+// Sacar e meter plantillas fai Trasladar (trasladar.go), que usa estas funcións.
 //
 // Unha plantilla non vive nun só ficheiro: o texto vai en plantillas.json e as
 // imaxes nun cartafol á parte (<config>/lua/plantillas/<id>/), así que para
@@ -14,14 +14,7 @@ package main
 // por calquera das dúas aplicacións ábrese na outra.
 
 import (
-	"encoding/json"
-	"fmt"
-	"os"
-	"strings"
-
 	"edicion/plantilla"
-
-	"github.com/wailsapp/wails/v3/pkg/application"
 )
 
 // construirBundlePlantilla arma o bundle dunha plantilla xa gardada: o seu
@@ -38,66 +31,4 @@ func construirBundlePlantilla(p PlantillaLatex) (bundlePlantilla, error) {
 // e coas imaxes resoltas.
 func (a *App) importarBundlePlantilla(data []byte) (PlantillaLatex, error) {
 	return plantilla.ImportarBundle(data, opcionsPlantilla, importadorPlantillas{a: a})
-}
-
-// ExportarPlantilla garda unha plantilla da biblioteca nun ficheiro .json
-// (texto + imaxes en base64) para compartila cos compañeiros. Devolve a ruta
-// escollida, ou "" se se cancelou o diálogo.
-func (a *App) ExportarPlantilla(id string) (string, error) {
-	alm, err := loadAlmacenPlantillas()
-	if err != nil {
-		return "", err
-	}
-	var atopada *PlantillaLatex
-	for i := range alm.Plantillas {
-		if alm.Plantillas[i].ID == id {
-			atopada = &alm.Plantillas[i]
-			break
-		}
-	}
-	if atopada == nil {
-		return "", fmt.Errorf("non existe esa plantilla")
-	}
-
-	bundle, err := construirBundlePlantilla(*atopada)
-	if err != nil {
-		return "", err
-	}
-	data, err := json.MarshalIndent(bundle, "", "  ")
-	if err != nil {
-		return "", err
-	}
-
-	base := nomeFicheiroPlantilla(atopada.Nome) + extensionBundlePlantilla
-	path, err := saveFileDialogCompat("Exportar plantilla", "", base,
-		"Plantilla de Lúa (*"+extensionBundlePlantilla+")", "*"+extensionBundlePlantilla)
-	if err != nil || path == "" {
-		return "", err
-	}
-	if !strings.HasSuffix(strings.ToLower(path), extensionBundlePlantilla) {
-		path += extensionBundlePlantilla
-	}
-	if err := os.WriteFile(path, data, 0o644); err != nil {
-		return "", err
-	}
-	return path, nil
-}
-
-// ImportarPlantilla abre un diálogo para escoller un ficheiro .json e engádeo á
-// biblioteca coma plantilla nova (ver importarBundlePlantilla). Devolve a
-// plantilla gardada; se se cancela o diálogo devolve unha PlantillaLatex baleira
-// (ID "") sen erro, para que o frontend o distinga.
-func (a *App) ImportarPlantilla() (PlantillaLatex, error) {
-	path, err := application.Get().Dialog.OpenFile().
-		SetTitle("Importar plantilla").
-		AddFilter("Plantilla (*"+extensionBundlePlantilla+")", "*"+extensionBundlePlantilla).
-		PromptForSingleSelection()
-	if err != nil || path == "" {
-		return PlantillaLatex{}, err
-	}
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return PlantillaLatex{}, err
-	}
-	return a.importarBundlePlantilla(data)
 }

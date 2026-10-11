@@ -1,0 +1,22 @@
+# Calibración do runtime SDD (sdd-init feito a man o 2026-10-11).
+project: lua_yang
+stack:
+  backend: go 1.25 + wails v3 (beta.14)
+  frontend: javascript sen framework + vite + vitest
+modules:
+  - path: edicion
+  - path: lua/lua
+    frontend: lua/lua/frontend
+  - path: buxo
+commands:
+  format: gofmt -l .
+  vet: go vet ./...
+  test_go: go test ./...          # lua/lua tarda ~2 min (LaTeX, LibreOffice)
+  test_front: npm test            # en lua/lua/frontend
+  i18n: go test -run 'I18n|Idioma' ./...   # claves en gl/es/en/pt
+strict_tdd: true
+branch_policy: main aberta (constitución 4.1b)
+sdd:
+  autopilot: false
+models:
+  enabled: false

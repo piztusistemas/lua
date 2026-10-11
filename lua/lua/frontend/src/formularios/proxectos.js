@@ -10,7 +10,6 @@
 //     integradas               [{id, nome}] cronograma e actas
 //     crear(nome, materia, ferramentas)   Promise<Proxecto>
 //     abrir(id)                entra no proxecto (main.js recarga as ferramentas); Promise
-//     pechar()                 sae do proxecto aberto; Promise
 //     engadir(id, ferramenta) / quitar(id, ferramenta)   Promise
 //     eliminar(id)             Promise
 //     buxo()                   Promise<{activo, instalado, iaConfigurada}>
@@ -121,7 +120,7 @@ export function abrirProxectos({ t, accions }) {
       const despregado = abertos.has(p.id)
       const acc = [
         p.activo
-          ? el('button', { type: 'button', class: 'crono-btn', text: t('proxectos.pechar', 'Pechar proxecto'), onclick: () => executar(async () => { await accions.pechar(); pechar() }) })
+          ? el('span', { class: 'bib-chip', text: t('proxectos.aberto', 'Aberto') })
           : el('button', { type: 'button', class: 'crono-btn primary', text: t('proxectos.abrir', 'Abrir'), onclick: () => executar(async () => { await accions.abrir(p.id); pechar() }) }),
         el('button', {
           type: 'button', class: 'crono-btn', 'aria-expanded': String(despregado), text: t('proxectos.ferramentas', 'Ferramentas…'),

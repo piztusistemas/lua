@@ -53,6 +53,9 @@ type Settings struct {
 	// defecto está activo e Lua o descarga e actualiza ao arrincar). Xestiónase
 	// con BuxoActivar.
 	BuxoDesactivado bool `json:"buxoDesactivado,omitempty"`
+	// Instalacion identifica esta instalación de Lúa (aleatorio, non secreto):
+	// recoñece os documentos .json que saíron de aquí e volven (trasladar.go).
+	Instalacion string `json:"instalacion,omitempty"`
 	// LatexEngine escolle o compilador: "" ou "pdflatex" (por defecto),
 	// "xelatex" ou "lualatex" (soporte Unicode/fontes do sistema nativo,
 	// útil para símbolos especiais coma letras gregas ou fontes propias).
@@ -220,6 +223,7 @@ func (a *App) SaveSettings(s Settings) error {
 		s.IABovedas = a.settings.IABovedas
 	}
 	s.BuxoDesactivado = a.settings.BuxoDesactivado // non o xestiona o diálogo de Opcións
+	s.Instalacion = a.settings.Instalacion         // nin o identificador da instalación
 	cambiaMaxima := s.MaximaPath != a.settings.MaximaPath || s.MaximaDecimais != a.settings.MaximaDecimais
 	a.settings = s
 	a.aplicarIdiomaGo()

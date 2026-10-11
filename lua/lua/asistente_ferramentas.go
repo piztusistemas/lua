@@ -278,12 +278,12 @@ var ferramentasFrontend = []IAFerramenta{
 	},
 	{
 		Nome: "curso_abrir", Tipo: tipoEscritura, Onde: "frontend",
-		Descricion: "Abre o selector de ficheiros para que o usuario escolla un curso gardado (.json).",
+		Descricion: "Abre a xanela Trasladar na lapela «Meter» para que o usuario meta en Lúa un ficheiro (.lua, .json dun curso, formulario ou plantilla, PDF ou Markdown). Lúa di que leva e onde vai antes de metelo.",
 	},
 	{
 		Nome: "curso_gardar", Tipo: tipoEscritura, Onde: "frontend",
-		Descricion: "Garda o curso no seu ficheiro (se aínda non ten, abre o diálogo de Gardar como). Con comoNovo=true pregunta sempre onde gardar.",
-		Parametros: esqObx(map[string]any{"comoNovo": esqBool("Gardar cun nome novo.")}),
+		Descricion: "O curso xa se garda só en Lúa (dentro do proxecto); isto escríbeo agora mesmo. Con comoNovo=true abre ademais a xanela Trasladar para sacalo a un ficheiro.",
+		Parametros: esqObx(map[string]any{"comoNovo": esqBool("Abrir Trasladar para sacar o curso a un ficheiro.")}),
 	},
 	{
 		Nome: "informe_xerar", Tipo: tipoEscritura, Onde: "frontend",

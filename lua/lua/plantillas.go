@@ -541,3 +541,28 @@ func (a *App) previsualizarPlantillaPedido(p PlantillaLatex, pedido XerarInforme
 	p.Textos = normalizarTextosDoc(p.Textos)
 	return a.xerarPDFPedido(pedido, &p, tmpDir)
 }
+
+// claveDocumento é a clave coa que se lembra a plantilla dun documento: o
+// ficheiro onde Lúa garda ese documento do proxecto aberto ("" sen proxecto).
+func claveDocumento(ferramenta string) string {
+	if proxectoAbertoValido() == "" {
+		return ""
+	}
+	r, err := borradorFerramentaPath(ferramenta)
+	if err != nil {
+		return ""
+	}
+	return r
+}
+
+// EscollerPlantillaDocumento fixa a plantilla activa e lémbraa para o
+// documento `ferramenta` do proxecto aberto (selector da barra).
+func (a *App) EscollerPlantillaDocumento(id, ferramenta string) error {
+	return depositoPlantillas.Activar(id, claveDocumento(ferramenta))
+}
+
+// PlantillaDoDocumento activa (e devolve) a plantilla lembrada para o
+// documento `ferramenta` do proxecto aberto; sen lembranza, mantén a activa.
+func (a *App) PlantillaDoDocumento(ferramenta string) (string, error) {
+	return depositoPlantillas.ParaFicheiro(claveDocumento(ferramenta))
+}

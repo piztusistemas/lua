@@ -2,8 +2,9 @@
 // entre o editor do cronograma (cronograma-editor.js), o backend Go
 // (informe_cronograma.go) e a chrome de main.js (barra, estado, avisos,
 // panel de resultado). Concentra aquí todo o que main.js non debe saber:
-// o curso en edición, o ficheiro aberto, desfacer/refacer, o borrador
-// automático e as exportacións.
+// o curso en edición, desfacer/refacer, o gardado automático en Lúa (o
+// «borrador», que é o documento do proxecto) e as exportacións. Sacar ou
+// meter ficheiros xa non pasa por aquí: vai por Trasladar (trasladar/).
 //
 // Igual ca editor.js/explorer.js é unha factoría illada: recibe `api`
 // (os bindings de Wails que precisa) e `ui` (callbacks de main.js), e nunca
@@ -12,8 +13,8 @@
 // Serve para calquera ferramenta (cronograma, actas...): cada unha achega unha
 // "ferramenta" (o seu modelo de datos, o seu editor e a súa petición ao
 // backend, ver ferramenta-cronograma.js e ferramenta-actas.js) e o controlador
-// leva o curso en edición, os ficheiros, desfacer/refacer, o borrador e as
-// exportacións igual para todas.
+// leva o curso en edición, desfacer/refacer, o gardado e as exportacións
+// igual para todas.
 import { FERRAMENTA_CRONOGRAMA } from './ferramenta-cronograma.js'
 
 // Límites do historial de desfacer: os cursos levan imaxes en base64 e cada
@@ -28,6 +29,7 @@ export function createInformes({
   ferramenta = FERRAMENTA_CRONOGRAMA,
 }) {
   const { novoPlan, lerFicheiro, escribirFicheiro, nomeFicheiroSuxerido } = ferramenta
+  const gardadoEnLua = () => t('status.gardadoLua', 'Gardado en Lúa')
   const t = tIn || ((clave, fallback, vars) => {
     let val = fallback ?? clave
     if (vars) for (const k in vars) val = val.replaceAll(`{${k}}`, vars[k])
@@ -39,8 +41,7 @@ export function createInformes({
   // ambito: que se xera/imprime (só ten sentido nas ferramentas con varios
   // documentos, coma as actas: "curso" ou o mes dunha acta).
   let ambito = ferramenta.ambitoPorDefecto || ''
-  let ruta = null // ficheiro aberto/gardado, ou null se é un curso novo
-  let sucio = false // cambios desde o último gardar/abrir
+  let sucio = false // cambios aínda non escritos en Lúa
   let versionPlan = 0 // sobe en cada cambio; permite saber se o resultado está ao día
   let versionResultado = -1
   let ultimoPDF = null
@@ -109,16 +110,18 @@ export function createInformes({
     ui.aoCambiar?.()
   }
 
-  // O borrador é o traballo en curso: se Lua se pecha sen gardar, ao volver
-  // abrir o curso está como estaba (mesma idea ca data.json da app orixinal).
+  // O borrador É o documento do proxecto: Lúa gárdao só ao pouco de cada
+  // cambio, así que nunca hai nada «sen gardar». Devolve se se escribiu.
   async function gardarBorrador() {
     clearTimeout(temporizadorBorrador)
     temporizadorBorrador = null
-    if (descartado) return
+    if (descartado) return false
     try {
-      await api.GardarBorradorInforme(escribirFicheiro(plan, { path: ruta || '' }))
+      await api.GardarBorradorInforme(escribirFicheiro(plan))
+      sucio = false
+      return true
     } catch {
-      // Rede de seguridade, non crítica: se falla non se molesta ao usuario.
+      return false
     }
   }
 
@@ -128,12 +131,11 @@ export function createInformes({
     marcarCambio()
   }
 
-  function cargar(novoPlanCargado, novaRuta, { sucioInicial = false } = {}) {
+  function cargar(novoPlanCargado) {
     plan = novoPlanCargado
-    ruta = novaRuta
     editor.setValue(plan)
     reiniciarHistorial()
-    sucio = sucioInicial
+    sucio = false
     versionPlan++
     ultimoPDF = null
     versionResultado = -1
@@ -150,16 +152,15 @@ export function createInformes({
     try {
       const borrador = await api.LerBorradorInforme()
       if (borrador) {
-        const dato = JSON.parse(borrador)
         const [p] = lerFicheiro(borrador)
-        cargar(p, dato.path || null, { sucioInicial: true })
+        cargar(p)
         recuperado = true
       }
     } catch {
       // Un borrador ilegible non debe impedir arrincar.
     }
-    if (!recuperado) cargar(novoPlan(), null)
-    ui.setStatus(ruta || t('status.unsaved', 'sen gardar'))
+    if (!recuperado) cargar(novoPlan())
+    ui.setStatus(gardadoEnLua())
   }
 
   async function iniciar() {
@@ -176,129 +177,40 @@ export function createInformes({
     await cargarBorrador()
   }
 
-  // ---------- Ficheiros ----------
+  // ---------- Documento ----------
 
-  async function confirmarPerdaDeCambios() {
-    if (!sucio || !haiContido()) return true
-    return ui.confirmar(t('confirm.discardChanges', 'Vanse perder os cambios non gardados. Continuar?'))
-  }
-
+  // Novo baleira o documento deste proxecto (pódese desfacer co historial).
   async function novo() {
-    if (!await confirmarPerdaDeCambios()) return
-    cargar(novoPlan(), null)
-    gardarBorrador()
+    if (haiContido() && !await ui.confirmar(t('confirm.novoDocumento', 'Isto baleira este documento do proxecto. Podes desfacelo con Desfacer, ou sacar antes unha copia con Trasladar. Continuar?'))) return false
+    plan = novoPlan()
+    editor.setValue(plan)
+    rexistrar('estrutura')
+    marcarCambio()
+    await gardarBorrador()
     ui.showWarnings([])
-    ui.setStatus(t('status.unsaved', 'sen gardar'))
+    ui.setStatus(gardadoEnLua())
+    return true
   }
 
-  // escollerCurso: un ficheiro pode traer varios cursos (copia de seguridade
-  // completa de Piztu Orienta). Devolve o escollido ou null se se cancela.
-  function escollerCurso(cursos) {
-    if (cursos.length === 1) return Promise.resolve(cursos[0])
-    return new Promise((resolve) => {
-      const overlay = document.createElement('div')
-      overlay.className = 'overlay overlay--dialog'
-      const modal = document.createElement('div')
-      modal.className = 'modal modal--dialog'
-      const msg = document.createElement('p')
-      msg.className = 'dialog-message'
-      msg.textContent = t('informes.escoller.curso', 'Este ficheiro contén {n} cursos. Cal queres abrir?', { n: cursos.length })
-      modal.append(msg)
-      const lista = document.createElement('div')
-      lista.style.cssText = 'display:flex;flex-direction:column;gap:0.4rem;max-height:50vh;overflow:auto;margin:0.6rem 0'
-      const pechar = (r) => { overlay.remove(); resolve(r) }
-      for (const c of cursos) {
-        const b = document.createElement('button')
-        b.type = 'button'
-        b.className = 'crono-btn'
-        b.textContent = ferramenta.descricionCurso(c, t)
-        b.addEventListener('click', () => pechar(c))
-        lista.append(b)
-      }
-      modal.append(lista)
-      const acc = document.createElement('div')
-      acc.className = 'modal-actions'
-      const cancelar = document.createElement('button')
-      cancelar.type = 'button'
-      cancelar.textContent = t('dialog.cancel', 'Cancelar')
-      cancelar.addEventListener('click', () => pechar(null))
-      acc.append(cancelar)
-      modal.append(acc)
-      overlay.append(modal)
-      overlay.addEventListener('click', (e) => { if (e.target === overlay) pechar(null) })
-      document.body.append(overlay)
-    })
-  }
-
-  async function abrir() {
-    if (!await confirmarPerdaDeCambios()) return
-    try {
-      const res = await api.AbrirInformeDialog()
-      if (!res) return
-      const cursos = lerFicheiro(res.content)
-      const curso = await escollerCurso(cursos)
-      if (!curso) return
-      // Un ficheiro con varios cursos non se pode sobrescribir con Ctrl+S
-      // sen perder os outros: gárdase como copia nova (ruta null).
-      const vario = cursos.length > 1
-      cargar(curso, vario ? null : res.path)
-      // Cada curso lembra a súa plantilla (estilo): recupérase antes de xerar.
-      if (!vario) await ui.aoAbrirFicheiro?.(res.path)
-      ui.showWarnings([])
-      ui.setStatus(vario ? t('status.unsaved', 'sen gardar') : res.path)
-      gardarBorrador()
-      await xerar()
-    } catch (err) {
-      ui.setStatus(t('status.errorOpening', 'Erro ao abrir'))
-      ui.showWarnings([ui.mensaxeErro(err)])
-    }
-  }
-
-  async function gardarComo() {
-    try {
-      const suxerido = (ruta ? ruta.replace(/\.json$/i, '') : nomeFicheiroSuxerido(plan)) + '.json'
-      const path = await api.GardarInformeDialog(suxerido, escribirFicheiro(plan))
-      if (!path) return false
-      ruta = path
-      sucio = false
-      ui.setStatus(t('status.saved', 'Gardado: ') + path)
-      gardarBorrador()
-      // "Gardar como" estrea ruta: anótase que ESE curso usa a plantilla activa.
-      await ui.aoGardarComo?.(path)
-      return true
-    } catch (err) {
-      ui.setStatus(t('status.errorSaving', 'Erro ao gardar'))
-      ui.showWarnings([ui.mensaxeErro(err)])
-      return false
-    }
-  }
-
+  // gardar escribe xa o documento en Lúa (Ctrl+S), sen agardar polo gardado
+  // automático. Non pregunta nada nin abre ningún diálogo.
   async function gardar() {
-    if (!ruta) return gardarComo()
-    try {
-      await api.SaveFile(ruta, escribirFicheiro(plan))
-      sucio = false
-      ui.setStatus(t('status.saved', 'Gardado: ') + ruta)
-      gardarBorrador()
-      return true
-    } catch (err) {
-      ui.setStatus(t('status.errorSaving', 'Erro ao gardar'))
-      ui.showWarnings([ui.mensaxeErro(err)])
-      return false
-    }
+    const ok = await gardarBorrador()
+    ui.setStatus(ok ? gardadoEnLua() : t('status.errorSaving', 'Erro ao gardar'))
+    return ok
   }
 
   // ---------- Xerar e exportar ----------
 
   function peticion() {
-    // nomeBase (ruta do curso sen extensión, ou o nome suxerido) enche
+    // nomeBase (o nome suxerido polo curso) enche
     // {{FICHEIRO}} das plantillas e é o nome que propón a xanela de
     // resultado desacoplada ao exportar.
     return ferramenta.peticion(plan, { tipografia: tipografia(), nomeBase: nomeBase(''), ambito })
   }
 
   function nomeBase(ext) {
-    const base = ruta ? ruta.replace(/\.json$/i, '') : nomeFicheiroSuxerido(plan)
+    const base = nomeFicheiroSuxerido(plan)
     // Unha soa acta: o nome leva o mes (actas-2025-2026-2025-11).
     const sufixo = ambito && ambito !== 'curso' ? '-' + ambito : ''
     return base + sufixo + ext
@@ -410,9 +322,7 @@ export function createInformes({
     // A petición que se mandaría ao xerar o documento actual (vista previa da plantilla).
     peticionActual: peticion,
     novo,
-    abrir,
     gardar,
-    gardarComo,
     xerar,
     exportarPDF,
     exportarTex,
@@ -441,7 +351,8 @@ export function createInformes({
     refrescarIdioma: () => editor?.refrescar(),
     // Tarefa gardada nunha xanela propia de edición: entra no curso.
     aplicarTarefaExterna: (r) => editor?.aplicarTarefaExterna(r),
-    ruta: () => ruta,
+    // O documento tal como se garda en Lúa (para sacalo con Trasladar).
+    contidoDocumento: () => escribirFicheiro(plan),
     ferramenta,
     // Que se xera e imprime (ver `ambito` arriba). Cambialo invalida o
     // resultado xa xerado, pero non marca o curso coma cambiado.
@@ -460,6 +371,6 @@ export function createInformes({
     // Para main.js ao borrar un formulario: para o gardado automático do borrador para sempre.
     descartar(activo = true) { descartado = activo; if (activo) { clearTimeout(temporizadorBorrador); temporizadorBorrador = null } },
     // Só para probas.
-    _estado: () => ({ plan, ruta, sucio, idx, pila: pila.length }),
+    _estado: () => ({ plan, sucio, idx, pila: pila.length }),
   }
 }

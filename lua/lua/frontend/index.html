@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="./src/asistente/asistente.css"/>
 </head>
 <body>
-<div id="app">
+<div id="app" data-file-drop-target>
     <div id="latexWarning" class="banner hidden">
         <span id="latexWarningText" data-i18n="banner.latex.text">⚠ Falta LaTeX neste equipo.</span>
         <button id="btnInstallLatex" data-i18n="banner.latex.install">⇩ Instalar automaticamente</button>
@@ -31,17 +31,10 @@
                 <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 2.5h6l3.5 3.5v11a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5v-14a.5.5 0 0 1 .5-.5z"/><path d="M11 2.5v3.5h3.5"/><path d="M10 10v5M7.5 12.5h5"/></svg>
                 <span data-i18n="toolbar.new.label">Novo</span>
             </button>
-            <button id="btnOpen" data-i18n-title="toolbar.open.title" title="Abrir un curso gardado (Ctrl+O)">
-                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 5.5a1 1 0 0 1 1-1h4l1.5 2h7a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1h-12.5a1 1 0 0 1-1-1z"/></svg>
-                <span data-i18n="toolbar.open.label">Abrir</span>
-            </button>
-            <button id="btnSave" data-i18n-title="toolbar.save.title" title="Gardar (Ctrl+S)">
-                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 3.5h9l3 3v10a.5.5 0 0 1-.5.5h-11.5a.5.5 0 0 1-.5-.5v-12.5a.5.5 0 0 1 .5-.5z"/><path d="M6.5 3.5v4h6v-4"/><path d="M6 13h8"/></svg>
-                <span data-i18n="toolbar.save.label">Gardar</span>
-            </button>
-            <button id="btnSaveAs" data-i18n-title="toolbar.saveAs.title" title="Gardar como... escoller nome/lugar (Ctrl+Maiús+S)">
-                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 3.5h9l3 3v10a.5.5 0 0 1-.5.5h-11.5a.5.5 0 0 1-.5-.5v-12.5a.5.5 0 0 1 .5-.5z"/><path d="M6.5 3.5v4h6v-4"/><circle cx="10" cy="12" r="1.6"/></svg>
-                <span data-i18n="toolbar.saveAs.label">Gardar como</span>
+            <!-- Trasladar: o único sitio para sacar cousas de Lúa e metelas (trasladar/trasladar.js). Gardar non fai falta: Lúa garda só. -->
+            <button id="btnTrasladar" data-i18n-title="toolbar.trasladar.title" title="Trasladar: sacar de Lúa (un proxecto, un documento ou unha copia de todo) ou meter nela un ficheiro (Ctrl+Maiús+S / Ctrl+O). Lúa garda todo só.">
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 3v12"/><path d="M3.5 6 6.5 3l3 3"/><path d="M13.5 17V5"/><path d="M10.5 14l3 3 3-3"/></svg>
+                <span data-i18n="toolbar.trasladar.label">Trasladar</span>
             </button>
         </div>
         <span class="sep"></span>

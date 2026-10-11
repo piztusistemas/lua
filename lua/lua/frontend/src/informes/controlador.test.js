@@ -12,9 +12,6 @@ function novoContexto(apiExtra = {}, uiExtra = {}, opcions = {}) {
     LerBorradorInforme: vi.fn(async () => ''),
     GardarBorradorInforme: vi.fn(async () => {}),
     XerarInformeCronograma: vi.fn(async () => ({ pdfBase64: 'UERG', pageImages: ['data:image/png;base64,AA'], warnings: ['aviso'], log: 'log' })),
-    AbrirInformeDialog: vi.fn(async () => null),
-    GardarInformeDialog: vi.fn(async () => '/tmp/x.json'),
-    SaveFile: vi.fn(async () => {}),
     SavePDFDialog: vi.fn(async () => '/tmp/x.pdf'),
     ExportarInformeTex: vi.fn(async () => ({ path: '/tmp/x.tex', warnings: [] })),
     ExportarInformeMarkdown: vi.fn(async () => ({ path: '/tmp/x.md', warnings: [] })),
@@ -52,19 +49,16 @@ describe('arranque e borrador', () => {
     const e = inf._estado()
     expect(e.plan.monthsData).toEqual({})
     expect(e.sucio).toBe(false)
-    expect(e.ruta).toBeNull()
-    expect(ui.setStatus).toHaveBeenCalled()
+    expect(ui.setStatus).toHaveBeenLastCalledWith('Gardado en Lúa')
   })
 
-  it('recupera o borrador (con curso e ruta) e o marca sucio', async () => {
+  it('recupera o documento gardado en Lúa (un «path» vello ignórase)', async () => {
     const plan = planCunhaTarefa('Recuperada')
     const { inf, container } = novoContexto({
       LerBorradorInforme: vi.fn(async () => escribirFicheiro(plan, { path: '/tmp/curso.json' })),
     })
     await inf.iniciar()
-    const e = inf._estado()
-    expect(e.ruta).toBe('/tmp/curso.json')
-    expect(e.sucio).toBe(true)
+    expect(inf._estado().sucio).toBe(false)
     expect(container.textContent).toContain('Recuperada')
   })
 
@@ -74,11 +68,6 @@ describe('arranque e borrador', () => {
     expect(inf._estado().plan.monthsData).toEqual({})
   })
 
-  it('un borrador sen ruta abre coma curso sen gardar', async () => {
-    const { inf } = novoContexto({ LerBorradorInforme: vi.fn(async () => escribirFicheiro(novoPlan(), { path: '' })) })
-    await inf.iniciar()
-    expect(inf._estado().ruta).toBeNull()
-  })
 })
 
 describe('descartar (ferramenta borrada)', () => {
@@ -141,89 +130,48 @@ describe('edición, desfacer e borrador automático', () => {
   })
 })
 
-describe('ficheiros', () => {
-  it('novo pide confirmación só se hai cambios con contido', async () => {
+describe('documento', () => {
+  it('novo pide confirmación se hai contido e pódese desfacer', async () => {
     const plan = planCunhaTarefa('X')
-    const { inf, ui } = novoContexto({ LerBorradorInforme: vi.fn(async () => escribirFicheiro(plan)) })
-    await inf.iniciar() // borrador => sucio con contido
+    const { inf, ui, api } = novoContexto({ LerBorradorInforme: vi.fn(async () => escribirFicheiro(plan)) })
+    await inf.iniciar()
     ui.confirmar.mockResolvedValueOnce(false)
     await inf.novo()
     expect(ui.confirmar).toHaveBeenCalledTimes(1)
     expect(Object.keys(inf._estado().plan.monthsData)).toHaveLength(1) // cancelado: non se tocou
     await inf.novo() // confirmar devolve true por defecto
     expect(inf._estado().plan.monthsData).toEqual({})
-    await inf.novo() // agora está baleiro: nin pregunta
-    expect(ui.confirmar).toHaveBeenCalledTimes(2)
+    expect(api.GardarBorradorInforme).toHaveBeenCalled()
+    inf.desfacer()
+    expect(Object.keys(inf._estado().plan.monthsData)).toHaveLength(1)
+    await inf.novo() // con contido outra vez: pregunta
+    await inf.novo() // baleiro: nin pregunta
+    expect(ui.confirmar).toHaveBeenCalledTimes(3)
   })
 
-  it('abrir un ficheiro con un curso cárgao, lembra a ruta e xera', async () => {
-    const plan = planCunhaTarefa('Aberta', 1)
-    const { inf, api, container } = novoContexto({
-      AbrirInformeDialog: vi.fn(async () => ({ path: '/tmp/curso.json', content: escribirFicheiro(plan) })),
-    })
-    await inf.iniciar()
-    await inf.abrir()
-    expect(inf._estado().ruta).toBe('/tmp/curso.json')
-    expect(inf._estado().sucio).toBe(false)
-    expect(container.textContent).toContain('Aberta')
-    expect(api.XerarInformeCronograma).toHaveBeenCalledTimes(1)
-  })
-
-  it('abrir un ficheiro inválido avisa e non toca o curso actual', async () => {
-    const { inf, ui } = novoContexto({ AbrirInformeDialog: vi.fn(async () => ({ path: '/tmp/x.json', content: 'lixo' })) })
-    await inf.iniciar()
-    await inf.abrir()
-    expect(ui.showWarnings).toHaveBeenLastCalledWith([expect.stringMatching(/JSON/)])
-    expect(inf._estado().ruta).toBeNull()
-  })
-
-  it('cancelar o selector de ficheiros non fai nada', async () => {
-    const { inf, api } = novoContexto()
-    await inf.iniciar()
-    await inf.abrir()
-    expect(api.XerarInformeCronograma).not.toHaveBeenCalled()
-  })
-
-  it('un ficheiro con varios cursos deixa escoller e queda sen ruta (para non pisar os outros)', async () => {
-    const a = normalizarPlan({ ...novoPlan(), academicYear: '2024/2025' })
-    const b = normalizarPlan({ ...novoPlan(), academicYear: '2025/2026' })
-    const { inf } = novoContexto({
-      AbrirInformeDialog: vi.fn(async () => ({ path: '/tmp/copia.json', content: JSON.stringify({ plans: [a, b] }) })),
-    })
-    await inf.iniciar()
-    const p = inf.abrir()
-    await vi.waitFor(() => expect(document.querySelectorAll('.overlay .crono-btn')).toHaveLength(2))
-    document.querySelectorAll('.overlay .crono-btn')[1].click()
-    await p
-    expect(inf._estado().plan.academicYear).toBe('2025/2026')
-    expect(inf._estado().ruta).toBeNull()
-  })
-
-  it('gardar sen ruta abre "Gardar como"; con ruta escribe directamente', async () => {
-    const { inf, api } = novoContexto()
+  it('gardar escribe xa en Lúa, sen diálogos', async () => {
+    const { inf, api, ui } = novoContexto()
     await inf.iniciar()
     expect(await inf.gardar()).toBe(true)
-    expect(api.GardarInformeDialog).toHaveBeenCalledTimes(1)
-    expect(api.GardarInformeDialog.mock.calls[0][0]).toMatch(/^cronograma-\d{4}-\d{4}\.json$/)
-    expect(inf._estado().ruta).toBe('/tmp/x.json')
-    expect(await inf.gardar()).toBe(true)
-    expect(api.SaveFile).toHaveBeenCalledWith('/tmp/x.json', expect.stringContaining('"plans"'))
-    expect(inf._estado().sucio).toBe(false)
+    expect(api.GardarBorradorInforme).toHaveBeenCalledWith(expect.stringContaining('"plans"'))
+    expect(api.GardarBorradorInforme.mock.calls[0][0]).not.toContain('"path"')
+    expect(ui.setStatus).toHaveBeenLastCalledWith('Gardado en Lúa')
+    expect(inf.abrir).toBeUndefined()
+    expect(inf.gardarComo).toBeUndefined()
   })
 
-  it('cancelar "Gardar como" non cambia a ruta', async () => {
-    const { inf } = novoContexto({ GardarInformeDialog: vi.fn(async () => '') })
+  it('un erro ao gardar dío', async () => {
+    const { inf, ui } = novoContexto({ GardarBorradorInforme: vi.fn(async () => { throw new Error('sen permiso') }) })
     await inf.iniciar()
     expect(await inf.gardar()).toBe(false)
-    expect(inf._estado().ruta).toBeNull()
+    expect(ui.setStatus).toHaveBeenLastCalledWith('Erro ao gardar')
   })
 
-  it('un erro ao gardar avisa', async () => {
-    const { inf, ui } = novoContexto({ SaveFile: vi.fn(async () => { throw new Error('sen permiso') }) })
+  it('contidoDocumento é o mesmo JSON que se garda en Lúa', async () => {
+    const plan = planCunhaTarefa('Para sacar')
+    const { inf } = novoContexto({ LerBorradorInforme: vi.fn(async () => escribirFicheiro(plan)) })
     await inf.iniciar()
-    await inf.gardarComo()
-    await inf.gardar()
-    expect(ui.showWarnings).toHaveBeenLastCalledWith(['sen permiso'])
+    expect(JSON.parse(inf.contidoDocumento()).plans[0].monthsData).toEqual(plan.monthsData)
   })
 })
 
@@ -306,17 +254,16 @@ describe('exportar', () => {
   })
 
   it('TeX/MD/DOCX/ODT chaman ao seu método co nome suxerido e amosan a ruta', async () => {
-    const { inf, api, ui } = novoContexto({ GardarInformeDialog: vi.fn(async () => '/casa/curso.json') })
+    const { inf, api, ui } = novoContexto()
     await inf.iniciar()
-    await inf.gardarComo() // agora hai ruta: os nomes derívanse dela
     await inf.exportarTex('b')
     await inf.exportarMarkdown('b')
     await inf.exportarDocx('b')
     await inf.exportarOdt('b')
-    expect(api.ExportarInformeTex.mock.calls[0][1]).toBe('/casa/curso.tex')
-    expect(api.ExportarInformeMarkdown.mock.calls[0][1]).toBe('/casa/curso.md')
-    expect(api.ExportarInformeDocx.mock.calls[0][1]).toBe('/casa/curso.docx')
-    expect(api.ExportarInformeOdt.mock.calls[0][1]).toBe('/casa/curso.odt')
+    expect(api.ExportarInformeTex.mock.calls[0][1]).toMatch(/^cronograma-\d{4}-\d{4}\.tex$/)
+    expect(api.ExportarInformeMarkdown.mock.calls[0][1]).toMatch(/\.md$/)
+    expect(api.ExportarInformeDocx.mock.calls[0][1]).toMatch(/\.docx$/)
+    expect(api.ExportarInformeOdt.mock.calls[0][1]).toMatch(/\.odt$/)
     expect(ui.setStatusGardado).toHaveBeenLastCalledWith(expect.stringContaining('/tmp/x.odt'), '/tmp/x.odt')
     expect(ui.ocupadoBoton).toHaveBeenCalledWith('b', true)
     expect(ui.ocupadoBoton).toHaveBeenLastCalledWith('b', false)
@@ -332,73 +279,23 @@ describe('exportar', () => {
 })
 
 describe('plantillas (estilos) por curso', () => {
-  it('abrir un ficheiro recupera a súa plantilla ANTES de xerar', async () => {
-    const orde = []
-    const plan = planCunhaTarefa('Aberta', 1)
-    const { inf, api } = novoContexto({
-      AbrirInformeDialog: vi.fn(async () => ({ path: '/tmp/curso.json', content: escribirFicheiro(plan) })),
-      XerarInformeCronograma: vi.fn(async () => { orde.push('xerar'); return { pdfBase64: 'UERG', pageImages: [], warnings: [], log: '' } }),
-    }, {
-      aoAbrirFicheiro: vi.fn(async (ruta) => { orde.push('plantilla:' + ruta) }),
-    })
-    await inf.iniciar()
-    await inf.abrir()
-    expect(orde).toEqual(['plantilla:/tmp/curso.json', 'xerar'])
-    expect(api.XerarInformeCronograma).toHaveBeenCalledTimes(1)
-  })
-
-  it('un ficheiro con varios cursos (queda sen ruta) non fixa plantilla por ficheiro', async () => {
-    const aoAbrirFicheiro = vi.fn()
-    const dous = JSON.stringify({ plans: [{ ...novoPlan(), academicYear: '2024-2025' }, { ...novoPlan(), academicYear: '2025-2026' }] })
-    const { inf } = novoContexto({
-      AbrirInformeDialog: vi.fn(async () => ({ path: '/tmp/copia.json', content: dous })),
-    }, { aoAbrirFicheiro })
-    await inf.iniciar()
-    const pendente = inf.abrir()
-    await vi.waitFor(() => expect(document.querySelector('.modal--dialog .crono-btn')).not.toBeNull())
-    document.querySelector('.modal--dialog .crono-btn').click()
-    await pendente
-    expect(inf._estado().ruta).toBeNull()
-    expect(aoAbrirFicheiro).not.toHaveBeenCalled()
-  })
-
-  it('"Gardar como" anota a plantilla activa para a ruta nova', async () => {
-    const aoGardarComo = vi.fn(async () => {})
-    const { inf } = novoContexto({ GardarInformeDialog: vi.fn(async () => '/casa/curso.json') }, { aoGardarComo })
-    await inf.iniciar()
-    await inf.gardarComo()
-    expect(aoGardarComo).toHaveBeenCalledWith('/casa/curso.json')
-  })
-
-  it('cancelar "Gardar como" non anota nada', async () => {
-    const aoGardarComo = vi.fn()
-    const { inf } = novoContexto({ GardarInformeDialog: vi.fn(async () => '') }, { aoGardarComo })
-    await inf.iniciar()
-    await inf.gardarComo()
-    expect(aoGardarComo).not.toHaveBeenCalled()
-  })
-
-  it('a petición leva nomeBase (ruta sen extensión, ou o nome suxerido se non hai ruta)', async () => {
-    const { inf, api } = novoContexto({ GardarInformeDialog: vi.fn(async () => '/casa/curso.json') })
+  it('a petición leva nomeBase (o nome suxerido polo curso)', async () => {
+    const { inf, api } = novoContexto()
     await inf.iniciar()
     await inf.xerar()
     expect(api.XerarInformeCronograma.mock.calls[0][0].nomeBase).toMatch(/^cronograma-\d{4}-\d{4}$/)
-    await inf.gardarComo()
-    await inf.xerar()
-    expect(api.XerarInformeCronograma.mock.calls[1][0].nomeBase).toBe('/casa/curso')
   })
 
   it('as exportacións MD/DOCX/ODT mandan a petición completa (curso, tipografía e nomeBase)', async () => {
-    const { inf, api } = novoContexto({ GardarInformeDialog: vi.fn(async () => '/casa/curso.json') })
+    const { inf, api } = novoContexto()
     await inf.iniciar()
-    await inf.gardarComo()
     await inf.exportarMarkdown('b')
     await inf.exportarDocx('b')
     await inf.exportarOdt('b')
     for (const f of [api.ExportarInformeMarkdown, api.ExportarInformeDocx, api.ExportarInformeOdt]) {
       const req = f.mock.calls[0][0]
       expect(req.plan).toBeDefined()
-      expect(req.nomeBase).toBe('/casa/curso')
+      expect(req.nomeBase).toMatch(/^cronograma-\d{4}-\d{4}$/)
       expect('tipografia' in req).toBe(true)
     }
   })
@@ -442,29 +339,23 @@ describe('a ferramenta de actas co mesmo controlador', () => {
     expect(inf.estaAoDia()).toBe(true)
   })
 
-  it('o borrador e o ficheiro son de actas, e un ficheiro de cronograma dá erro', async () => {
+  it('o documento que se garda en Lúa é de actas', async () => {
     const plan = planCunhaActa()
-    const { inf, api, ui } = actas({
-      AbrirInformeDialog: vi.fn(async () => ({ path: '/tmp/cronograma.json', content: escribirFicheiro(novoPlan()) })),
-    })
+    const { inf, api } = actas()
     await inf.iniciar()
     inf.substituirPlan(plan)
     await inf.volcarBorrador()
     const gardado = JSON.parse(api.GardarBorradorInforme.mock.calls.at(-1)[0])
     expect(gardado.ferramenta).toBe('actas')
     expect(gardado.actas[0].monthsData).toBeTruthy()
-    await inf.abrir()
-    expect(ui.showWarnings).toHaveBeenLastCalledWith([expect.stringMatching(/cronograma/)])
-    expect(inf._estado().ruta).toBeNull()
   })
 
   it('recupera o borrador de actas ao arrancar', async () => {
     const plan = planCunhaActa()
     const { inf } = actas({ LerBorradorInforme: vi.fn(async () => escribirFicheiroActas(plan, { path: '/tmp/actas.json' })) })
     await inf.iniciar()
-    expect(inf._estado().ruta).toBe('/tmp/actas.json')
     expect(Object.keys(inf._estado().plan.monthsData)).toHaveLength(1)
-    expect(inf._estado().sucio).toBe(true)
+    expect(inf._estado().sucio).toBe(false)
   })
 
   it('avisa a ui de cada cambio do curso (para refrescar a lista de actas do ámbito)', async () => {

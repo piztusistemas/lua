@@ -75,6 +75,11 @@ type App struct {
 	problemasMu sync.Mutex
 	problemas   *xerar.Motor
 	problemasDe string // a ruta de Maxima coa que se abriu ("" = sen Maxima)
+
+	// migracion é o que se moveu do traballo solto a un proxecto ao arrincar
+	// (trasladar_migracion.go); o frontend recólleo unha vez para avisar.
+	migracionMu sync.Mutex
+	migracion   *ResultadoMigracion
 }
 
 func NewApp() *App {
@@ -108,6 +113,11 @@ func (a *App) ServiceStartup(ctx context.Context, options application.ServiceOpt
 	a.startup(ctx)
 	// Os adxuntos do asistente son temporais: os da sesión anterior non serven.
 	_ = limparAdxuntosDaSesion()
+	// Os datos pertencen sempre a un proxecto: o traballo solto das versións
+	// anteriores pasa a un, antes de que o frontend lea ningún borrador.
+	if m, err := migrarTraballoSolto(); err == nil && m.Proxecto != "" {
+		a.migracion = &m
+	}
 	go a.comprobarActualizacionLua()
 	go a.vixiarBuxo() // buxo: descarga/actualiza se está activo (ao arrincar e cada hora)
 	return nil
@@ -197,12 +207,6 @@ func saveFileDialogCompat(title, dir, base, filterName, filterPattern string) (s
 		d = d.SetDirectory(dir)
 	}
 	return d.PromptForSingleSelection()
-}
-
-// SaveFile escribe content nunha ruta xa coñecida (Ctrl+S sobre un ficheiro
-// que xa se abriu ou se gardou unha vez).
-func (a *App) SaveFile(path, content string) error {
-	return os.WriteFile(path, []byte(content), 0o644)
 }
 
 func fileExists(path string) bool {

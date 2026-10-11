@@ -398,9 +398,6 @@ func TestBorradorDeCadaFormulario(t *testing.T) {
 	if borradorFerramentaNome("actas") != "actas-borrador.json" || borradorFerramentaNome("cronograma") != "cronograma-borrador.json" {
 		t.Error("o das actas e o do cronograma non cambian")
 	}
-	if a, _, _ := nomesFerramenta("form:x"); a != "Abrir formulario" {
-		t.Errorf("título do diálogo = %q", a)
-	}
 }
 
 func TestNomeXanelaFormulario(t *testing.T) {

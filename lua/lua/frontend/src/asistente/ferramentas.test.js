@@ -16,7 +16,6 @@ function montar(plan = planBase(), extra = {}) {
   const informes = {
     getPlan: () => estado.plan,
     substituirPlan: (novo, motivo) => { estado.plan = novo; estado.historial.push(motivo) },
-    ruta: () => '/tmp/curso.json',
     abrirTarefa: vi.fn(),
     novo: vi.fn(async () => {}), abrir: vi.fn(async () => {}),
     gardar: vi.fn(async () => true), gardarComo: vi.fn(async () => true),
@@ -34,7 +33,7 @@ function montar(plan = planBase(), extra = {}) {
     escollerPlantilla: vi.fn(async () => {}),
     getTipografia: () => tipografia, setTipografia: (t) => { tipografia = t },
     avisar: vi.fn(), preguntar: vi.fn(async () => 'Outubro'),
-    refrescarPlantillas: vi.fn(), recargarOpcions: vi.fn(),
+    refrescarPlantillas: vi.fn(), recargarOpcions: vi.fn(), abrirTrasladar: vi.fn(async () => {}),
     ...extra.ui,
   }
   const api = {
@@ -59,7 +58,7 @@ describe('curso_ler', () => {
     expect(set.tarefas.map((t) => t.id)).toEqual(['a', 'b'])
     expect(set.tarefas[0].imaxes).toBe(1)
     expect(r.contido).not.toContain('base64')
-    expect(v.ficheiro).toBe('/tmp/curso.json')
+    expect('ficheiro' in v).toBe(false) // o curso vive en Lúa, non nun ficheiro
   })
   it('permite pedir só a configuración, ou só un mes', async () => {
     const { executar } = montar()
@@ -251,7 +250,9 @@ describe('informe, ficheiros e interface', () => {
     expect(json(await executar('curso_gardar', {})).gardado).toBe(true)
     expect(informes.gardar).toHaveBeenCalled()
     await executar('curso_gardar', { comoNovo: true })
-    expect(informes.gardarComo).toHaveBeenCalled()
+    expect(ui.abrirTrasladar).toHaveBeenCalledWith('sacar')
+    await executar('curso_abrir', {})
+    expect(ui.abrirTrasladar).toHaveBeenCalledWith('meter')
     await executar('historial', { accion: 'desfacer' })
     expect(informes.desfacer).toHaveBeenCalled()
     expect((await executar('historial', { accion: 'foo' })).erro).toBe(true)

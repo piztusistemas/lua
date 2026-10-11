@@ -767,11 +767,11 @@ func borradorFerramentaPath(ferramenta string) (string, error) {
 	if d := dirProxectoActivo(); d != "" {
 		return filepath.Join(d, "datos", borradorFerramentaNome(ferramenta)), nil
 	}
-	dir, err := os.UserConfigDir()
+	dir, err := dirConfigLua()
 	if err != nil {
 		return "", err
 	}
-	return filepath.Join(dir, "lua", "informes", borradorFerramentaNome(ferramenta)), nil
+	return filepath.Join(dir, "informes", borradorFerramentaNome(ferramenta)), nil
 }
 
 // borradorFerramentaPathVello é a localización histórica dos borradores:

@@ -32,8 +32,6 @@ import (
 	"strings"
 	"sync"
 	"time"
-
-	"github.com/wailsapp/wails/v3/pkg/application"
 )
 
 // ---------- Modelo ----------
@@ -1371,50 +1369,6 @@ func planDemoCrono() PlanCrono {
 }
 
 // ---------- Ficheiros do curso ----------
-
-// nomesFerramenta son os textos dos diálogos de ficheiros de cada ferramenta.
-func nomesFerramenta(ferramenta string) (abrir, gardar, filtro string) {
-	if _, ok := idFerramentaFormulario(ferramenta); ok {
-		return "Abrir formulario", "Gardar formulario", "Formulario (*.json)"
-	}
-	if ferramenta == ferramentaActas {
-		return "Abrir actas", "Gardar actas", "Actas (*.json)"
-	}
-	return "Abrir cronograma", "Gardar cronograma", "Cronograma (*.json)"
-}
-
-// AbrirInformeDialog amosa o selector nativo de ficheiros .json e devolve a
-// ruta e o contido. A interpretación (formato novo {"plans":[...]} ou o array
-// da versión web) faina o frontend. `ferramenta` é "cronograma" ou "actas".
-func (a *App) AbrirInformeDialog(ferramenta string) (map[string]string, error) {
-	titulo, _, filtro := nomesFerramenta(ferramenta)
-	path, err := application.Get().Dialog.OpenFile().
-		SetTitle(titulo).
-		AddFilter(filtro, "*.json").
-		PromptForSingleSelection()
-	if err != nil || path == "" {
-		return nil, err
-	}
-	contido, err := os.ReadFile(path)
-	if err != nil {
-		return nil, err
-	}
-	return map[string]string{"path": path, "content": string(contido)}, nil
-}
-
-// GardarInformeDialog amosa o selector nativo "Gardar como" e escribe o contido.
-func (a *App) GardarInformeDialog(ferramenta, defaultName, content string) (string, error) {
-	_, titulo, filtro := nomesFerramenta(ferramenta)
-	dir, base := splitDialogDefault(defaultName)
-	path, err := saveFileDialogCompat(titulo, dir, base, filtro, "*.json")
-	if err != nil || path == "" {
-		return "", err
-	}
-	if err := escribirAtomicoCrono(path, []byte(content)); err != nil {
-		return "", err
-	}
-	return path, nil
-}
 
 // escribirAtomicoCrono escribe nun temporal e renomea: unha caída a medio
 // gardar non deixa o curso do usuario cortado.

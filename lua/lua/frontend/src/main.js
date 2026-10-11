@@ -1,5 +1,5 @@
 import {
-  SaveFile, AbrirFicheiro,
+  AbrirFicheiro,
   GetSettings, SaveSettings,
   CheckLatexDeps, InstallLatex,
   SavePDFDialog,
@@ -14,15 +14,16 @@ import {
   GetActualizacionLua, AplicarActualizacionLua,
   IdiomaPiztu,
   ListarPlantillas, FragmentosInformePorDefecto, GardarPlantilla, EliminarPlantilla, DuplicarPlantilla,
-  EscollerPlantilla, PlantillaParaFicheiro, SubirImaxePlantilla, PlantillaImaxeVista, EliminarImaxePlantilla,
-  PrevisualizarPlantillaDe, PrevisualizarPlantillaDocumento, PrevisualizarPlantillaOfimaticaDocumento, PrevisualizarPlantilla, ExportarPlantilla, ImportarPlantilla,
+  EscollerPlantillaDocumento, PlantillaDoDocumento, SubirImaxePlantilla, PlantillaImaxeVista, EliminarImaxePlantilla,
+  PrevisualizarPlantillaDe, PrevisualizarPlantillaDocumento, PrevisualizarPlantillaOfimaticaDocumento, PrevisualizarPlantilla,
   PaqueteLatexQueFalta, InstalarPaqueteLatex,
   ListarFontesSistema,
   XerarInformeCronograma, ExportarInformeTex, ExportarInformeMarkdown, ExportarInformeDocx, ExportarInformeOdt,
-  AbrirInformeDialog, GardarInformeDialog, GardarBorradorInforme, LerBorradorInforme,
+  GardarBorradorInforme, LerBorradorInforme,
   ListarFormularios, GardarFormulario, EliminarFormulario, CambiarModoFormulario,
   LerBibliotecaFormularios, GardarBibliotecaFormularios, CrearCarpetaFormularios, GardarDescricionFormulario, GardarIconaFormulario,
-  ExportarFormulario, ImportarFormulario,
+  ArboreTraslado, SacarTenDatosProducion, SacarTraslado, SacarDocumentoJSON, EscollerFicheiroMeter, EscollerCartafolMeter,
+  AnalizarMeter, AplicarMeter, DesfacerTraslado, MigracionTraballoSolto,
   BuxoEstadoActual, BuxoActivar, BuxoActualizar,
   ListarCarpetasProxectos, CrearCarpetaProxectos, RenomearCarpetaProxectos, EliminarCarpetaProxectos, MoverProxecto,
   ListarProxectos, ListarFormulariosBiblioteca, CrearProxecto, ActivarProxecto, ProxectoActivo, EngadirAoProxecto, QuitarDoProxecto, EliminarProxecto, AbrirBuxoDoProxecto,
@@ -33,6 +34,7 @@ import {
 import { Application, Events, Window } from '@wailsio/runtime'
 import { haiProblemas, xeracionDe } from './formularios/problemas-modelo.js'
 import { abrirBibliotecaPlantillas } from './plantillas.js'
+import { abrirTrasladar } from './trasladar/trasladar.js'
 import { montarEditorPlantilla } from './plantillas-editor.js'
 import { makeDraggable } from './draggable.js'
 import { crearProgreso } from './progreso.js'
@@ -43,7 +45,7 @@ import { FERRAMENTA_ACTAS } from './informes/ferramenta-actas.js'
 import { crearFerramentaFormulario } from './formularios/ferramenta.js'
 import { abrirDisenador } from './formularios/disenador.js'
 import { svgIcona, coresFormularios, valorCor, aparenciaLibre } from './formularios/iconas.js'
-import { haiContidoFormulario, datosParaExportar, novoEsquema } from './formularios/modelo.js'
+import { haiContidoFormulario, novoEsquema } from './formularios/modelo.js'
 import { abrirBibliotecaFormularios } from './formularios/biblioteca.js'
 import { abrirProxectos } from './formularios/proxectos.js'
 import { crearColumna } from './formularios/columna.js'
@@ -116,9 +118,7 @@ function aplicarTraducions() {
 
 const preview = document.getElementById('preview')
 const btnNew = document.getElementById('btnNew')
-const btnOpen = document.getElementById('btnOpen')
-const btnSave = document.getElementById('btnSave')
-const btnSaveAs = document.getElementById('btnSaveAs')
+const btnTrasladar = document.getElementById('btnTrasladar')
 const btnUndo = document.getElementById('btnUndo')
 const btnRedo = document.getElementById('btnRedo')
 const btnRun = document.getElementById('btnRun')
@@ -686,11 +686,9 @@ function criarControlador(ferramenta) {
     ferramenta,
     api: {
       XerarInformeCronograma, ExportarInformeTex, ExportarInformeMarkdown, ExportarInformeDocx, ExportarInformeOdt,
-      AbrirInformeDialog: () => AbrirInformeDialog(id),
-      GardarInformeDialog: (nome, contido) => GardarInformeDialog(id, nome, contido),
       GardarBorradorInforme: (contido) => GardarBorradorInforme(id, contido),
       LerBorradorInforme: () => LerBorradorInforme(id),
-      SaveFile, SavePDFDialog,
+      SavePDFDialog,
     },
     ui: {
       setStatus,
@@ -712,10 +710,6 @@ function criarControlador(ferramenta) {
       ocupadoBoton: (boton, v) => { if (boton) boton.disabled = v },
       logLatex: logPdflatex,
       aoFallar: () => { checkLatex() },
-      // Cada curso lembra a súa plantilla (estilo): ao abrilo recupérase, e
-      // ao gardalo cun nome novo anótase a que está activa agora.
-      aoAbrirFicheiro: sincronizarPlantillaDoFicheiro,
-      aoGardarComo: lembrarPlantillaDoFicheiro,
       aoCambiar: () => { if (activo()) actualizarAmbitos() },
     },
     t,
@@ -750,7 +744,7 @@ function crearInformes() {
   aplicarFerramentaNaInterface()
   // Os formularios propios entran despois (hai que ler a biblioteca); se o
   // último que se usou era un deles, volve a el cando estea listo.
-  cargarFormularios(inicial).then(restaurarProxecto).then(abrirProxectosSeNonHai).catch((err) => { setStatus(t('formularios.erro.carga', 'Non se puido ler a biblioteca de formularios')); showWarnings([mensaxeErro(err)]) })
+  cargarFormularios(inicial).then(recollerMigracion).then(restaurarProxecto).then(asegurarProxectoAberto).catch((err) => { setStatus(t('formularios.erro.carga', 'Non se puido ler a biblioteca de formularios')); showWarnings([mensaxeErro(err)]) })
 }
 
 // aplicarFerramentaNaInterface amosa o editor da ferramenta activa, marca o
@@ -771,7 +765,7 @@ function aplicarFerramentaNaInterface() {
   preview.srcdoc = pagesToPreviewHTML((!senFerramenta && paxinasPorFerramenta[ferramentaActiva]) || [])
   actualizarAmbitos()
   actualizarAsistentePorModo()
-  setStatus(informes.ruta() || t('status.unsaved', 'sen gardar'))
+  setStatus(t('status.gardadoLua', 'Gardado en Lúa'))
 }
 
 // cambiarFerramenta pasa á ferramenta `id` (botóns da columna da esquerda):
@@ -788,6 +782,7 @@ async function cambiarFerramenta(id) {
   try { localStorage.setItem(CLAVE_FERRAMENTA, id) } catch { /* sen persistencia */ }
   aplicarFerramentaNaInterface()
   if (asistente) asistente.refrescarBoveda?.() // cada ferramenta ten a súa bóveda
+  sincronizarPlantillaDoDocumento()
   informes.focus()
 }
 
@@ -930,26 +925,26 @@ async function cargarFormularios(inicial) {
 const CLAVE_PROXECTO = 'lua.proxecto'
 const proxectoChip = document.getElementById('proxectoActivo')
 
+// Os datos pertencen sempre a un proxecto (spec trasladar): o chip só di cal
+// está aberto; para cambiar, o panel de Proxectos.
 function pintarChipProxecto(nome) {
   if (!proxectoChip) return
   proxectoChip.hidden = !proxectoAberto
   proxectoChip.replaceChildren()
   if (!proxectoAberto) return
-  const pechar = document.createElement('button')
-  pechar.type = 'button'
-  pechar.className = 'proxecto-activo__pechar'
-  pechar.textContent = '✕'
-  pechar.title = t('proxectos.chip.pechar', 'Pechar o proxecto (volves ás ferramentas soltas)')
-  pechar.addEventListener('click', () => cambiarProxecto('').catch((err) => showWarnings([mensaxeErro(err)])))
-  proxectoChip.append(t('proxectos.chip', 'Proxecto: {nome}', { nome }), pechar)
+  proxectoChip.append(t('proxectos.chip', 'Proxecto: {nome}', { nome }))
 }
 
-// cambiarProxecto entra no proxecto `id` ('' = sae). Os borradores en curso
-// vólcanse ANTES de cambiar o sitio dos datos.
-async function cambiarProxecto(id) {
-  for (const c of controladores.values()) await c.volcarBorrador()
+// cambiarProxecto entra no proxecto `id`. Os documentos en curso vólcanse ANTES
+// de cambiar o sitio dos datos, agás cando o que hai no disco é máis novo ca o
+// que hai en pantalla (despois de meter algo con Trasladar): `volcar: false`.
+// Fóra de proxecto (só ao arrincar) non hai nada que volcar.
+let nomeProxectoAberto = ''
+async function cambiarProxecto(id, { volcar } = {}) {
+  if (volcar ?? Boolean(proxectoAberto)) for (const c of controladores.values()) await c.volcarBorrador()
   const p = await ActivarProxecto(id)
   proxectoAberto = id
+  nomeProxectoAberto = p?.nome || ''
   try { if (id) localStorage.setItem(CLAVE_PROXECTO, id); else localStorage.removeItem(CLAVE_PROXECTO) } catch { /* sen persistencia */ }
   for (const fid of idsFormularios()) quitarFormulario(fid)
   await informesCrono.recargar()
@@ -962,7 +957,8 @@ async function cambiarProxecto(id) {
   informes = controladores.get(ferramentaActiva)
   if (asistente) asistente.refrescarBoveda?.() // a bóveda do proxecto, se a ten
   await asegurarFerramentaVisible()
-  setStatus(informes.ruta() || t('status.unsaved', 'sen gardar'))
+  await sincronizarPlantillaDoDocumento()
+  setStatus(t('status.gardadoLua', 'Gardado en Lúa'))
 }
 
 // Ao arrincar, volve ao proxecto no que se estaba (se aínda existe).
@@ -970,17 +966,35 @@ async function restaurarProxecto() {
   let id = ''
   try { id = localStorage.getItem(CLAVE_PROXECTO) || '' } catch { /* sen persistencia */ }
   if (!id) return
-  try { await cambiarProxecto(id) } catch {
+  try { await cambiarProxecto(id, { volcar: false }) } catch {
     try { localStorage.removeItem(CLAVE_PROXECTO) } catch { /* sen persistencia */ }
     await ActivarProxecto('').catch(() => {})
   }
 }
 
-// Ao abrir Lua sen proxecto aberto, o primeiro que se ve é a biblioteca de
-// proxectos: os formularios traballan dentro dun proxecto.
-async function abrirProxectosSeNonHai() {
-  if (proxectoAberto) return
-  await abrirPanelProxectos()
+// recollerMigracion: se ao arrincar Go pasou o traballo solto dunha versión
+// anterior a un proxecto, ábrese ese e avísase unha vez.
+let avisoMigracion = ''
+async function recollerMigracion() {
+  try {
+    const m = await MigracionTraballoSolto()
+    if (!m?.proxecto) return
+    try { if (!localStorage.getItem(CLAVE_PROXECTO)) localStorage.setItem(CLAVE_PROXECTO, m.proxecto) } catch { /* sen persistencia */ }
+    avisoMigracion = t('trasladar.migracion', 'O teu traballo de antes (fóra de proxectos) está agora no proxecto «{nome}». Lúa garda todo só; para levar algo fóra usa Trasladar.', { nome: m.nome })
+  } catch (err) {
+    showWarnings([mensaxeErro(err)])
+  }
+}
+
+// asegurarProxectoAberto: sempre hai un proxecto aberto. Se non quedou ningún
+// do último uso, ábrese o primeiro; se non hai ningún, créase «O meu traballo».
+async function asegurarProxectoAberto() {
+  if (!proxectoAberto) {
+    const lista = (await ListarProxectos()) || []
+    const id = lista[0]?.id || (await CrearProxecto(t('proxectos.meuTraballo', 'O meu traballo'), '', [])).id
+    await cambiarProxecto(id, { volcar: false })
+  }
+  if (avisoMigracion) { showWarnings([avisoMigracion]); avisoMigracion = '' }
 }
 
 async function abrirPanelProxectos() {
@@ -995,7 +1009,6 @@ async function abrirPanelProxectos() {
       ],
       crear: (nome, materia, ferramentas) => CrearProxecto(nome, materia, ferramentas),
       abrir: (id) => cambiarProxecto(id),
-      pechar: () => cambiarProxecto(''),
       engadir: async (id, f) => { await EngadirAoProxecto(id, f); if (id === proxectoAberto) await cambiarProxecto(id) },
       quitar: async (id, f) => { await QuitarDoProxecto(id, f); if (id === proxectoAberto) await cambiarProxecto(id) },
       eliminar: (id) => EliminarProxecto(id),
@@ -1081,51 +1094,83 @@ async function borrarDatosProba(fid) {
   setStatus(t('formularios.proba.borrados', 'Datos de proba borrados'))
 }
 
-// exportarFormulario garda un formulario da biblioteca nun ficheiro para pasarllo
-// a un compañeiro. Se ten datos escritos pregunta se van dentro: por defecto
-// (Esc, clic fóra, «Só o formulario») NON van. En produción os datos poden ser
-// reais, e a mensaxe dío.
+// exportarFormulario (menú do botón dereito ou «⋯» da biblioteca): abre
+// Trasladar co documento dese formulario (estrutura e datos) xa escollido.
 async function exportarFormulario(tid) {
-  const c = controladores.get(tid)
-  if (!c || !tid.startsWith('form:')) return
-  const fid = tid.slice(5)
-  const esquema = c.ferramenta.esquema
-  const nome = esquema.nome
-  let datos = ''
-  if (haiContidoFormulario(c.getPlan())) {
-    const msg = esquema.modo === 'produccion'
-      ? t('formularios.exportar.datos.produccion', '«{nome}» está en PRODUCIÓN e ten datos escritos, que poden ser reais. Se os incluís no ficheiro, saen do teu equipo. Queres incluílos?', { nome })
-      : t('formularios.exportar.datos', '«{nome}» ten datos escritos. Queres incluílos no ficheiro? Se non, expórtase só o formulario (a estrutura).', { nome })
-    const cos = await confirmar(msg, {
-      aceptar: t('formularios.exportar.cosDatos', 'Incluír os datos'),
-      cancelar: t('formularios.exportar.soFormulario', 'Só o formulario'),
-    })
-    if (cos) datos = datosParaExportar(c.getPlan())
-  }
+  if (!controladores.has(tid) || !tid.startsWith('form:')) return
+  if (tid !== ferramentaActiva) await cambiarFerramenta(tid)
+  await abrirTrasladarUI({ lapela: 'sacar', opcion: 'documento' })
+}
+
+// importarFormulario: «Importar formulario…» da biblioteca abre Trasladar.
+// Devolve null: a biblioteca non ten que amosar nada (faino Trasladar).
+async function importarFormulario() {
+  abrirTrasladarUI({ lapela: 'meter' })
+  return null
+}
+
+// ── Trasladar ──
+// O único sitio para sacar cousas de Lúa e metelas (trasladar/trasladar.js).
+// Ábrese co botón ⇅, con Ctrl+O (meter) e Ctrl+Maiús+S (sacar), ao soltar un
+// ficheiro na xanela e dende os menús de formularios e plantillas.
+function contextoTrasladar() {
+  const proxecto = proxectoAberto ? { id: proxectoAberto, nome: nomeProxectoAberto || proxectoAberto } : null
+  const documento = haiFerramenta() && informes ? { ferramenta: ferramentaActiva, nome: nomeDeFerramenta(ferramentaActiva) } : null
+  return { proxecto, documento }
+}
+
+// describirCurso: o texto dun curso dun ficheiro con varios (Piztu Orienta).
+function describirCurso(ferramenta, curso, i) {
   try {
-    const ruta = await ExportarFormulario(fid, datos)
-    if (ruta) setStatus(t('formularios.exportado', 'Formulario exportado: {ruta}', { ruta }))
-  } catch (err) {
-    setStatus(t('status.error', 'Erro'))
-    showWarnings([mensaxeErro(err)])
+    const f = ferramenta === 'actas' ? FERRAMENTA_ACTAS : FERRAMENTA_CRONOGRAMA
+    const texto = ferramenta === 'actas' ? JSON.stringify({ ferramenta: 'actas', actas: [curso] }) : JSON.stringify({ plans: [curso] })
+    return f.descricionCurso(f.lerFicheiro(texto)[0], t)
+  } catch {
+    return String(i + 1)
   }
 }
 
-// importarFormulario engade á biblioteca un formulario que chegou nun ficheiro
-// (ver formulario_intercambio.go: entra coma novo e nunca pisa un existente).
-// Os erros suben coma excepción: a biblioteca móstraos na súa propia capa.
-// Devolve {avisos}, ou null se se cancelou o diálogo.
-async function importarFormulario() {
-  const r = await ImportarFormulario()
-  const esquema = r?.formulario
-  if (!esquema?.id) return null // cancelado
-  // Os datos que traía o ficheiro xa os deixou Go coma borrador do formulario:
-  // a ferramenta recupéraos ao arrincar, coma calquera traballo en curso.
-  engadirFormulario(esquema)
+// recargarDespoisDeMeter volve ler o que cambiou SEN volcar a pantalla enriba
+// do que se acaba de meter.
+async function recargarDespoisDeMeter(res) {
+  if (res.reiniciar) { location.reload(); return }
   await recargarBiblioteca()
-  setStatus(t('formularios.importado', 'Formulario importado: {nome}', { nome: esquema.nome }))
-  return { avisos: r.avisos || [] }
+  await refrescarSelectorPlantillas()
+  const existentes = ((await ListarProxectos()) || []).map((p) => p.id)
+  if (res.abrirProxecto && !res.desfeito && existentes.includes(res.abrirProxecto)) {
+    await cambiarProxecto(res.abrirProxecto, { volcar: false })
+  } else if (existentes.includes(proxectoAberto)) {
+    await cambiarProxecto(proxectoAberto, { volcar: false })
+  } else {
+    proxectoAberto = ''
+    await asegurarProxectoAberto()
+  }
 }
+
+function abrirTrasladarUI(opcions = {}) {
+  return abrirTrasladar({
+    t,
+    contexto: contextoTrasladar(),
+    confirmar,
+    describirCurso,
+    api: {
+      ArboreTraslado, SacarTenDatosProducion, SacarTraslado, SacarDocumentoJSON,
+      contidoDocumento: () => informes.contidoDocumento(),
+      EscollerFicheiroMeter, EscollerCartafolMeter, AnalizarMeter, AplicarMeter, DesfacerTraslado,
+    },
+    antesDeMeter: async () => { for (const c of controladores.values()) await c.volcarBorrador() },
+    despoisDeMeter: (res) => recargarDespoisDeMeter(res).catch((err) => showWarnings([mensaxeErro(err)])),
+    ...opcions,
+  }).catch((err) => showWarnings([mensaxeErro(err)]))
+}
+
+// Soltar un ficheiro ou cartafol en calquera parte de Lúa (trasladar_app.go).
+Events.On('lua:trasladar-soltados', (e) => {
+  const rutas = Array.isArray(e.data) ? e.data : []
+  if (!rutas.length || souXanelaResultado || souXanelaTarefa) return
+  if (rutas.length > 1) setStatus(t('trasladar.soUn', 'Soltaches {n} elementos: Lúa mete o primeiro. Solta os demais despois.', { n: rutas.length }))
+  abrirTrasladarUI({ ruta: rutas[0] })
+})
 
 // A biblioteca de formularios: todos, en cartafoles, con descrición (formularios/biblioteca.js).
 function verBibliotecaFormularios() {
@@ -1368,16 +1413,11 @@ async function newFile() {
   await informes.novo()
 }
 
-async function openFile() {
-  await informes.abrir()
-}
-
-async function saveFile() {
+// gardarAgora (Ctrl+S): Lúa xa garda só; isto escribe todo xa e, se está
+// activado en Opcións, volve xerar.
+async function gardarAgora() {
+  for (const c of controladores.values()) if (c !== informes) await c.volcarBorrador()
   if (await informes.gardar()) gardadoOk()
-}
-
-async function saveFileAs() {
-  if (await informes.gardarComo()) gardadoOk()
 }
 
 async function printPreview() {
@@ -1406,7 +1446,7 @@ async function accionRemota(accionFn, btn, statusCompiling, errKey, errFallback)
   log('[XERAR] ' + statusCompiling)
   try {
     const result = await accionFn()
-    setStatusGardado(result.path ? t('status.exported', 'Exportado: ') + result.path : t('status.unsaved', 'sen gardar'), result.path)
+    setStatusGardado(result.path ? t('status.exported', 'Exportado: ') + result.path : t('status.gardadoLua', 'Gardado en Lúa'), result.path)
     log('[XERAR] ' + (result.path ? 'Exportado: ' + result.path : 'Feito.'))
     logAvisos(result.warnings)
   } catch (err) {
@@ -1470,7 +1510,8 @@ const apiPlantillas = {
   gardar: (p) => GardarPlantilla(p),
   eliminar: (id) => EliminarPlantilla(id),
   duplicar: (id) => DuplicarPlantilla(id),
-  escoller: (id, ficheiro) => EscollerPlantilla(id, ficheiro),
+  // O segundo argumento é o documento (a ferramenta activa) que lembra a plantilla.
+  escoller: (id, ferramenta) => EscollerPlantillaDocumento(id, ferramenta),
   subirImaxe: (req) => SubirImaxePlantilla(req),
   vistaImaxe: (id, nome) => PlantillaImaxeVista(id, nome),
   eliminarImaxe: (id, nome) => EliminarImaxePlantilla(id, nome),
@@ -1493,13 +1534,9 @@ const apiPlantillas = {
   aplicada: (p) => (souXanelaPlantilla ? PlantillaXanelaAplicada(p.id) : plantillaGardada(p.id)),
   // Asistente de IA do editor (ámbito "plantilla"): bindings, adxuntos e idioma.
   asistente: asistenteDaPlantilla(),
-  exportar: (id) => ExportarPlantilla(id),
-  importar: () => ImportarPlantilla(),
-}
-
-// rutaActual é o ficheiro do curso aberto ('' se aínda non se gardou).
-function rutaActual() {
-  return (informes && informes.ruta()) || ''
+  // Exportar e Importar abren Trasladar (o único sitio para sacar e meter).
+  exportar: (id) => { abrirTrasladarUI({ lapela: 'sacar', marcados: { plantillas: [id] } }); return '' },
+  importar: () => { abrirTrasladarUI({ lapela: 'meter' }); return null },
 }
 
 // refrescarSelectorPlantillas volve pintar o desplegable da barra co que
@@ -1542,7 +1579,7 @@ async function refrescarSelectorPlantillas() {
 // xerar non se compila nada.
 async function cambiarPlantilla(id) {
   try {
-    await EscollerPlantilla(id, rutaActual())
+    await EscollerPlantillaDocumento(id, haiFerramenta() ? ferramentaActiva : '')
     setStatus(id
       ? t('status.templateApplied', 'Plantilla aplicada')
       : t('status.templateNone', 'Sen plantilla'))
@@ -1553,25 +1590,14 @@ async function cambiarPlantilla(id) {
   }
 }
 
-// sincronizarPlantillaDoFicheiro: ao abrir un curso recupérase a plantilla
-// que ese ficheiro usaba (PlantillaParaFicheiro, plantillas.go). Un curso
-// novo, ou un que nunca tivo plantilla, deixa a activa como estea.
-async function sincronizarPlantillaDoFicheiro(ruta) {
-  if (!plantillaSelect) return
+// sincronizarPlantillaDoDocumento: cada documento do proxecto lembra a súa
+// plantilla (PlantillaDoDocumento, plantillas.go): ao cambiar de documento ou
+// de proxecto recupérase. Un documento que nunca tivo deixa a activa.
+async function sincronizarPlantillaDoDocumento() {
+  if (!plantillaSelect || !proxectoAberto || !haiFerramenta()) return
   try {
-    await PlantillaParaFicheiro(ruta || '')
+    await PlantillaDoDocumento(ferramentaActiva)
     await refrescarSelectorPlantillas()
-  } catch (err) {
-    showWarnings([mensaxeErro(err)])
-  }
-}
-
-// lembrarPlantillaDoFicheiro anota a plantilla activa para a ruta dada -
-// tras un "Gardar como", que é cando un curso estrea ruta.
-async function lembrarPlantillaDoFicheiro(ruta) {
-  if (!plantillaSelect || !ruta) return
-  try {
-    await EscollerPlantilla(plantillaSelect.value || '', ruta)
   } catch (err) {
     showWarnings([mensaxeErro(err)])
   }
@@ -1593,7 +1619,7 @@ function abrirPlantillas() {
   abrirBibliotecaPlantillas({
     t,
     api: apiPlantillas,
-    ficheiroActual: rutaActual,
+    ficheiroActual: () => (haiFerramenta() ? ferramentaActiva : ''),
     onEscoller: async () => {
       const anterior = plantillaSelect ? plantillaSelect.value : ''
       await refrescarSelectorPlantillas()
@@ -2182,7 +2208,7 @@ function resumoEstadoAsistente() {
     `- Curso académico: ${p.academicYear || '(sen indicar)'}; datas ${c.startDate} a ${c.endDate} (${meses.length} meses).`,
     `- Centro: ${c.schoolName || '(sen indicar)'}; localidade: ${c.location || '(sen indicar)'}; xefe/a: ${c.headOfDepartment || '(sen indicar)'}.`,
     `- Tarefas: ${totalTarefas(p)}${p.isLocked ? '; o curso está BLOQUEADO (non se pode editar)' : ''}; introdución do curso: ${c.introText ? 'escrita' : 'baleira'}.`,
-    `- Ficheiro: ${informes.ruta() || 'sen gardar'}; plantilla activa: ${plantilla || 'ningunha'}; informe xerado: ${informes.temResultado() ? 'si' : 'non'}.`,
+    `- Gardado en Lúa, no proxecto «${nomeProxectoAberto}»; plantilla activa: ${plantilla || 'ningunha'}; informe xerado: ${informes.temResultado() ? 'si' : 'non'}.`,
     `- Idioma da interface: ${idiomaActual}.`,
   ].join('\n')
 }
@@ -2197,7 +2223,7 @@ function resumoEstadoFormulario(p) {
   const cubertos = e.campos.filter((c) => c.tipo !== 'seccion' && p.valores[c.id] !== undefined && p.valores[c.id] !== '').length
   return [
     `- FERRAMENTA ACTIVA: o formulario propio «${e.nome}» (as ferramentas curso_*, tarefa_* e actas_* non traballan sobre el).`,
-    `- Campos: ${e.campos.length}; con datos: ${cubertos}. Ficheiro: ${informes.ruta() || 'sen gardar'}; documento xerado: ${informes.temResultado() ? 'si' : 'non'}.`,
+    `- Campos: ${e.campos.length}; con datos: ${cubertos}. Gardado en Lúa, no proxecto «${nomeProxectoAberto}»; documento xerado: ${informes.temResultado() ? 'si' : 'non'}.`,
     `- Idioma da interface: ${idiomaActual}.`,
   ].join('\n')
 }
@@ -2212,7 +2238,7 @@ function resumoEstadoActas(p) {
     `- Centro: ${c.schoolName || '(sen indicar)'}; departamento: ${c.department || '(sen indicar)'}; xefe/a: ${c.headOfDepartment || '(sen indicar)'}; secretario/a: ${c.secretary || '(sen indicar)'}.`,
     `- Membros: ${c.members.length}; materias: ${c.subjects.length}; actas: ${totalActas(p)}; informes de seguimento: ${totalSeguimentos(p)}${p.isLocked ? '; o curso está BLOQUEADO (non se pode editar)' : ''}.`,
     `- Ámbito que se xera e imprime: ${informes.getAmbito()}.`,
-    `- Ficheiro: ${informes.ruta() || 'sen gardar'}; plantilla activa: ${plantilla || 'ningunha'}; documento xerado: ${informes.temResultado() ? 'si' : 'non'}.`,
+    `- Gardado en Lúa, no proxecto «${nomeProxectoAberto}»; plantilla activa: ${plantilla || 'ningunha'}; documento xerado: ${informes.temResultado() ? 'si' : 'non'}.`,
     `- Idioma da interface: ${idiomaActual}.`,
   ].join('\n')
 }
@@ -2237,6 +2263,7 @@ function crearAsistente() {
       recargarOpcions,
       cambiarFerramenta,
       ferramentaActiva: () => ferramentaActiva,
+      abrirTrasladar: (lapela) => abrirTrasladarUI({ lapela }),
     },
   })
   asistente = crearPanelAsistente({
@@ -2318,9 +2345,7 @@ Events.On('actualizacion_lua_cambiada', (e) => aplicarActualizacionLua(e.data))
 // --- Wiring ---
 
 btnNew.addEventListener('click', conFerramenta(newFile))
-btnOpen.addEventListener('click', conFerramenta(openFile))
-btnSave.addEventListener('click', conFerramenta(saveFile))
-btnSaveAs.addEventListener('click', conFerramenta(saveFileAs))
+btnTrasladar?.addEventListener('click', () => abrirTrasladarUI())
 btnUndo.addEventListener('click', conFerramenta(() => informes.desfacer()))
 btnRedo.addEventListener('click', conFerramenta(() => informes.refacer()))
 btnRun.addEventListener('click', run)
@@ -2344,7 +2369,8 @@ btnLatexDismiss.addEventListener('click', () => latexWarning.classList.add('hidd
 btnAbout.addEventListener('click', () => sobreOverlay.classList.remove('hidden'))
 btnAboutClose.addEventListener('click', () => sobreOverlay.classList.add('hidden'))
 
-// Ctrl+N/S/O/Enter/X funcionan sexa cal sexa o foco. Ctrl+Z/Y sobre o
+// Ctrl+N/S/O/Enter/X funcionan sexa cal sexa o foco. Ctrl+O (meter) e
+// Ctrl+Maiús+S (sacar) abren Trasladar; Ctrl+S garda xa en Lúa. Ctrl+Z/Y sobre o
 // historial do curso só se non se está a teclear nun campo (aí manda o
 // desfacer nativo do campo). Ctrl+X (Xerar) fai preventDefault() antes de que
 // o navegador execute o "cortar" nativo - por deseño: pediuse Ctrl+X para
@@ -2355,11 +2381,11 @@ window.addEventListener('keydown', (e) => {
   // Ctrl+N/S/O/etc non teñen sentido alí.
   if (souXanelaResultado || souXanelaTarefa) return
   const mod = e.ctrlKey || e.metaKey
-  if (mod && !haiFerramenta()) return // sen documento: Ctrl+N/S/O/Z/Xerar non fan nada
-  if (mod && e.shiftKey && (e.key === 's' || e.key === 'S')) { e.preventDefault(); saveFileAs() }
-  else if (mod && e.key === 's') { e.preventDefault(); saveFile() }
+  if (mod && e.shiftKey && (e.key === 's' || e.key === 'S')) { e.preventDefault(); abrirTrasladarUI({ lapela: 'sacar' }); return }
+  if (mod && e.key === 'o') { e.preventDefault(); abrirTrasladarUI({ lapela: 'meter' }); return }
+  if (mod && !haiFerramenta()) return // sen documento: Ctrl+N/S/Z/Xerar non fan nada
+  if (mod && e.key === 's') { e.preventDefault(); gardarAgora() }
   else if (mod && e.key === 'n') { e.preventDefault(); newFile() }
-  else if (mod && e.key === 'o') { e.preventDefault(); openFile() }
   else if (mod && (e.key === 'Enter' || e.key === 'x' || e.key === 'X')) { e.preventDefault(); run() }
   else if (mod && (e.key === 'z' || e.key === 'Z' || e.key === 'y') && !/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) {
     e.preventDefault()
@@ -2373,7 +2399,7 @@ window.addEventListener('keydown', (e) => {
   }
 })
 
-setStatus(t('status.unsaved', 'sen gardar'))
+setStatus(t('status.gardadoLua', 'Gardado en Lúa'))
 pintarActualizacionLua() // versión local xa dispoñible dende o arranque, aínda sen resposta de GitHub
 GetActualizacionLua().then(aplicarActualizacionLua).catch(() => {})
 

@@ -52,14 +52,14 @@ function comprobarNonBloqueado(plan) {
 }
 
 // vistaCurso: o curso en forma lixeira para a IA (sen imaxes en base64).
-export function vistaCurso(plan, { ambito = 'todo', mes, ruta = null } = {}) {
+export function vistaCurso(plan, { ambito = 'todo', mes } = {}) {
   const c = plan.config
   const config = {
     anoAcademico: plan.academicYear, dataInicio: c.startDate, dataFin: c.endDate, centro: c.schoolName,
     localidade: c.location, departamento: c.department, xefe: c.headOfDepartment, cargoSinatura: c.signatoryRole,
     introducion: c.introText, bloqueado: !!plan.isLocked, tenLogotipo: !!c.schoolLogo,
   }
-  const out = { ficheiro: ruta }
+  const out = {}
   if (ambito !== 'tarefas') out.curso = config
   if (ambito !== 'config') {
     const meses = calendario(plan.config, plan.monthsData)
@@ -94,7 +94,7 @@ export function crearFerramentas({ informes, api, ui }) {
   }
 
   const frontend = {
-    curso_ler: (a) => vistaCurso(plan(), { ambito: a.ambito || 'todo', mes: txt(a.mes), ruta: informes.ruta() }),
+    curso_ler: (a) => vistaCurso(plan(), { ambito: a.ambito || 'todo', mes: txt(a.mes) }),
 
     curso_configurar(a) {
       const p = plan()
@@ -236,14 +236,18 @@ export function crearFerramentas({ informes, api, ui }) {
       return { novo: true }
     },
 
+    // Meter e sacar ficheiros vai por Trasladar: o asistente só abre a xanela.
     async curso_abrir() {
-      await informes.abrir()
-      return { ruta: informes.ruta() }
+      await ui.abrirTrasladar?.('meter')
+      return { trasladar: 'meter' }
     },
 
+    // O curso xa se garda só en Lúa; isto escríbeo agora. comoNovo abre
+    // Trasladar para sacalo a un ficheiro.
     async curso_gardar(a) {
-      const ok = a.comoNovo === true ? await informes.gardarComo() : await informes.gardar()
-      return { gardado: !!ok, ruta: informes.ruta() }
+      const ok = await informes.gardar()
+      if (a.comoNovo === true) await ui.abrirTrasladar?.('sacar')
+      return { gardado: !!ok, onde: 'Lúa' }
     },
 
     async informe_xerar() {
