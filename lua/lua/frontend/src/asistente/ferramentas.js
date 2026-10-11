@@ -236,6 +236,16 @@ export function crearFerramentas({ informes, api, ui }) {
       return { novo: true }
     },
 
+    // Reutilizar formularios do catálogo común no proxecto aberto.
+    async catalogo_reutilizar(a) {
+      const ids = (Array.isArray(a.ids) ? a.ids : []).map((x) => String(x).trim()).filter(Boolean)
+        .map((x) => (x === 'cronograma' || x === 'actas' || x.startsWith('form:') ? x : 'form:' + x))
+      if (!ids.length) erro('faltan os ids (de catalogo_ler)')
+      if (!ui.reutilizar) erro('non se pode reutilizar desde aquí')
+      await ui.reutilizar(ids)
+      return { reutilizados: ids }
+    },
+
     // Meter e sacar ficheiros vai por Trasladar: o asistente só abre a xanela.
     async curso_abrir() {
       await ui.abrirTrasladar?.('meter')

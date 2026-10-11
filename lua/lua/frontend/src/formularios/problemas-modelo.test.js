@@ -62,6 +62,9 @@ describe('problemas-modelo', () => {
   it('xeración por defecto', () => {
     expect(xeracionDe({})).toEqual({ semente: 1, variantes: 1, solucions: 'non' })
     expect(xeracionDe({ xeracion: { semente: 7, variantes: 99, solucions: 'final' } })).toEqual({ semente: 7, variantes: 50, solucions: 'final' })
+    expect(xeracionDe({ xeracion: { solucions: 'resultado-xunto' } }).solucions).toBe('resultado-xunto')
+    expect(xeracionDe({ xeracion: { solucions: 'resultado-final' } }).solucions).toBe('resultado-final')
+    expect(xeracionDe({ xeracion: { solucions: 'inventada' } }).solucions).toBe('non')
     expect(partesMates('a $x$ b').map((p) => p.mates)).toEqual([false, true, false])
   })
 })

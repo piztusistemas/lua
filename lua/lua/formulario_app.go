@@ -18,8 +18,23 @@ func (a *App) LerFormulario(id string) (Formulario, error) {
 
 // GardarFormulario normaliza, valida e garda un formulario (novo ou existente)
 // e devolve como quedou: co id e os ids dos campos que Lua lles puxo.
+//
+// Dentro dun proxecto, o formulario queda tamén no catálogo común
+// (catalogo_formularios.go), para poder reutilizalo noutros proxectos.
 func (a *App) GardarFormulario(f Formulario) (Formulario, error) {
-	return gardarFormulario(f)
+	g, err := gardarFormulario(f)
+	if err == nil {
+		sincronizarSeHaiProxecto(g)
+	}
+	return g, err
+}
+
+// sincronizarSeHaiProxecto copia ao catálogo común un formulario do proxecto
+// aberto. É mellor esforzo: se falla, o proxecto xa está gardado.
+func sincronizarSeHaiProxecto(f Formulario) {
+	if proxectoAbertoValido() != "" {
+		_ = sincronizarFormularioCatalogo(f)
+	}
 }
 
 // CambiarModoFormulario pasa un formulario a modo «deseno» ou «produccion» e
@@ -60,13 +75,48 @@ func (a *App) CrearCarpetaFormularios(nome string) (BibliotecaFormularios, error
 // GardarDescricionFormulario cambia só a descrición dun formulario (vale en
 // calquera modo, tamén en produción: non toca os campos).
 func (a *App) GardarDescricionFormulario(id, descricion string) (Formulario, error) {
-	return actualizarDescricionFormulario(id, descricion)
+	f, err := actualizarDescricionFormulario(id, descricion)
+	if err == nil {
+		sincronizarSeHaiProxecto(f)
+	}
+	return f, err
 }
 
 // GardarIconaFormulario cambia só a icona e a cor do formulario na columna
 // esquerda (menú do botón dereito → «Cambiar icona»). Vale en calquera modo.
 func (a *App) GardarIconaFormulario(id, icona, cor string) (Formulario, error) {
-	return actualizarIconaFormulario(id, icona, cor)
+	f, err := actualizarIconaFormulario(id, icona, cor)
+	if err == nil {
+		sincronizarSeHaiProxecto(f)
+	}
+	return f, err
+}
+
+// ---------- Catálogo común (ventá «Deseñar formulario») ----------
+
+// CatalogoFormularios devolve todos os formularios creados, cos cartafoles e
+// o que xa ten o proxecto aberto.
+func (a *App) CatalogoFormularios() (CatalogoFormularios, error) { return catalogoFormularios() }
+
+// CrearCarpetaCatalogo crea un cartafol do catálogo e devolve o seu id.
+func (a *App) CrearCarpetaCatalogo(nome string) (string, error) { return crearCarpetaCatalogo(nome) }
+
+// RenomearCarpetaCatalogo cambia o nome dun cartafol do catálogo.
+func (a *App) RenomearCarpetaCatalogo(id, nome string) error {
+	return renomearCarpetaCatalogo(id, nome)
+}
+
+// EliminarCarpetaCatalogo borra un cartafol (os formularios quedan sen cartafol).
+func (a *App) EliminarCarpetaCatalogo(id string) error { return eliminarCarpetaCatalogo(id) }
+
+// MoverFormularioCatalogo pon un formulario nun cartafol ("" = sen cartafol).
+func (a *App) MoverFormularioCatalogo(id, carpeta string) error {
+	return moverFormularioCatalogo(id, carpeta)
+}
+
+// ReutilizarNoProxecto engade ao proxecto aberto as ferramentas escollidas.
+func (a *App) ReutilizarNoProxecto(ferramentas []string) (Proxecto, error) {
+	return reutilizarNoProxecto(ferramentas)
 }
 
 // TiposCampoFormulario é a paleta de campos que pode arrastrar o deseñador.

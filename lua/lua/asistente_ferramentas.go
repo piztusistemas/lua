@@ -277,6 +277,11 @@ var ferramentasFrontend = []IAFerramenta{
 		Descricion: "Crea un curso novo baleiro (o que hai agora péchase; se ten cambios sen gardar o programa pregunta ao usuario).",
 	},
 	{
+		Nome: "catalogo_reutilizar", Tipo: tipoEscritura, Onde: "frontend",
+		Descricion: "Mete no proxecto aberto formularios do catálogo común (ids de catalogo_ler), o cronograma («cronograma») ou as actas («actas»): o proxecto leva unha copia de cada un e aparecen na columna da esquerda.",
+		Parametros: esqObx(map[string]any{"ids": map[string]any{"type": "array", "items": map[string]any{"type": "string"}, "description": "Ids dos formularios, «cronograma» ou «actas»."}}, "ids"),
+	},
+	{
 		Nome: "curso_abrir", Tipo: tipoEscritura, Onde: "frontend",
 		Descricion: "Abre a xanela Trasladar na lapela «Meter» para que o usuario meta en Lúa un ficheiro (.lua, .json dun curso, formulario ou plantilla, PDF ou Markdown). Lúa di que leva e onde vai antes de metelo.",
 	},

@@ -11,6 +11,7 @@
 //   eliminar(id)                          borra un formulario (con confirmación)
 //   exportar(id)                          (opcional) exporta un formulario a un ficheiro
 //   cambiarIcona(id)                      (opcional) escolle a icona dun formulario
+//   quitar(id)                            (opcional) saca a ferramenta do proxecto aberto (con confirmación)
 import { columna, accionDeSoltar, destinoDeSoltar } from './biblioteca-modelo.js'
 import { itemsDeFerramenta } from './accions-ferramenta.js'
 import { abrirMenu } from './menu-contextual.js'
@@ -19,7 +20,7 @@ import { iniciarArrastre } from './arrastrar.js'
 const SELECTOR = '.ferramenta-btn[data-ferramenta]'
 const MARXE_X = 24 // canto se pode saír da columna sen perder o destino
 
-export function crearColumna({ nav, zonaFixa, zonaResto, separador, t, biblioteca, existentes, nomeDe, gardar, eliminar, exportar, cambiarIcona }) {
+export function crearColumna({ nav, zonaFixa, zonaResto, separador, t, biblioteca, existentes, nomeDe, gardar, eliminar, exportar, cambiarIcona, quitar }) {
   const botons = () => new Map([...nav.querySelectorAll(SELECTOR)].map((b) => [b.dataset.ferramenta, b]))
 
   // pintar reparte os botóns nas zonas (na orde da biblioteca) e agocha os que toquen.
@@ -47,7 +48,7 @@ export function crearColumna({ nav, zonaFixa, zonaResto, separador, t, bibliotec
     abrirMenu({
       x: r.right + 6, y: r.top,
       etiqueta: nomeDe(id),
-      items: itemsDeFerramenta(id, { t, biblioteca, gardar, eliminar, exportar, cambiarIcona }),
+      items: itemsDeFerramenta(id, { t, biblioteca, gardar, eliminar, exportar, cambiarIcona, quitar }),
     })
   }
 

@@ -26,7 +26,8 @@ import {
   AnalizarMeter, AplicarMeter, DesfacerTraslado, MigracionTraballoSolto,
   BuxoEstadoActual, BuxoActivar, BuxoActualizar,
   ListarCarpetasProxectos, CrearCarpetaProxectos, RenomearCarpetaProxectos, EliminarCarpetaProxectos, MoverProxecto,
-  ListarProxectos, ListarFormulariosBiblioteca, CrearProxecto, ActivarProxecto, ProxectoActivo, EngadirAoProxecto, QuitarDoProxecto, EliminarProxecto, AbrirBuxoDoProxecto,
+  ListarProxectos, ListarFormulariosBiblioteca, CrearProxecto, ActivarProxecto, ProxectoActivo, QuitarDoProxecto, EliminarProxecto, AbrirBuxoDoProxecto,
+  CatalogoFormularios, CrearCarpetaCatalogo, RenomearCarpetaCatalogo, EliminarCarpetaCatalogo, MoverFormularioCatalogo, ReutilizarNoProxecto,
   CatalogoFluxo, FluxoAutomaticoDe, SincronizarFluxoFormulario, AvaliarFluxoFormulario,
   AbrirXanelaFormulario, GetDatosXanelaFormulario, FormularioXanelaGardado, FormularioXanelaEliminado, MarcarXanelaFormularioSucia, PecharXanelaFormulario,
   CalcularProblemas, ResolverProblema, CheckMaxima, DetectMaxima, InstallMaxima,
@@ -48,6 +49,7 @@ import { svgIcona, coresFormularios, valorCor, aparenciaLibre } from './formular
 import { haiContidoFormulario, novoEsquema } from './formularios/modelo.js'
 import { abrirBibliotecaFormularios } from './formularios/biblioteca.js'
 import { abrirProxectos } from './formularios/proxectos.js'
+import { abrirCatalogo } from './formularios/catalogo.js'
 import { crearColumna } from './formularios/columna.js'
 import { escollerIcona } from './formularios/escoller-icona.js'
 import { bibliotecaBaleira, completar, columna as columnaDe, agochar, podeBorrar } from './formularios/biblioteca-modelo.js'
@@ -732,7 +734,7 @@ function crearInformes() {
     nav: ferramentasNav, zonaFixa: zonaFixaColumna, zonaResto: zonaRestoColumna, separador: document.getElementById('ferramentasSeparador'),
     t, biblioteca: () => biblioteca, existentes: idsExistentes, nomeDe: nomeDeFerramenta,
     gardar: gardarBibliotecaColumna, eliminar: eliminarFormularioDaColumna, exportar: exportarFormulario,
-    cambiarIcona: cambiarIconaFormulario,
+    cambiarIcona: cambiarIconaFormulario, quitar: (id) => quitarDoProxectoUI(id).catch((err) => showWarnings([mensaxeErro(err)])),
   })
   pintarColumna()
   informesCrono.iniciar()
@@ -1007,10 +1009,8 @@ async function abrirPanelProxectos() {
         { id: 'cronograma', nome: nomeDeFerramenta('cronograma') },
         { id: 'actas', nome: nomeDeFerramenta('actas') },
       ],
-      crear: (nome, materia, ferramentas) => CrearProxecto(nome, materia, ferramentas),
+      crear: (nome, materia) => CrearProxecto(nome, materia, []),
       abrir: (id) => cambiarProxecto(id),
-      engadir: async (id, f) => { await EngadirAoProxecto(id, f); if (id === proxectoAberto) await cambiarProxecto(id) },
-      quitar: async (id, f) => { await QuitarDoProxecto(id, f); if (id === proxectoAberto) await cambiarProxecto(id) },
       eliminar: (id) => EliminarProxecto(id),
       buxo: () => BuxoEstadoActual(),
       abrirBuxo: (id) => AbrirBuxoDoProxecto(id),
@@ -1026,7 +1026,7 @@ async function abrirPanelProxectos() {
 }
 document.getElementById('btnProxectos')?.addEventListener('click', () => abrirPanelProxectos().catch((err) => showWarnings([mensaxeErro(err)])))
 document.getElementById('btnBenvidaProxectos')?.addEventListener('click', () => abrirPanelProxectos().catch((err) => showWarnings([mensaxeErro(err)])))
-document.getElementById('btnBenvidaProxectosEngadir')?.addEventListener('click', () => abrirPanelProxectos().catch((err) => showWarnings([mensaxeErro(err)])))
+document.getElementById('btnBenvidaProxectosEngadir')?.addEventListener('click', () => abrirCatalogoUI())
 document.getElementById('btnBenvidaFormulario')?.addEventListener('click', () => deseñarFormulario(null))
 
 function quitarFormulario(id) {
@@ -1320,7 +1320,50 @@ async function aplicarResultadoDisenador(r) {
   }
 }
 
-btnNovoFormulario?.addEventListener('click', () => deseñarFormulario(null))
+// «Deseñar formulario» (botón +): a ventá do catálogo común, onde se reutilizan
+// os formularios xa creados (e o cronograma e as actas) ou se crea un novo.
+btnNovoFormulario?.addEventListener('click', () => abrirCatalogoUI())
+
+function abrirCatalogoUI() {
+  return abrirCatalogo({
+    t,
+    accions: {
+      catalogo: () => CatalogoFormularios(),
+      nomeIntegrada: nomeDeFerramenta,
+      reutilizar: reutilizarNoProxectoUI,
+      novo: () => deseñarFormulario(null),
+      crearCarpeta: (nome) => CrearCarpetaCatalogo(nome),
+      renomearCarpeta: (id, nome) => RenomearCarpetaCatalogo(id, nome),
+      eliminarCarpeta: (id) => EliminarCarpetaCatalogo(id),
+      mover: (fid, carpeta) => MoverFormularioCatalogo(fid, carpeta),
+      preguntar,
+      confirmar,
+    },
+  }).catch((err) => showWarnings([mensaxeErro(err)]))
+}
+
+// reutilizarNoProxectoUI mete no proxecto aberto as ferramentas escollidas e
+// vai á última. Os documentos en curso vólcanse antes de recargar.
+async function reutilizarNoProxectoUI(ferramentas) {
+  for (const c of controladores.values()) await c.volcarBorrador()
+  await ReutilizarNoProxecto(ferramentas)
+  await cambiarProxecto(proxectoAberto, { volcar: false })
+  const ultima = ferramentas.at(-1)
+  if (ultima && controladores.has(ultima)) await cambiarFerramenta(ultima)
+  setStatus(t('catalogo.reutilizados', 'Engadido ao proxecto: {n}', { n: ferramentas.map(nomeDeFerramenta).join(', ') }))
+}
+
+// quitarDoProxectoUI (botón dereito na columna): saca a ferramenta do proxecto
+// aberto, coa súa copia e os seus datos. A biblioteca común non cambia.
+async function quitarDoProxectoUI(id) {
+  const nome = nomeDeFerramenta(id)
+  if (!await confirmar(t('proxectos.quitar.confirmar', 'Quitar «{nome}» do proxecto? Bórranse a súa copia e os datos que levase neste proxecto.', { nome }) + ' ' + t('catalogo.quitar.biblioteca', 'A biblioteca común non cambia: podes volver reutilizalo.'))) return
+  for (const c of controladores.values()) if (c !== controladores.get(id)) await c.volcarBorrador()
+  controladores.get(id)?.descartar()
+  await QuitarDoProxecto(proxectoAberto, id)
+  await cambiarProxecto(proxectoAberto, { volcar: false })
+  setStatus(t('catalogo.quitado', 'Quitado do proxecto: {nome}', { nome }))
+}
 
 // ── Ámbito: que se xera e imprime (só nas actas) ──
 let ambitosPintados = ''
@@ -2264,6 +2307,7 @@ function crearAsistente() {
       cambiarFerramenta,
       ferramentaActiva: () => ferramentaActiva,
       abrirTrasladar: (lapela) => abrirTrasladarUI({ lapela }),
+      reutilizar: reutilizarNoProxectoUI,
     },
   })
   asistente = crearPanelAsistente({

@@ -97,3 +97,8 @@ Why        — Non se debilita un test para avanzar, e cada commit queda verde.
 - A copia completa restaura proxectos, biblioteca, plantillas e opcións, pero non a clave da IA, a instalación nin as bóvedas de Obsidian conectadas (son deste equipo).
 - Quitáronse os bindings sen uso `AbrirInformeDialog`, `GardarInformeDialog`, `SaveFile`, `ExportarFormulario`, `ImportarFormulario`, `ExportarPlantilla` e `ImportarPlantilla`; as funcións puras dos formatos vellos quedan porque Trasladar segue léndoos.
 - «Novo» xa non bota man dun ficheiro: baleira o documento do proxecto, con confirmación e Desfacer.
+
+## 2026-10-11 — Proxectos lixeiros e catálogo común de formularios (spec `reutilizar-formularios`)
+- Decisións do usuario: os proxectos crean baleiros; a ventá «Deseñar formulario» é a única porta para engadir ferramentas (tamén cronograma e actas); todo formulario gardado nun proxecto entra no catálogo común; quitar dun proxecto vai no botón dereito da columna; dúas opcións novas de solucións (só o resultado, debaixo ou ao final).
+- Os cartafoles do catálogo gárdanse no `biblioteca_formularios.json` de fóra dos proxectos: así os cartafoles que xa existían seguen. Os cartafoles internos de cada proxecto non se ven nesta ventá.
+- Na columna, «Quitar do proxecto…» substitúe a «Eliminar formulario…» (dentro dun proxecto, eliminar só borraba a copia sen sacala da ficha do proxecto).

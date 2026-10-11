@@ -60,6 +60,8 @@
                         <option value="non" data-i18n="toolbar.solutions.non">Non (exame)</option>
                         <option value="xunto" data-i18n="toolbar.solutions.xunto">Debaixo de cada pregunta</option>
                         <option value="final" data-i18n="toolbar.solutions.final">Solucionario ao final</option>
+                        <option value="resultado-xunto" data-i18n="toolbar.solutions.resultadoXunto">Só o resultado, debaixo de cada pregunta</option>
+                        <option value="resultado-final" data-i18n="toolbar.solutions.resultadoFinal">Só os resultados, ao final</option>
                     </select>
                 </label>
             </div>
@@ -113,7 +115,7 @@
             <!-- Os demais formularios do usuario entran aquí (un botón por formulario,
                  ver main.js: engadirFormulario). Con botón dereito ou arrastrando cámbianse de zona ou bórranse. -->
             <div id="ferramentasResto" class="ferramentas-nav__zona" role="group" data-i18n-aria-label="ferramentas.zonaFormularios" aria-label="Formularios"></div>
-            <button type="button" id="btnNovoFormulario" class="ferramenta-btn ferramenta-btn--novo" data-i18n-title="formularios.novo.title" data-i18n-aria-label="formularios.novo.title" title="Crear un formulario novo" aria-label="Crear un formulario novo">
+            <button type="button" id="btnNovoFormulario" class="ferramenta-btn ferramenta-btn--novo" data-i18n-title="formularios.novo.title" data-i18n-aria-label="formularios.novo.title" title="Deseñar formulario: reutilizar un formulario xa creado (ou o cronograma e as actas) ou crear un novo" aria-label="Deseñar formulario">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
             </button>
             <button type="button" id="btnBibliotecaFormularios" class="ferramenta-btn ferramenta-btn--novo" data-i18n-title="formularios.bib.title" data-i18n-aria-label="formularios.bib.title" title="Biblioteca de formularios: cartafoles, descricións e formularios agochados" aria-label="Biblioteca de formularios: cartafoles, descricións e formularios agochados">
@@ -130,11 +132,11 @@
             <!-- Sen ningunha ferramenta na columna (por defecto o cronograma e as actas só están na biblioteca). -->
             <div id="benvida">
                 <p data-benvida="fora" data-i18n="proxectos.benvida.texto">Abre un proxecto para traballar: cada proxecto leva os seus formularios e os seus datos.</p>
-                <p data-benvida="proxecto" hidden data-i18n="proxectos.benvida.baleiro">Este proxecto aínda non ten ferramentas. Crea o seu primeiro formulario: o asistente pode deseñalo a partir dun documento que xa teñas ou dunha descrición. Tamén lle podes engadir o cronograma ou as actas.</p>
+                <p data-benvida="proxecto" hidden data-i18n="proxectos.benvida.baleiro">Este proxecto aínda non ten ferramentas. Crea o seu primeiro formulario: o asistente pode deseñalo a partir dun documento que xa teñas ou dunha descrición. Ou reutiliza un formulario que xa creaches (tamén o cronograma e as actas).</p>
                 <div class="modal-actions">
                     <button id="btnBenvidaProxectos" data-benvida="fora" class="primary" data-i18n="proxectos.benvida.abrir">Abrir a biblioteca de proxectos</button>
                     <button id="btnBenvidaFormulario" data-benvida="proxecto" hidden class="primary" data-i18n="proxectos.benvida.formulario">Crear un formulario co asistente</button>
-                    <button id="btnBenvidaProxectosEngadir" data-benvida="proxecto" hidden data-i18n="proxectos.benvida.engadir">Engadir cronograma ou actas</button>
+                    <button id="btnBenvidaProxectosEngadir" data-benvida="proxecto" hidden class="primary benvida-reutilizar" data-i18n="proxectos.benvida.engadir">Reutilizar formularios</button>
                 </div>
             </div>
         </div>

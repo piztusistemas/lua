@@ -475,6 +475,8 @@ body.xanela-formulario #formularioXanela { position: fixed; inset: 0; display: f
 body.sen-ferramenta #benvida { display: flex; }
 #benvida [hidden] { display: none !important; }
 #benvida p { max-width: 36rem; }
+/* «Reutilizar formularios»: tan visible coma «Crear», pero en verde para distinguilos. */
+#benvida button.benvida-reutilizar { background: oklch(52% 0.14 155); color: #fff; }
 body.sen-ferramenta .pane-editor > .contedor-ferramenta,
 body.sen-ferramenta #informeEditor,
 body.sen-ferramenta #actasEditor { display: none !important; }
@@ -632,3 +634,16 @@ body.sen-ferramenta :is(#btnNew, #btnOpen, #btnSave, #btnSaveAs, #btnUndo, #btnR
 .tras-resultado { margin: 0; font-size: 0.85rem; overflow-wrap: anywhere; }
 .tras-resultado p { margin: 0 0 0.4rem; }
 .tras[aria-busy="true"] { cursor: progress; }
+
+/* Proxectos pregados: a cabeceira desprega o resto (proxectos.js). */
+.prx-tarxeta__cab { flex: 1 1 100%; display: flex; align-items: baseline; flex-wrap: wrap; gap: 0.5rem; padding: 0; font: inherit; color: inherit; text-align: left; background: none; border: 0; cursor: pointer; }
+.prx-tarxeta__cab:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; border-radius: var(--radius-sm); }
+.prx-tarxeta__frecha { color: var(--text-muted); width: 1em; }
+.prx-tarxeta__cab .prx-materia { color: var(--text-muted); }
+
+/* Ventá «Deseñar formulario» (catalogo.js). */
+.cat-seccion { margin: 0.3rem 0 0; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); }
+.cat-marca { flex: 1; min-width: 0; display: flex; align-items: center; gap: 0.7rem; cursor: pointer; }
+.cat-form--xa { opacity: 0.7; }
+.cat-pe { justify-content: space-between; flex-wrap: nowrap; }
+.cat-pe .bib-pe__axuda { flex: 1 1 auto; }

@@ -30,6 +30,7 @@ function montar(extra = {}) {
   return { accions, estado }
 }
 const tarxetas = () => [...document.querySelectorAll('.prx-tarxeta strong')].map((e) => e.textContent)
+const despregar = (nome) => [...document.querySelectorAll('.prx-tarxeta__cab')].find((b) => b.textContent.includes(nome)).click()
 const botonCarp = (txt) => [...document.querySelectorAll('.prx-carpetas .bib-carp')].find((b) => b.textContent.startsWith(txt))
 
 describe('proxectos: cartafoles', () => {
@@ -49,7 +50,9 @@ describe('proxectos: cartafoles', () => {
     await vi.waitFor(() => expect(tarxetas().length).toBe(3))
     document.querySelector('.prx-carpetas .bib-nova').click()
     await vi.waitFor(() => expect(accions.crearCarpeta).toHaveBeenCalledWith('Física'))
-    const sel = document.querySelectorAll('.prx-carpeta')[1] // Mates
+    await vi.waitFor(() => expect(tarxetas().length).toBe(3))
+    despregar('Mates')
+    const sel = document.querySelector('.prx-carpeta')
     sel.value = 'vaz'
     sel.dispatchEvent(new Event('change'))
     await vi.waitFor(() => expect(accions.mover).toHaveBeenCalledWith('b', 'vaz'))
@@ -57,13 +60,35 @@ describe('proxectos: cartafoles', () => {
   it('eliminar un proxecto pide confirmación; un cartafol avisa de que non borra proxectos', async () => {
     const { accions } = montar()
     await vi.waitFor(() => expect(tarxetas().length).toBe(3))
-    document.querySelectorAll('.prx-eliminar')[1].click()
+    despregar('Mates')
+    document.querySelector('.prx-eliminar').click()
     await vi.waitFor(() => expect(accions.eliminar).toHaveBeenCalledWith('b'))
     expect(accions.confirmar.mock.calls[0][0]).toMatch(/Mates/)
     const fila = botonCarp('Inglés').closest('.bib-carp-fila')
     fila.querySelectorAll('button')[2].click()
     await vi.waitFor(() => expect(accions.eliminarCarpeta).toHaveBeenCalledWith('ing'))
     expect(accions.confirmar.mock.calls[1][0]).toMatch(/NON se borran/)
+  })
+  it('os proxectos saen pregados e desprégase ao premer', async () => {
+    montar()
+    await vi.waitFor(() => expect(tarxetas().length).toBe(3))
+    expect(document.querySelector('.prx-acc')).toBe(null)
+    expect(document.body.textContent).not.toContain('Ferramentas…')
+    despregar('Mates')
+    expect(document.querySelectorAll('.prx-acc').length).toBe(1)
+    expect(document.querySelector('.prx-tarxeta__cab[aria-expanded="true"]').textContent).toContain('Mates')
+    despregar('Mates')
+    expect(document.querySelector('.prx-acc')).toBe(null)
+  })
+  it('crear un proxecto só pide o nome: nace baleiro', async () => {
+    const { accions } = montar()
+    await vi.waitFor(() => expect(tarxetas().length).toBe(3))
+    expect(document.querySelector('.prx-novo input[type=checkbox]')).toBe(null)
+    const nome = document.querySelector('.prx-novo input')
+    nome.value = 'Física 2º'
+    ;[...document.querySelectorAll('.prx-novo button')].find((b) => b.textContent === 'Crear e abrir').click()
+    await vi.waitFor(() => expect(accions.crear).toHaveBeenCalledWith('Física 2º', ''))
+    expect(accions.abrir).toHaveBeenCalledWith('n')
   })
   it('opcionsFerramentas pon as integradas antes dos formularios', () => {
     expect(opcionsFerramentas([{ id: 'actas', nome: 'Actas' }], [{ id: 'x', nome: 'X', icona: 'i' }]).map((o) => o.id)).toEqual(['actas', 'form:x'])

@@ -48,6 +48,9 @@ const (
 	solucionsNon   = "non"   // só os enunciados (o exame para o alumnado)
 	solucionsXunto = "xunto" // debaixo de cada pregunta
 	solucionsFinal = "final" // nun solucionario ao final
+	// Só o resultado final de cada pregunta, sen a resolución paso a paso.
+	solucionsResultadoXunto = "resultado-xunto" // debaixo de cada pregunta
+	solucionsResultadoFinal = "resultado-final" // nunha lista ao final
 )
 
 // maxVariantes é o tope de copias dun documento (o mesmo ca Yang).
@@ -99,7 +102,7 @@ func (p ProblemaFormulario) motor() xerar.Problema {
 type XeracionProblemas struct {
 	Semente   int    `json:"semente"`
 	Variantes int    `json:"variantes,omitempty"` // as «iteracións»: 0 ou 1 = unha copia
-	Solucions string `json:"solucions,omitempty"` // solucionsNon (por defecto), solucionsXunto ou solucionsFinal
+	Solucions string `json:"solucions,omitempty"` // solucionsNon (por defecto), solucionsXunto, solucionsFinal ou só o resultado (solucionsResultado*)
 }
 
 func (x *XeracionProblemas) normalizar() XeracionProblemas {
@@ -110,7 +113,7 @@ func (x *XeracionProblemas) normalizar() XeracionProblemas {
 	out.Semente = max(x.Semente, 0)
 	out.Variantes = min(max(x.Variantes, 1), maxVariantes)
 	switch x.Solucions {
-	case solucionsXunto, solucionsFinal:
+	case solucionsXunto, solucionsFinal, solucionsResultadoXunto, solucionsResultadoFinal:
 		out.Solucions = x.Solucions
 	}
 	return out
@@ -290,7 +293,7 @@ func expandirProblemas(bloques []bloqueDoc, xer *XeracionProblemas, m motorProbl
 		}
 		if x.Variantes > 1 {
 			out = append(out, bloqueDoc{Tipo: bloqueTitulo, Nivel: 2, Texto: tx.T("FORM_VARIANTE", map[string]string{"N": strconv.Itoa(v + 1), "SEMENTE": strconv.Itoa(semente)})})
-			if x.Solucions == solucionsFinal {
+			if x.Solucions == solucionsFinal || x.Solucions == solucionsResultadoFinal {
 				solucionario = append(solucionario, bloqueDoc{Tipo: bloqueTitulo, Nivel: 3, Texto: tx.T("FORM_VARIANTE", map[string]string{"N": strconv.Itoa(v + 1), "SEMENTE": strconv.Itoa(semente)})})
 			}
 		}
@@ -325,12 +328,20 @@ func expandirProblemas(bloques []bloqueDoc, xer *XeracionProblemas, m motorProbl
 				if sol != "" && p.Solucion != nil && !p.Solucion.Parametrica && len(p.Solucion.Valores) > 0 && !mesmosValores(p.Solucion.Valores, c.Valores) {
 					avisar(fmt.Sprintf("pregunta %s: a solución resolveuse con outros valores das variables; resólvea de novo ou fai fixas as variables", num))
 				}
+				resultado := strings.TrimSpace(c.Resultado)
+				soResultado := x.Solucions == solucionsResultadoXunto || x.Solucions == solucionsResultadoFinal
 				switch {
 				case x.Solucions == solucionsNon:
+				case soResultado && resultado == "" && sol != "":
+					avisar(idioma.T("go.problemas.sen_resultado", "pregunta %s: a solución non ten un resultado final aparte (enche o campo Resultado)", num))
 				case sol == "":
 					avisar(idioma.T("go.problemas.sen_solucion", "pregunta %s: aínda non ten solución", num))
 				case x.Solucions == solucionsXunto:
 					out = append(out, bloqueDoc{Tipo: bloqueSolucion, Rotulo: tx.T("FORM_SOLUCION"), Texto: sol})
+				case x.Solucions == solucionsResultadoXunto:
+					out = append(out, bloqueDoc{Tipo: bloqueSolucion, Rotulo: tx.T("FORM_RESULTADO"), Texto: resultado})
+				case x.Solucions == solucionsResultadoFinal:
+					solucionario = append(solucionario, bloqueDoc{Tipo: bloqueSolucion, Rotulo: num + ".", Texto: resultado})
 				default:
 					solucionario = append(solucionario, bloqueDoc{Tipo: bloqueSolucion, Rotulo: num + ".", Texto: sol})
 				}
@@ -338,7 +349,11 @@ func expandirProblemas(bloques []bloqueDoc, xer *XeracionProblemas, m motorProbl
 		}
 	}
 	if len(solucionario) > 0 {
-		out = append(out, bloqueDoc{Tipo: bloqueSalto}, bloqueDoc{Tipo: bloqueTitulo, Nivel: 2, Texto: tx.T("FORM_SOLUCIONARIO")})
+		titulo := tx.T("FORM_SOLUCIONARIO")
+		if x.Solucions == solucionsResultadoFinal {
+			titulo = tx.T("FORM_RESULTADOS")
+		}
+		out = append(out, bloqueDoc{Tipo: bloqueSalto}, bloqueDoc{Tipo: bloqueTitulo, Nivel: 2, Texto: titulo})
 		out = append(out, solucionario...)
 	}
 	return out, avisos

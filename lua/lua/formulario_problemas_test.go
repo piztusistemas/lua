@@ -275,3 +275,48 @@ func TestUnidadesNonSonVariables(t *testing.T) {
 		t.Fatalf("só debería avisar de {q}: %v", av)
 	}
 }
+
+func TestSolucionsSoResultado(t *testing.T) {
+	f, d := formularioExame()
+	tx := novosTextosDoc(nil, map[string]string{})
+	m, _ := xerar.NovoMotor(xerar.Opcions{}, false, 0)
+	pasos := func(out []bloqueDoc) (resultados, conPasos int, titulo string) {
+		for _, b := range out {
+			if b.Tipo == bloqueSolucion {
+				if strings.Contains(b.Texto, "dfrac") {
+					conPasos++
+				} else if strings.Contains(b.Texto, "m/s") {
+					resultados++
+				}
+			}
+			if b.Tipo == bloqueTitulo {
+				titulo = b.Texto
+			}
+		}
+		return
+	}
+	for _, c := range []struct {
+		modo, titulo string
+		final        bool
+	}{{solucionsResultadoXunto, "", false}, {solucionsResultadoFinal, "Resultados", true}} {
+		d.Xeracion = &XeracionProblemas{Semente: 4, Solucions: c.modo}
+		if d.Xeracion.normalizar().Solucions != c.modo {
+			t.Fatalf("%s: o modo non se conserva", c.modo)
+		}
+		bloques, _ := bloquesFormulario(f, d, tx)
+		out, avisos := expandirProblemas(bloques, d.Xeracion, m, tx)
+		r, p, titulo := pasos(out)
+		if r != 1 || p != 0 {
+			t.Fatalf("%s: %d resultados, %d con resolución\n%+v", c.modo, r, p, out)
+		}
+		if c.final && titulo != c.titulo {
+			t.Fatalf("%s: título final %q", c.modo, titulo)
+		}
+		if !c.final && out[len(out)-1].Tipo == bloqueSalto {
+			t.Fatalf("%s: debaixo non leva solucionario ao final", c.modo)
+		}
+		if !strings.Contains(strings.Join(avisos, "|"), "aínda non ten solución") {
+			t.Fatalf("%s: avisos %v", c.modo, avisos)
+		}
+	}
+}

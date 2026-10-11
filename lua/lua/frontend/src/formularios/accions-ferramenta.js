@@ -7,9 +7,11 @@
 //   eliminar(id)      borra un formulario, con confirmación (Promise)
 //   exportar(id)      (opcional) garda o formulario nun ficheiro para compartilo (Promise)
 //   cambiarIcona(id)  (opcional) abre a xanela para escoller a icona da columna (Promise)
+//   quitar(id)        (opcional) saca a ferramenta do proxecto aberto, con confirmación (Promise).
+//                     Se se dá, substitúe a «Eliminar formulario»: nun proxecto, quitar é o que se quere.
 import { esIntegrada, estaFixa, estaAgochada, podeBorrar, fixar, desfixar, agochar } from './biblioteca-modelo.js'
 
-export function itemsDeFerramenta(id, { t, biblioteca, gardar, eliminar, exportar, cambiarIcona }) {
+export function itemsDeFerramenta(id, { t, biblioteca, gardar, eliminar, exportar, cambiarIcona, quitar }) {
   const b = biblioteca()
   const items = []
   const agochada = estaAgochada(b, id)
@@ -18,7 +20,12 @@ export function itemsDeFerramenta(id, { t, biblioteca, gardar, eliminar, exporta
     titulo: agochada ? undefined : t('formularios.menu.ocultar.title', 'Non se borra: segue na biblioteca e podes volver amosalo'),
     aoPremer: () => gardar(agochar(b, id, !agochada)),
   })
-  if (esIntegrada(id)) return items
+  const itemQuitar = quitar ? {
+    texto: t('formularios.menu.quitar', 'Quitar do proxecto…'), perigo: true,
+    titulo: t('formularios.menu.quitar.title', 'Saca esta ferramenta e os seus datos do proxecto. A biblioteca común non cambia.'),
+    aoPremer: () => quitar(id),
+  } : null
+  if (esIntegrada(id)) return itemQuitar ? [...items, { separador: true }, itemQuitar] : items
 
   items.unshift(estaFixa(b, id)
     ? { texto: t('formularios.menu.desfixar', 'Quitar da zona fixa'), titulo: t('formularios.menu.desfixar.title', 'Pasa á zona de abaixo (onde si se pode borrar)'), aoPremer: () => gardar(desfixar(b, id)) }
@@ -38,6 +45,7 @@ export function itemsDeFerramenta(id, { t, biblioteca, gardar, eliminar, exporta
     })
   }
   items.push({ separador: true })
+  if (itemQuitar) return [...items, itemQuitar]
   const borrable = podeBorrar(b, id)
   items.push({
     texto: t('formularios.menu.eliminar', 'Eliminar formulario…'), perigo: true, desactivado: !borrable,

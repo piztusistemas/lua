@@ -96,6 +96,7 @@ var textosDoc = []TextoDoc{
 	{"FORM_SOLUCION", "formulario", "Rótulo da solución debaixo dunha pregunta", "Solución", ""},
 	{"FORM_RESULTADO", "formulario", "Rótulo do resultado final dunha pregunta", "Resultado", ""},
 	{"FORM_SOLUCIONARIO", "formulario", "Título do solucionario ao final", "Solucionario", ""},
+	{"FORM_RESULTADOS", "formulario", "Título da lista de resultados ao final (só os resultados)", "Resultados", ""},
 	{"FORM_VARIANTE", "formulario", "Título de cada copia cando hai varias ({{N}}: número, {{SEMENTE}}: a semente)", "Modelo {{N}}", "{{N}}: o número da copia; {{SEMENTE}}: a súa semente"},
 }
 

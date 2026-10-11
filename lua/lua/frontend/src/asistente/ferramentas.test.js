@@ -33,7 +33,7 @@ function montar(plan = planBase(), extra = {}) {
     escollerPlantilla: vi.fn(async () => {}),
     getTipografia: () => tipografia, setTipografia: (t) => { tipografia = t },
     avisar: vi.fn(), preguntar: vi.fn(async () => 'Outubro'),
-    refrescarPlantillas: vi.fn(), recargarOpcions: vi.fn(), abrirTrasladar: vi.fn(async () => {}),
+    refrescarPlantillas: vi.fn(), recargarOpcions: vi.fn(), abrirTrasladar: vi.fn(async () => {}), reutilizar: vi.fn(async () => {}),
     ...extra.ui,
   }
   const api = {
@@ -245,6 +245,12 @@ describe('informe, ficheiros e interface', () => {
     informes.ultimoErroExportar = () => 'sen espazo'
     expect((await executar('informe_exportar', { formato: 'odt' })).contido).toBe('sen espazo')
   })
+  it('catalogo_reutilizar pon «form:» aos ids dos formularios', async () => {
+    const { executar, ui } = montar()
+    expect(json(await executar('catalogo_reutilizar', { ids: ['exame', 'cronograma', 'form:ficha'] })).reutilizados).toEqual(['form:exame', 'cronograma', 'form:ficha'])
+    expect(ui.reutilizar).toHaveBeenCalledWith(['form:exame', 'cronograma', 'form:ficha'])
+    expect((await executar('catalogo_reutilizar', { ids: [] })).erro).toBe(true)
+  })
   it('curso_gardar, historial e resultado_xanela', async () => {
     const { executar, informes, ui } = montar()
     expect(json(await executar('curso_gardar', {})).gardado).toBe(true)
@@ -364,7 +370,7 @@ describe('cobertura do catálogo', () => {
     const declaradas = ['curso_ler', 'curso_configurar', 'tarefa_engadir', 'tarefa_editar', 'tarefa_eliminar', 'tarefa_mover',
       'tarefa_abrir', 'curso_novo', 'curso_abrir', 'curso_gardar', 'informe_xerar', 'informe_exportar', 'historial',
       'resultado_xanela', 'plantilla_escoller', 'axustes_texto', 'usuario_avisar', 'usuario_preguntar', 'curso_logotipo', 'tarefa_imaxe',
-      'ferramenta_activa', 'actas_ler', 'actas_configurar', 'actas_membros', 'actas_materias', 'acta_gardar', 'acta_eliminar', 'acta_seguimento', 'actas_ambito']
+      'ferramenta_activa', 'actas_ler', 'actas_configurar', 'actas_membros', 'actas_materias', 'acta_gardar', 'acta_eliminar', 'acta_seguimento', 'actas_ambito', 'catalogo_reutilizar']
     const { nomesFrontend } = montar()
     expect([...nomesFrontend].sort()).toEqual([...declaradas].sort())
   })

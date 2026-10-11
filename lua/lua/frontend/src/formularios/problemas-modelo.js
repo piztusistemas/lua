@@ -186,6 +186,6 @@ export function xeracionDe(plan) {
   return {
     semente: Number.isFinite(Number(x.semente)) ? Math.max(0, Math.trunc(Number(x.semente))) : 1,
     variantes: Math.min(50, Math.max(1, Math.trunc(Number(x.variantes)) || 1)),
-    solucions: ['non', 'xunto', 'final'].includes(x.solucions) ? x.solucions : 'non',
+    solucions: ['non', 'xunto', 'final', 'resultado-xunto', 'resultado-final'].includes(x.solucions) ? x.solucions : 'non',
   }
 }

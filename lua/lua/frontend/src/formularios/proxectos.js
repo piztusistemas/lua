@@ -1,16 +1,16 @@
-// O panel de PROXECTOS: un proxecto é unha documentación concreta feita cos
-// formularios que se escollen da biblioteca. Leva a súa copia deles e os seus
-// propios datos (ver proxecto.go), e pode ter a súa bóveda de coñecemento
-// (módulo Buxo).
+// O panel de PROXECTOS: crear, abrir e ordenar proxectos. Un proxecto leva a
+// súa copia dos formularios e os seus propios datos (ver proxecto.go), e pode
+// ter a súa bóveda de coñecemento (módulo Buxo). Os formularios dun proxecto
+// escóllense na ventá «Deseñar formulario» (catalogo.js), non aquí: un proxecto
+// novo nace baleiro. Os proxectos saen pregados; ao premer, desprégase o resto.
 //
 //   abrirProxectos({ t, accions }) -> Promise (resolve ao pechar)
 //   accions: {
 //     listar()                 [{id, nome, materia, ferramentas, activo, boveda, fontes, wiki}]
 //     formularios()            esquemas da BIBLIOTECA (non os do proxecto aberto)
 //     integradas               [{id, nome}] cronograma e actas
-//     crear(nome, materia, ferramentas)   Promise<Proxecto>
+//     crear(nome, materia)     Promise<Proxecto> (baleiro)
 //     abrir(id)                entra no proxecto (main.js recarga as ferramentas); Promise
-//     engadir(id, ferramenta) / quitar(id, ferramenta)   Promise
 //     eliminar(id)             Promise
 //     buxo()                   Promise<{activo, instalado, iaConfigurada}>
 //     abrirBuxo(id)            Promise
@@ -21,7 +21,7 @@
 //     confirmar(msg)           Promise<boolean>
 //   }
 import { el } from '../informes/dom.js'
-import { svgIcona, coresFormularios, valorCor } from './iconas.js'
+import { coresFormularios } from './iconas.js'
 
 const ICONA_MAIS = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M10 4.5v11M4.5 10h11"/></svg>'
 const ICONA_LAPIS = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16 14.5 5.5a1.4 1.4 0 0 1 2 2L6 18l-3 1z"/></svg>'
@@ -52,7 +52,7 @@ export function abrirProxectos({ t, accions }) {
     let carpetaSel = null // null = todos, '' = sen cartafol, id = ese cartafol
     let formularios = []
     let buxo = { activo: false, instalado: false, iaConfigurada: false }
-    const abertos = new Set() // proxectos co selector de ferramentas despregado
+    const abertos = new Set() // proxectos despregados
 
     const overlay = el('div', { class: 'overlay bib-overlay', role: 'dialog', 'aria-modal': 'true', 'aria-label': t('proxectos.titulo', 'Proxectos') })
     const erro = el('p', { class: 'crono-erro bib-erro', role: 'alert', hidden: true })
@@ -76,40 +76,23 @@ export function abrirProxectos({ t, accions }) {
     // ---------- Novo proxecto ----------
     const inNome = el('input', { type: 'text', class: 'form-entrada', maxlength: '80', placeholder: t('proxectos.novo.nome', 'Nome do proxecto'), 'aria-label': t('proxectos.novo.nome', 'Nome do proxecto') })
     const inMateria = el('input', { type: 'text', class: 'form-entrada', maxlength: '200', placeholder: t('proxectos.novo.materia', 'Materia ou tema (opcional: axuda á IA da bóveda)'), 'aria-label': t('proxectos.novo.materia', 'Materia ou tema') })
-    const marcas = new Set()
-    const caixaNovo = el('div', { class: 'prx-ferr' })
-    function pintarFerrNovo() {
-      caixaNovo.replaceChildren(...opcionsFerramentas(accions.integradas, formularios).map((o) => casilla(o, marcas.has(o.id), (v) => {
-        if (v) marcas.add(o.id); else marcas.delete(o.id)
-      })))
-    }
     const btnCrear = el('button', {
       type: 'button', class: 'crono-btn primary', text: t('proxectos.novo.crear', 'Crear e abrir'),
       onclick: () => executar(async () => {
         const nome = inNome.value.trim()
         if (!nome) throw new Error(t('proxectos.novo.sen.nome', 'O proxecto necesita un nome.'))
-        const p = await accions.crear(nome, inMateria.value.trim(), [...marcas])
+        const p = await accions.crear(nome, inMateria.value.trim())
         if (carpetaSel && accions.mover) await accions.mover(p.id, carpetaSel)
         inNome.value = ''
         inMateria.value = ''
-        marcas.clear()
         await accions.abrir(p.id)
         pechar()
       }),
     })
     const novo = el('section', { class: 'prx-novo' },
       el('h3', { text: t('proxectos.novo.titulo', 'Novo proxecto') }),
-      el('p', { class: 'prx-axuda', text: t('proxectos.novo.axuda', 'Escolle os formularios que vai usar: o proxecto garda unha copia deles e os seus propios datos, e poderás reimprimir cando queiras.') }),
-      inNome, inMateria, caixaNovo, btnCrear)
-
-    function casilla(o, marcada, aoCambiar, desactivada = false) {
-      const cb = el('input', { type: 'checkbox', checked: marcada, disabled: desactivada })
-      cb.checked = marcada
-      cb.addEventListener('change', () => aoCambiar(cb.checked))
-      return el('label', { class: 'prx-casilla' }, cb,
-        o.icona ? el('span', { class: 'prx-casilla__icona', style: `--cor-formulario: ${valorCor(o.cor)}`, html: svgIcona(o.icona), 'aria-hidden': 'true' }) : null,
-        el('span', { text: o.nome }))
-    }
+      el('p', { class: 'prx-axuda', text: t('proxectos.novo.axudaBaleiro', 'Crea un proxecto baleiro. Despois engádelle formularios, o cronograma ou as actas co botón + da columna (Deseñar formulario).') }),
+      inNome, inMateria, btnCrear)
 
     // ---------- Lista ----------
     function tarxeta(p) {
@@ -122,11 +105,6 @@ export function abrirProxectos({ t, accions }) {
         p.activo
           ? el('span', { class: 'bib-chip', text: t('proxectos.aberto', 'Aberto') })
           : el('button', { type: 'button', class: 'crono-btn primary', text: t('proxectos.abrir', 'Abrir'), onclick: () => executar(async () => { await accions.abrir(p.id); pechar() }) }),
-        el('button', {
-          type: 'button', class: 'crono-btn', 'aria-expanded': String(despregado), text: t('proxectos.ferramentas', 'Ferramentas…'),
-          title: t('proxectos.ferramentas.title', 'Engadir ou quitar formularios do proxecto'),
-          onclick: () => { if (despregado) abertos.delete(p.id); else abertos.add(p.id); pintar() },
-        }),
         // Buxo ofrécese se está activo e hai unha IA configurada; se aínda non
         // está instalado (descárgase das Releases) o botón sae apagado e di por que.
         buxoOfrecido ? el('button', {
@@ -154,23 +132,23 @@ export function abrirProxectos({ t, accions }) {
         selCarpeta.addEventListener('change', () => executar(() => accions.mover(p.id, selCarpeta.value)))
       }
       acc.unshift(selCarpeta)
-      const selector = despregado ? el('div', { class: 'prx-ferr prx-ferr--tarxeta' },
-        ...opcions.map((o) => casilla(o, p.ferramentas.includes(o.id), (v) => executar(async () => {
-          if (v) { await accions.engadir(p.id, o.id); return }
-          if (!await accions.confirmar(t('proxectos.quitar.confirmar', 'Quitar «{nome}» do proxecto? Bórranse a súa copia e os datos que levase neste proxecto.', { nome: o.nome }))) return
-          await accions.quitar(p.id, o.id)
-        })))) : null
-      return el('article', { class: 'prx-tarxeta' + (p.activo ? ' prx-tarxeta--activo' : '') },
-        el('div', { class: 'prx-tarxeta__texto' },
-          el('div', { class: 'bib-form__tit' },
-            el('strong', { text: p.nome }),
-            p.activo ? el('span', { class: 'bib-chip bib-chip--produccion', text: t('proxectos.aberto', 'Aberto') }) : null,
-            el('small', { class: 'bib-form__n', text: p.creado })),
-          p.materia ? el('span', { class: 'prx-materia', text: p.materia }) : null,
+      const alternar = () => { if (despregado) abertos.delete(p.id); else abertos.add(p.id); pintar() }
+      const cab = el('button', {
+        type: 'button', class: 'prx-tarxeta__cab', 'aria-expanded': String(despregado),
+        title: despregado ? t('proxectos.pregar', 'Pregar') : t('proxectos.despregar', 'Ver as ferramentas e as accións do proxecto'),
+        onclick: alternar,
+      },
+      el('span', { class: 'prx-tarxeta__frecha', 'aria-hidden': 'true', text: despregado ? '▾' : '▸' }),
+      el('strong', { text: p.nome }),
+      p.activo ? el('span', { class: 'bib-chip bib-chip--produccion', text: t('proxectos.aberto', 'Aberto') }) : null,
+      el('small', { class: 'bib-form__n', text: p.creado }),
+      p.materia ? el('span', { class: 'prx-materia', text: p.materia }) : null)
+      return el('article', { class: 'prx-tarxeta' + (p.activo ? ' prx-tarxeta--activo' : '') + (despregado ? ' prx-tarxeta--aberta' : '') },
+        cab,
+        despregado ? el('div', { class: 'prx-tarxeta__texto' },
           el('small', { class: 'prx-resumo', text: resumo }),
-          el('small', { class: 'prx-resumo', text: resumoBoveda(p, t) })),
-        el('div', { class: 'bib-form__acc prx-acc' }, acc.filter(Boolean)),
-        selector)
+          el('small', { class: 'prx-resumo', text: resumoBoveda(p, t) })) : null,
+        despregado ? el('div', { class: 'bib-form__acc prx-acc' }, acc.filter(Boolean)) : null)
     }
 
     const daCarpeta = (p) => (carpetas.some((c) => c.id === p.carpeta) ? p.carpeta : '')
@@ -223,7 +201,6 @@ export function abrirProxectos({ t, accions }) {
     }
 
     function pintar() {
-      pintarFerrNovo()
       pintarCarpetas()
       const vistos = proxectos.filter((p) => carpetaSel === null || daCarpeta(p) === carpetaSel)
       lista.replaceChildren(...(vistos.length
