@@ -1264,5 +1264,17 @@
   "proxectos.novo.axudaBaleiro": "Cria um projeto vazio. Depois adiciona-lhe formulários, o cronograma ou as atas com o botão + da coluna (Desenhar formulário).",
   "proxectos.pregar": "Recolher",
   "toolbar.solutions.resultadoFinal": "Só os resultados, no fim",
-  "toolbar.solutions.resultadoXunto": "Só o resultado, debaixo de cada pergunta"
+  "toolbar.solutions.resultadoXunto": "Só o resultado, debaixo de cada pergunta",
+  "boveda.traballo.creada": "Criou-se o cofre do projeto e adicionou-se: {nota}",
+  "boveda.traballo.engadido": "Adicionado ao cofre: {nota}",
+  "boveda.traballo.erro": "Não foi possível adicionar ao cofre",
+  "go.boveda.produccion": "este formulário está em PRODUÇÃO: os seus dados podem ser reais e o assistente lê o cofre, por isso não se adiciona",
+  "go.boveda.traballo_cab": "Trabalho adicionado pela Lúa em %s",
+  "preview.boveda.label": "Cofre",
+  "preview.boveda.produccion": "Em produção não se adiciona ao cofre: os dados podem ser reais e o assistente lê o cofre.",
+  "preview.boveda.title": "Adicionar este documento ao cofre de conhecimento (nota Markdown e PDF em wiki/traballos/). Se o projeto não tem cofre, a Lúa cria-o.",
+  "preview.bovedaSempre.label": "sempre",
+  "preview.bovedaSempre.title": "Adicionar sempre este formulário ao cofre cada vez que se gera",
+  "preview.bovedaSempre.si": "Este formulário será adicionado ao cofre cada vez que se gerar.",
+  "preview.bovedaSempre.non": "Este formulário já não se adiciona ao cofre ao gerar."
 }

@@ -1264,5 +1264,17 @@
   "proxectos.novo.axudaBaleiro": "Creates an empty project. Then add forms, the schedule or the minutes with the + button in the column (Design form).",
   "proxectos.pregar": "Collapse",
   "toolbar.solutions.resultadoFinal": "Only the results, at the end",
-  "toolbar.solutions.resultadoXunto": "Only the result, under each question"
+  "toolbar.solutions.resultadoXunto": "Only the result, under each question",
+  "boveda.traballo.creada": "The project vault was created and the work added: {nota}",
+  "boveda.traballo.engadido": "Added to the vault: {nota}",
+  "boveda.traballo.erro": "Could not add it to the vault",
+  "go.boveda.produccion": "this form is in PRODUCTION mode: its data may be real and the assistant reads the vault, so it is not added",
+  "go.boveda.traballo_cab": "Work added by Lúa on %s",
+  "preview.boveda.label": "Vault",
+  "preview.boveda.produccion": "In production mode it is not added to the vault: the data may be real and the assistant reads the vault.",
+  "preview.boveda.title": "Add this document to the knowledge vault (Markdown note and PDF in wiki/traballos/). If the project has no vault, Lúa creates it.",
+  "preview.bovedaSempre.label": "always",
+  "preview.bovedaSempre.title": "Always add this form to the vault every time it is generated",
+  "preview.bovedaSempre.si": "This form will be added to the vault every time it is generated.",
+  "preview.bovedaSempre.non": "This form is no longer added to the vault when generating."
 }

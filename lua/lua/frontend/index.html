@@ -178,6 +178,14 @@
                     <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2.5h5.5L15 6v11a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-14a.5.5 0 0 1 .5-.5z"/><path d="M11.5 2.5V6H15"/><path d="M6.5 15v-3.5h1.2a1.2 1.2 0 0 1 0 2.4H6.5M11 15v-3.5h1.6M11 13.2h1.4"/></svg>
                     <span>ODT</span>
                 </button>
+                <!-- Engadir á bóveda (spec traballos-boveda): nota Markdown e PDF en wiki/traballos/. -->
+                <button id="btnBoveda" data-i18n-title="preview.boveda.title" title="Engadir este documento á bóveda de coñecemento (nota Markdown e PDF en wiki/traballos/). Se o proxecto non ten bóveda, Lúa créaa.">
+                    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5a1 1 0 0 1 1-1h4.5a1.5 1.5 0 0 1 1.5 1.5v11.5a1.5 1.5 0 0 0-1.5-1.5H4z"/><path d="M16 4.5a1 1 0 0 0-1-1h-2.5A1.5 1.5 0 0 0 11 5v11.5a1.5 1.5 0 0 1 1.5-1.5H16z"/></svg>
+                    <span data-i18n="preview.boveda.label">Bóveda</span>
+                </button>
+                <label id="bovedaSempreFila" class="boveda-sempre" hidden data-i18n-title="preview.bovedaSempre.title" title="Engadir sempre este formulario á bóveda cada vez que se xera">
+                    <input type="checkbox" id="chkBovedaSempre"> <span data-i18n="preview.bovedaSempre.label">sempre</span>
+                </label>
                 <!-- Non hai botón "Acoplar" na xanela de resultado a propósito:
                      pechar esta xanela (X do xestor de xanelas) xa dispara
                      WindowClosing -> lua:resultado-pechado (ver

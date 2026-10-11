@@ -56,6 +56,9 @@ type Proxecto struct {
 	BovedaDesconectada bool `json:"bovedaDesconectada,omitempty"`
 	// Carpeta: id do cartafol que agrupa o proxecto por temática ("" = sen cartafol).
 	Carpeta string `json:"carpeta,omitempty"`
+	// BovedaAutomatica: formularios que se engaden á bóveda en cada Xerar
+	// (boveda_traballos.go). Por defecto, ningún.
+	BovedaAutomatica []string `json:"bovedaAutomatica,omitempty"`
 }
 
 // ProxectoInfo é o que ve a lista de proxectos: a ficha e o estado da bóveda.

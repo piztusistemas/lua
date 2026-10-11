@@ -368,3 +368,33 @@ describe('a ferramenta de actas co mesmo controlador', () => {
     expect(inf.ferramenta.ambitosDisponibles(inf.getPlan())).toHaveLength(1)
   })
 })
+
+describe('bóveda', () => {
+  it('engadir á bóveda xera antes se fai falta e manda a petición co PDF', async () => {
+    const EngadirTraballoBoveda = vi.fn(async () => ({ nota: '/b/wiki/traballos/Cronograma.md', creada: true, avisos: [] }))
+    const { inf, api, ui } = novoContexto({ EngadirTraballoBoveda })
+    await inf.iniciar()
+    const r = await inf.engadirABoveda('Cronograma', 'b')
+    expect(api.XerarInformeCronograma).toHaveBeenCalledTimes(1)
+    expect(EngadirTraballoBoveda).toHaveBeenCalledWith(expect.objectContaining({ plan: expect.any(Object) }), 'UERG', 'Cronograma')
+    expect(r.creada).toBe(true)
+    expect(ui.setStatusGardado).toHaveBeenLastCalledWith(expect.stringContaining('Creouse a bóveda'), '/b/wiki/traballos/Cronograma.md')
+    await inf.engadirABoveda('Cronograma', 'b') // ao día: non volve xerar
+    expect(api.XerarInformeCronograma).toHaveBeenCalledTimes(1)
+  })
+
+  it('un erro (p. ex. produción) avísase e non rompe', async () => {
+    const { inf, ui } = novoContexto({ EngadirTraballoBoveda: vi.fn(async () => { throw new Error('está en PRODUCIÓN') }) })
+    await inf.iniciar()
+    expect(await inf.engadirABoveda('X', 'b')).toBe(null)
+    expect(ui.showWarnings).toHaveBeenLastCalledWith(['está en PRODUCIÓN'])
+  })
+
+  it('despois dun Xerar bo avisa (para «engadir sempre»)', async () => {
+    const despoisDeXerar = vi.fn()
+    const { inf } = novoContexto({}, { despoisDeXerar })
+    await inf.iniciar()
+    await inf.xerar()
+    expect(despoisDeXerar).toHaveBeenCalledTimes(1)
+  })
+})

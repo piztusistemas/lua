@@ -1264,5 +1264,17 @@
   "proxectos.novo.axudaBaleiro": "Crea un proxecto baleiro. Despois engádelle formularios, o cronograma ou as actas co botón + da columna (Deseñar formulario).",
   "proxectos.pregar": "Pregar",
   "toolbar.solutions.resultadoFinal": "Só os resultados, ao final",
-  "toolbar.solutions.resultadoXunto": "Só o resultado, debaixo de cada pregunta"
+  "toolbar.solutions.resultadoXunto": "Só o resultado, debaixo de cada pregunta",
+  "boveda.traballo.creada": "Creouse a bóveda do proxecto e engadiuse: {nota}",
+  "boveda.traballo.engadido": "Engadido á bóveda: {nota}",
+  "boveda.traballo.erro": "Non se puido engadir á bóveda",
+  "go.boveda.produccion": "este formulario está en PRODUCIÓN: os seus datos poden ser reais e o asistente le a bóveda, así que non se engade",
+  "go.boveda.traballo_cab": "Traballo engadido por Lúa o %s",
+  "preview.boveda.label": "Bóveda",
+  "preview.boveda.produccion": "En produción non se engade á bóveda: os datos poden ser reais e o asistente le a bóveda.",
+  "preview.boveda.title": "Engadir este documento á bóveda de coñecemento (nota Markdown e PDF en wiki/traballos/). Se o proxecto non ten bóveda, Lúa créaa.",
+  "preview.bovedaSempre.label": "sempre",
+  "preview.bovedaSempre.title": "Engadir sempre este formulario á bóveda cada vez que se xera",
+  "preview.bovedaSempre.si": "Este formulario engadirase á bóveda cada vez que se xere.",
+  "preview.bovedaSempre.non": "Este formulario xa non se engade á bóveda ao xerar."
 }

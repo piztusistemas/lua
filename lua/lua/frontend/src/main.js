@@ -27,6 +27,7 @@ import {
   BuxoEstadoActual, BuxoActivar, BuxoActualizar,
   ListarCarpetasProxectos, CrearCarpetaProxectos, RenomearCarpetaProxectos, EliminarCarpetaProxectos, MoverProxecto,
   ListarProxectos, ListarFormulariosBiblioteca, CrearProxecto, ActivarProxecto, ProxectoActivo, QuitarDoProxecto, EliminarProxecto, AbrirBuxoDoProxecto,
+  EngadirTraballoBoveda, BovedaAutomaticaDe, FixarBovedaAutomatica,
   CatalogoFormularios, CrearCarpetaCatalogo, RenomearCarpetaCatalogo, EliminarCarpetaCatalogo, MoverFormularioCatalogo, ReutilizarNoProxecto,
   CatalogoFluxo, FluxoAutomaticoDe, SincronizarFluxoFormulario, AvaliarFluxoFormulario,
   AbrirXanelaFormulario, GetDatosXanelaFormulario, FormularioXanelaGardado, FormularioXanelaEliminado, MarcarXanelaFormularioSucia, PecharXanelaFormulario,
@@ -133,6 +134,9 @@ const btnExportTex = document.getElementById('btnExportTex')
 const btnExportMarkdown = document.getElementById('btnExportMarkdown')
 const btnExportDocx = document.getElementById('btnExportDocx')
 const btnExportOdt = document.getElementById('btnExportOdt')
+const btnBoveda = document.getElementById('btnBoveda')
+const chkBovedaSempre = document.getElementById('chkBovedaSempre')
+const bovedaSempreFila = document.getElementById('bovedaSempreFila')
 const btnOptions = document.getElementById('btnOptions')
 const btnAbout = document.getElementById('btnAbout')
 const sobreOverlay = document.getElementById('sobreOverlay')
@@ -688,6 +692,7 @@ function criarControlador(ferramenta) {
     ferramenta,
     api: {
       XerarInformeCronograma, ExportarInformeTex, ExportarInformeMarkdown, ExportarInformeDocx, ExportarInformeOdt,
+      EngadirTraballoBoveda,
       GardarBorradorInforme: (contido) => GardarBorradorInforme(id, contido),
       LerBorradorInforme: () => LerBorradorInforme(id),
       SavePDFDialog,
@@ -713,6 +718,8 @@ function criarControlador(ferramenta) {
       logLatex: logPdflatex,
       aoFallar: () => { checkLatex() },
       aoCambiar: () => { if (activo()) actualizarAmbitos() },
+      // «Engadir sempre á bóveda ao xerar» (só formularios en deseño).
+      despoisDeXerar: () => { if (activo()) engadirABovedaAutomatico(id).catch(() => {}) },
     },
     t,
     tipografia: tipografiaActual,
@@ -767,7 +774,39 @@ function aplicarFerramentaNaInterface() {
   preview.srcdoc = pagesToPreviewHTML((!senFerramenta && paxinasPorFerramenta[ferramentaActiva]) || [])
   actualizarAmbitos()
   actualizarAsistentePorModo()
+  actualizarBotonBoveda()
   setStatus(t('status.gardadoLua', 'Gardado en Lúa'))
+}
+
+// ── Bóveda (spec traballos-boveda) ──
+// O botón «Bóveda» leva o documento á bóveda coma nota Markdown co seu PDF.
+// Nos formularios hai ademais a marca «sempre» (engadir en cada Xerar). En
+// produción as dúas cousas están desactivadas: o asistente le a bóveda.
+const enProducion = (id) => controladores.get(id)?.ferramenta.esquema?.modo === 'produccion'
+
+async function actualizarBotonBoveda() {
+  if (!btnBoveda || souXanelaResultado) return
+  const id = ferramentaActiva
+  const formulario = haiFerramenta() && id.startsWith('form:')
+  const producion = formulario && enProducion(id)
+  btnBoveda.disabled = producion
+  btnBoveda.title = producion
+    ? t('preview.boveda.produccion', 'En produción non se engade á bóveda: os datos poden ser reais e o asistente le a bóveda.')
+    : t('preview.boveda.title', 'Engadir este documento á bóveda de coñecemento (nota Markdown e PDF en wiki/traballos/). Se o proxecto non ten bóveda, Lúa créaa.')
+  bovedaSempreFila.hidden = !formulario
+  chkBovedaSempre.disabled = producion
+  chkBovedaSempre.checked = false
+  if (formulario && !producion) {
+    try { chkBovedaSempre.checked = await BovedaAutomaticaDe(id) } catch { /* queda desmarcada */ }
+  }
+}
+
+async function engadirABovedaAutomatico(id) {
+  if (!id.startsWith('form:') || enProducion(id)) return
+  const c = controladores.get(id)
+  // Só co resultado ao día: así nunca se volve xerar desde aquí.
+  if (!c || !c.estaAoDia() || !await BovedaAutomaticaDe(id)) return
+  await c.engadirABoveda(nomeDeFerramenta(id))
 }
 
 // cambiarFerramenta pasa á ferramenta `id` (botóns da columna da esquerda):
@@ -1227,6 +1266,7 @@ async function cambiarModoFormulario(fid, modo) {
     if (boton) pintarBotonFormulario(boton, novo)
     c.refrescarIdioma()
     actualizarAsistentePorModo()
+    actualizarBotonBoveda()
     setStatus(producion
       ? t('formularios.modo.aProduccion', 'Formulario en produción: {nome}', { nome: novo.nome })
       : t('formularios.modo.aDeseno', 'Formulario en deseño: {nome}', { nome: novo.nome }))
@@ -2401,6 +2441,18 @@ btnExportTex.addEventListener('click', conFerramenta(exportTex))
 btnExportMarkdown.addEventListener('click', conFerramenta(exportMarkdown))
 btnExportDocx.addEventListener('click', conFerramenta(exportDocx))
 btnExportOdt.addEventListener('click', conFerramenta(exportOdt))
+btnBoveda?.addEventListener('click', conFerramenta(() => informes.engadirABoveda(nomeDeFerramenta(ferramentaActiva), btnBoveda)))
+chkBovedaSempre?.addEventListener('change', async () => {
+  const quere = chkBovedaSempre.checked
+  try {
+    await FixarBovedaAutomatica(ferramentaActiva, quere)
+    setStatus(quere ? t('preview.bovedaSempre.si', 'Este formulario engadirase á bóveda cada vez que se xere.') : t('preview.bovedaSempre.non', 'Este formulario xa non se engade á bóveda ao xerar.'))
+  } catch (err) {
+    chkBovedaSempre.checked = !quere
+    showWarnings([mensaxeErro(err)])
+  }
+})
+if (souXanelaResultado) { if (btnBoveda) btnBoveda.hidden = true; if (bovedaSempreFila) bovedaSempreFila.hidden = true }
 btnOptions.addEventListener('click', openOptions)
 btnOptionsCancel.addEventListener('click', closeOptions)
 btnOptionsSave.addEventListener('click', saveOptions)

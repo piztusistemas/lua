@@ -246,6 +246,8 @@ export function createInformes({
         ? t('status.doneWarnings', 'Feito, con {n} avisos (ver o rexistro).', { n: r.warnings.length })
         : t('status.done', 'Feito.'))
       ultimoXerar = { ok: true, avisos: r.warnings || [], paxinas: (r.pageImages || []).length, erro: '' }
+      // Despois dun Xerar que saíu ben (p. ex. «engadir sempre á bóveda»).
+      ui.despoisDeXerar?.()
       return true
     } catch (err) {
       ui.setStatus(t('status.error', 'Erro'))
@@ -307,6 +309,29 @@ export function createInformes({
     }
   }
 
+  // engadirABoveda (spec traballos-boveda): leva o documento á bóveda coma
+  // nota Markdown co seu PDF. Se o resultado non está ao día, xera antes.
+  async function engadirABoveda(nome, boton) {
+    if (ultimoPDF === null || versionResultado !== versionPlan) {
+      if (!await xerar()) return null
+    }
+    ui.ocupadoBoton?.(boton, true)
+    try {
+      const r = await api.EngadirTraballoBoveda(peticion(), ultimoPDF, nome || nomeBase(''))
+      ui.setStatusGardado((r.creada
+        ? t('boveda.traballo.creada', 'Creouse a bóveda do proxecto e engadiuse: {nota}', { nota: r.nota })
+        : t('boveda.traballo.engadido', 'Engadido á bóveda: {nota}', { nota: r.nota })), r.nota)
+      ui.logAvisos?.(r.avisos || [])
+      return r
+    } catch (err) {
+      ui.setStatus(t('boveda.traballo.erro', 'Non se puido engadir á bóveda'))
+      ui.showWarnings([ui.mensaxeErro(err)])
+      return null
+    } finally {
+      ui.ocupadoBoton?.(boton, false)
+    }
+  }
+
   const exportarTex = (b) => exportar(b, t('status.exporting', 'Exportando...'), 'status.errorExporting', 'Erro ao exportar',
     () => api.ExportarInformeTex(peticion(), nomeBase('.tex')))
   const exportarMarkdown = (b) => exportar(b, t('status.compilingMarkdown', 'Compilando Markdown...'), 'status.errorExportingMarkdown', 'Erro ao exportar Markdown',
@@ -329,6 +354,7 @@ export function createInformes({
     exportarMarkdown,
     exportarDocx,
     exportarOdt,
+    engadirABoveda,
     desfacer: () => irAoHistorial(idx - 1),
     refacer: () => irAoHistorial(idx + 1),
     focus: () => editor?.focus(),

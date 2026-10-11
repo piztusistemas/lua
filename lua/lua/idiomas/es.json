@@ -1264,5 +1264,17 @@
   "proxectos.novo.axudaBaleiro": "Crea un proyecto vacío. Después añádele formularios, el cronograma o las actas con el botón + de la columna (Diseñar formulario).",
   "proxectos.pregar": "Plegar",
   "toolbar.solutions.resultadoFinal": "Solo los resultados, al final",
-  "toolbar.solutions.resultadoXunto": "Solo el resultado, debajo de cada pregunta"
+  "toolbar.solutions.resultadoXunto": "Solo el resultado, debajo de cada pregunta",
+  "boveda.traballo.creada": "Se creó la bóveda del proyecto y se añadió: {nota}",
+  "boveda.traballo.engadido": "Añadido a la bóveda: {nota}",
+  "boveda.traballo.erro": "No se pudo añadir a la bóveda",
+  "go.boveda.produccion": "este formulario está en PRODUCCIÓN: sus datos pueden ser reales y el asistente lee la bóveda, así que no se añade",
+  "go.boveda.traballo_cab": "Trabajo añadido por Lúa el %s",
+  "preview.boveda.label": "Bóveda",
+  "preview.boveda.produccion": "En producción no se añade a la bóveda: los datos pueden ser reales y el asistente lee la bóveda.",
+  "preview.boveda.title": "Añadir este documento a la bóveda de conocimiento (nota Markdown y PDF en wiki/traballos/). Si el proyecto no tiene bóveda, Lúa la crea.",
+  "preview.bovedaSempre.label": "siempre",
+  "preview.bovedaSempre.title": "Añadir siempre este formulario a la bóveda cada vez que se genera",
+  "preview.bovedaSempre.si": "Este formulario se añadirá a la bóveda cada vez que se genere.",
+  "preview.bovedaSempre.non": "Este formulario ya no se añade a la bóveda al generar."
 }

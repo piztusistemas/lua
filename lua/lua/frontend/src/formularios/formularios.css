@@ -647,3 +647,7 @@ body.sen-ferramenta :is(#btnNew, #btnOpen, #btnSave, #btnSaveAs, #btnUndo, #btnR
 .cat-form--xa { opacity: 0.7; }
 .cat-pe { justify-content: space-between; flex-wrap: nowrap; }
 .cat-pe .bib-pe__axuda { flex: 1 1 auto; }
+
+/* Marca «sempre» do botón Bóveda (spec traballos-boveda). */
+.boveda-sempre { display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.78rem; color: var(--text-muted); white-space: nowrap; }
+.boveda-sempre[hidden] { display: none; }
