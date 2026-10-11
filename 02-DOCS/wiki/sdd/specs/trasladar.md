@@ -6,12 +6,12 @@ tags: [sdd, spec, exportar, importar, proxectos, boveda]
 timestamp: 2026-10-11T00:00:00Z
 topic: sdd
 slug: trasladar
-status: draft
+status: planned (aprobada polo usuario o 2026-10-11; resto da cadea en autopiloto)
 ---
 
 # Spec — Trasladar: un só sitio para sacar e meter cousas en Lúa
 
-> Slug: `trasladar` · Status: draft · Creada: 2026-10-11
+> Slug: `trasladar` · Status: planned · Creada: 2026-10-11 · Aprobada: «Aprobada, lévaa ata o final en autopiloto» (2026-10-11)
 > Inherits: [constitution](../constitution.md) v1.2.1 (5.1 claves fóra das exportacións; 5.2 datos no equipo; 3.2 textos en catro idiomas; 6.1 teclado; 6.2 erros que din que facer; 8.2 axuda)
 
 ## Problem & why
@@ -128,8 +128,11 @@ quen recibe ficheiros de Piztu Orienta con varios cursos.
 - **suposición tomada** — O traballo solto migra só a «O meu traballo», con copia previa e aviso. *Base:* resposta do usuario. *Risco:* se xa existe un proxecto con ese nome, entra como «O meu traballo (2)».
 - **suposición tomada** — Ficheiros con varios cursos: lista con todos marcados, un proxecto por curso. *Base:* resposta do usuario.
 - **suposición tomada** — Ao abrir Lúa sen proxectos (primeira vez), créase un proxecto baleiro para empezar. *Base:* «sempre hai un proxecto aberto». *Risco:* pode sorprender a quen só quere probar.
-- **pregunta aberta** — Un documento sen proxecto de destino claro (un cronograma cando o proxecto aberto xa ten cronograma, ou un formulario con datos cando hai un proxecto aberto): proxecto novo (como di a táboa) ou ofrecer o proxecto aberto?
-- **pregunta aberta** — Que pasa con «Abrir» un `.json` de curso: entra no proxecto aberto ou nun proxecto novo por defecto?
-- **pregunta aberta** — Canto tempo ou cantas versións anteriores se gardan para «desfacer» unha actualización ou unha restauración?
+- **suposición tomada** (clarify, autopiloto) — Destino por defecto segundo a táboa; o resumo de «Meter» ten un selector «Destino» (proxecto aberto / proxecto novo) para cambialo sen máis preguntas. *Base:* intervención mínima sen quitar control. *Risco:* ningún; un clic opcional.
+- **suposición tomada** (clarify, autopiloto) — Un `.json` vello de curso ou de actas segue a mesma regra ca un documento: o proxecto aberto se non ten ese documento, se non proxecto novo. *Base:* coherencia coa táboa.
+- **suposición tomada** (clarify, autopiloto) — «Desfacer» garda as 5 últimas versións anteriores (actualizacións, restauracións e migración); a máis vella bórrase ao crear a sexta. *Base:* abonda para corrixir un erro recente sen encher o disco. *Risco:* unha copia completa grande ocupa espazo cinco veces.
 - **decisión diferida** — Copias de seguridade automáticas periódicas: fóra deste ciclo.
 - **área non formulable** — Compatibilidade cara adiante: que fai unha versión vella de Lúa cun `.lua` dunha versión nova. Hai algo aquí, pero aínda non se pode enunciar ben.
+
+## Revisions
+- 2026-10-11 — clarify en autopiloto: pechadas as tres preguntas abertas como suposicións (destino con selector, `.json` vello coma documento, 5 versións para desfacer).

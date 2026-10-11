@@ -88,3 +88,12 @@ Why        — Non se debilita un test para avanzar, e cada commit queda verde.
 - Un documento viaxa autosuficiente: datos, estrutura do formulario e plantilla. Ficheiros con varios cursos: lista marcada, un proxecto por curso.
 - Opcións descartadas: só renomear botóns (non dá copia de proxecto nin bóveda); un tipo de ficheiro por contido (obriga ao usuario a saber que ficheiro é cada un).
 - Risco anotado: a migración do traballo solto é o punto con máis perigo de perda de datos.
+
+## 2026-10-11 — Trasladar: decisións de implementación (plan `trasladar`)
+- Formato `.lua` = zip coa biblioteca estándar de Go (sen dependencias novas) e `manifest.json` (`formato: lua-paquete`, `version: 1`). Ao lelo rexéitanse rutas absolutas, con `..`, con `\` ou `:` e ligazóns; límites: 50 000 entradas, 1 GiB por entrada, 4 GiB en total.
+- O `.json` editable dun documento (`formato: lua-documento`) leva `orixe.instalacion`, un identificador aleatorio novo en `Settings.Instalacion`: serve só para recoñecer a «volta» e ofrecer «Actualizar».
+- Toda importación garda antes unha versión (máx. 5, en `<config>/lua/versions/`) do que pode cambiar e das rutas novas; se falla, restáurase (todo ou nada) e, se sae ben, a mesma versión é o «Desfacer».
+- A plantilla de cada documento lémbrase pola ruta do seu ficheiro dentro do proxecto (`EscollerPlantillaDocumento`/`PlantillaDoDocumento`) e viaxa no paquete (`plantillaDocumento`).
+- A copia completa restaura proxectos, biblioteca, plantillas e opcións, pero non a clave da IA, a instalación nin as bóvedas de Obsidian conectadas (son deste equipo).
+- Quitáronse os bindings sen uso `AbrirInformeDialog`, `GardarInformeDialog`, `SaveFile`, `ExportarFormulario`, `ImportarFormulario`, `ExportarPlantilla` e `ImportarPlantilla`; as funcións puras dos formatos vellos quedan porque Trasladar segue léndoos.
+- «Novo» xa non bota man dun ficheiro: baleira o documento do proxecto, con confirmación e Desfacer.
