@@ -102,3 +102,8 @@ Why        — Non se debilita un test para avanzar, e cada commit queda verde.
 - Decisións do usuario: os proxectos crean baleiros; a ventá «Deseñar formulario» é a única porta para engadir ferramentas (tamén cronograma e actas); todo formulario gardado nun proxecto entra no catálogo común; quitar dun proxecto vai no botón dereito da columna; dúas opcións novas de solucións (só o resultado, debaixo ou ao final).
 - Os cartafoles do catálogo gárdanse no `biblioteca_formularios.json` de fóra dos proxectos: así os cartafoles que xa existían seguen. Os cartafoles internos de cada proxecto non se ven nesta ventá.
 - Na columna, «Quitar do proxecto…» substitúe a «Eliminar formulario…» (dentro dun proxecto, eliminar só borraba a copia sen sacala da ficha do proxecto).
+
+## 2026-10-11 — Traballos na bóveda (spec `traballos-boveda`)
+- Decisións do usuario: nota Markdown + PDF; en `wiki/traballos/`; botón e marca opcional «engadir sempre» (desmarcada por defecto); produción bloqueada.
+- A bóveda é a que xa usa o asistente para ese documento (`bovedaDe`); se non hai ningunha, créase a do proxecto. Volver engadir substitúe.
+- A marca vive no proxecto (`proxecto.json` → `bovedaAutomatica`), non no esquema do formulario: así non cambia o formulario (que en produción está conxelado) e cada proxecto decide.

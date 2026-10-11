@@ -6,12 +6,12 @@ tags: [sdd, spec, boveda, obsidian, formularios]
 timestamp: 2026-10-11T00:00:00Z
 topic: sdd
 slug: traballos-boveda
-status: draft
+status: planned (aprobada polo usuario o 2026-10-11; resto da cadea en autopiloto)
 ---
 
 # Spec — Engadir traballos á bóveda
 
-> Slug: `traballos-boveda` · Status: draft · Creada: 2026-10-11
+> Slug: `traballos-boveda` · Status: planned · Creada: 2026-10-11
 > Inherits: [constitution](../constitution.md) v1.2.1 (5.2: os datos do alumnado só chegan á IA por unha acción de IA)
 
 ## Problem & why
