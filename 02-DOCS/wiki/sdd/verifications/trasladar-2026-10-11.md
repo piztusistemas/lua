@@ -5,6 +5,7 @@ slug: trasladar
 timestamp: 2026-10-11T00:00:00Z
 topic: sdd
 verdict: pass (con límites anotados)
+source_state: 11c50a6 (dirty: os cambios de Trasladar, antes do seu commit)
 ---
 
 # Verificación — Trasladar (2026-10-11)
@@ -39,6 +40,9 @@ verdict: pass (con límites anotados)
 | Teclado (Tab, frechas nas lapelas, Esc) | `trasladar.test.js` (Esc); lapelas con `role=tab` e frechas |
 | Catro idiomas e axuda | `i18n_test.go` verde; `lua/README.md` (sección Trasladar) |
 | Nunca se pisa un documento do proxecto aberto | `TestMeterNonPisaODocumentoDoProxectoAberto` (mata o mutante que quita a garda) |
+
+## Reexecución antes do commit
+`gofmt` baleiro, `go vet` limpo, `go test ./...` ok (118 s), vitest 492/492.
 
 ## Límites (o que non se probou)
 - Non se probou a xanela real de Wails: soltar ficheiros (`EnableFileDrop`), os diálogos nativos de gardar e abrir e o arranque coa migración comprobáronse por código e por tests unitarios, non nunha execución da app.
