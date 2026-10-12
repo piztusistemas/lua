@@ -15,13 +15,17 @@ package main
 //     agrúpanse nunha FICHA de pares «etiqueta: valor»; os baleiros omítense;
 //   - un texto longo é un título de nivel 3 coa etiqueta e o Markdown debaixo;
 //   - unha imaxe leva a etiqueta de pé; unha táboa, a etiqueta de título e as
-//     filas con algo escrito.
+//     filas con algo escrito;
+//   - unha etiqueta sen cambiar (o nome do tipo: «Texto longo») non sae
+//     (ver etiquetaDoc).
 //
 // O deseño (cores, tipos de letra, filetes) non está aquí: vai nos macros
 // \form* que define a plantilla (ver formulario_latex.go).
 
 import (
+	"encoding/json"
 	"strings"
+	"sync"
 
 	"lua-wails/grafico"
 )
@@ -94,15 +98,16 @@ func bloquesFormulario(f Formulario, d DatosFormulario, tx textosDocumento) ([]b
 			if valorVacio(c, v) {
 				continue
 			}
-			bloques = append(bloques,
-				bloqueDoc{Tipo: bloqueTitulo, Nivel: 3, Texto: c.Etiqueta},
-				bloqueDoc{Tipo: bloqueMarkdown, Texto: textoValor(v)})
+			if t := etiquetaDoc(c); t != "" {
+				bloques = append(bloques, bloqueDoc{Tipo: bloqueTitulo, Nivel: 3, Texto: t})
+			}
+			bloques = append(bloques, bloqueDoc{Tipo: bloqueMarkdown, Texto: textoValor(v)})
 		case campoImaxe:
 			pecharFicha()
 			if valorVacio(c, v) {
 				continue
 			}
-			bloques = append(bloques, bloqueDoc{Tipo: bloqueImaxe, Texto: c.Etiqueta, Imaxe: textoValor(v)})
+			bloques = append(bloques, bloqueDoc{Tipo: bloqueImaxe, Texto: etiquetaDoc(c), Imaxe: textoValor(v)})
 		case campoProblemas:
 			pecharFicha()
 			if valorVacio(c, v) {
@@ -115,7 +120,7 @@ func bloquesFormulario(f Formulario, d DatosFormulario, tx textosDocumento) ([]b
 			if len(filas) == 0 {
 				continue
 			}
-			b := bloqueDoc{Tipo: bloqueTaboa, Texto: c.Etiqueta}
+			b := bloqueDoc{Tipo: bloqueTaboa, Texto: etiquetaDoc(c)}
 			for _, col := range c.Columnas {
 				b.Cabeceira = append(b.Cabeceira, col.Etiqueta)
 			}
@@ -126,7 +131,10 @@ func bloquesFormulario(f Formulario, d DatosFormulario, tx textosDocumento) ([]b
 				}
 				b.Filas = append(b.Filas, linha)
 			}
-			bloques = append(bloques, bloqueDoc{Tipo: bloqueTitulo, Nivel: 3, Texto: c.Etiqueta}, b)
+			if b.Texto != "" {
+				bloques = append(bloques, bloqueDoc{Tipo: bloqueTitulo, Nivel: 3, Texto: b.Texto})
+			}
+			bloques = append(bloques, b)
 		default:
 			if valorVacio(c, v) {
 				continue
@@ -143,3 +151,40 @@ func bloquesFormulario(f Formulario, d DatosFormulario, tx textosDocumento) ([]b
 	}
 	return bloques, avisos
 }
+
+// etiquetaDoc é a etiqueta dun campo tal como sae no documento (título dun
+// texto longo ou dunha táboa, pé dunha imaxe). Unha etiqueta sen cambiar —o
+// nome do tipo que pon o deseñador ao crear o campo, «Texto longo», en
+// calquera idioma— non di nada do contido: non sae.
+func etiquetaDoc(c CampoFormulario) string {
+	t := strings.TrimSpace(c.Etiqueta)
+	if t == "" || nomesTipoPorDefecto()[c.Tipo][strings.ToLower(t)] {
+		return ""
+	}
+	return t
+}
+
+// nomesTipoPorDefecto: para cada tipo, os nomes que lle dá o deseñador
+// (formularios.tipo.<tipo> nos dicionarios embebidos), en minúsculas.
+var nomesTipoPorDefecto = sync.OnceValue(func() map[string]map[string]bool {
+	nomes := map[string]map[string]bool{}
+	for _, codigo := range []string{"gl", "es", "en", "pt"} {
+		datos, err := idiomasFS.ReadFile("idiomas/" + codigo + ".json")
+		if err != nil {
+			continue
+		}
+		var dicionario map[string]string
+		if json.Unmarshal(datos, &dicionario) != nil {
+			continue
+		}
+		for _, tipo := range tiposCampoFormulario {
+			if n := strings.TrimSpace(dicionario["formularios.tipo."+tipo]); n != "" {
+				if nomes[tipo] == nil {
+					nomes[tipo] = map[string]bool{}
+				}
+				nomes[tipo][strings.ToLower(n)] = true
+			}
+		}
+	}
+	return nomes
+})

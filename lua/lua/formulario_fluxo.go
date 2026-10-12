@@ -734,13 +734,13 @@ func fluxoAutomatico(f Formulario) *Fluxo {
 			destino(nodoTitulo, map[string]any{"texto": c.Etiqueta, "nivel": "2"}, nil)
 		case campoTextoLongo:
 			pecharFicha()
-			destino(nodoParagrafo, map[string]any{"titulo": c.Etiqueta}, map[string]string{"texto": engadirCampo(c)})
+			destino(nodoParagrafo, map[string]any{"titulo": etiquetaDoc(c)}, map[string]string{"texto": engadirCampo(c)})
 		case campoImaxe:
 			pecharFicha()
-			destino(nodoImaxe, map[string]any{"titulo": c.Etiqueta}, map[string]string{"imaxe": engadirCampo(c)})
+			destino(nodoImaxe, map[string]any{"titulo": etiquetaDoc(c)}, map[string]string{"imaxe": engadirCampo(c)})
 		case campoTaboa:
 			pecharFicha()
-			destino(nodoTaboa, map[string]any{"titulo": c.Etiqueta}, map[string]string{"taboa": engadirCampo(c)})
+			destino(nodoTaboa, map[string]any{"titulo": etiquetaDoc(c)}, map[string]string{"taboa": engadirCampo(c)})
 		case campoProblemas:
 			pecharFicha()
 			destino(nodoProblemas, nil, map[string]string{"problemas": engadirCampo(c)})

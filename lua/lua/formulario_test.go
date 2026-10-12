@@ -210,6 +210,32 @@ func TestBloquesFormularioCableadoAutomatico(t *testing.T) {
 	}
 }
 
+// Un texto longo coa etiqueta sen cambiar («Texto longo», en calquera idioma)
+// só deixa o contido; cunha etiqueta propia, o título segue saíndo.
+func TestBloquesFormularioEtiquetaPorDefectoNonSae(t *testing.T) {
+	f := normalizarFormulario(Formulario{ID: "exame", Nome: "Exame", Campos: []CampoFormulario{
+		{ID: "p1", Tipo: campoTextoLongo, Etiqueta: "Texto longo"},
+		{ID: "p2", Tipo: campoTextoLongo, Etiqueta: "Long text"},
+		{ID: "p3", Tipo: campoTextoLongo, Etiqueta: "Pregunta 3"},
+	}})
+	d := DatosFormulario{Valores: map[string]any{"p1": "Pregunta 1.", "p2": "Pregunta 2.", "p3": "Que é?"}}
+	for _, conFluxo := range []bool{false, true} {
+		g := f
+		if conFluxo {
+			g.Fluxo = fluxoAutomatico(f)
+		}
+		bloques, _ := bloquesFormulario(g, d, novosTextosDoc(nil, map[string]string{}))
+		var partes []string
+		for _, b := range bloques {
+			partes = append(partes, b.Tipo+":"+b.Texto)
+		}
+		esperado := "markdown:Pregunta 1.,markdown:Pregunta 2.,titulo:Pregunta 3,markdown:Que é?"
+		if strings.Join(partes, ",") != esperado {
+			t.Errorf("fluxo=%v: bloques = %s, quería %s", conFluxo, strings.Join(partes, ","), esperado)
+		}
+	}
+}
+
 func TestBloquesFormularioAvisosEBaleiro(t *testing.T) {
 	f := normalizarFormulario(formularioMostra())
 	tx := novosTextosDoc(nil, map[string]string{})
