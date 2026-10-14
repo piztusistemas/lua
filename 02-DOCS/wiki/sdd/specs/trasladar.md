@@ -64,7 +64,7 @@ quen recibe ficheiros de Piztu Orienta con varios cursos.
 
 ### O modelo
 - Dentro de Lúa todo se garda só. A interface amosa sempre o estado («Gardado en Lúa») e nunca un «sen gardar» alarmante.
-- Sempre hai un proxecto aberto: non existe traballo solto.
+- Sempre hai un proxecto aberto: non existe traballo solto. *(2026-10-14: Lúa arrinca no inicio, sen proxecto aberto e sen editor á vista; os datos seguen sendo sempre dun proxecto. Ver `decisions.md`, «Inicio nos dous paneis».)*
 - A palabra «Gardar» só aparece en editores que se poden descartar (deseñador de formularios, editor de plantillas) e sempre co nome do obxecto.
 
 ### O sitio único: Trasladar
@@ -127,7 +127,7 @@ quen recibe ficheiros de Piztu Orienta con varios cursos.
 - **suposición tomada** — Ao volver un documento que saíu deste Lúa ofrécese «Actualizar» por defecto e gárdase a versión anterior. *Base:* resposta do usuario. *Risco:* se o recoñecemento falla, entra como copia; hai que decidir que conta como «o mesmo documento».
 - **suposición tomada** — O traballo solto migra só a «O meu traballo», con copia previa e aviso. *Base:* resposta do usuario. *Risco:* se xa existe un proxecto con ese nome, entra como «O meu traballo (2)».
 - **suposición tomada** — Ficheiros con varios cursos: lista con todos marcados, un proxecto por curso. *Base:* resposta do usuario.
-- **suposición tomada** — Ao abrir Lúa sen proxectos (primeira vez), créase un proxecto baleiro para empezar. *Base:* «sempre hai un proxecto aberto». *Risco:* pode sorprender a quen só quere probar.
+- **suposición tomada** — Ao abrir Lúa sen proxectos (primeira vez), créase un proxecto baleiro para empezar. *Base:* «sempre hai un proxecto aberto». *Risco:* pode sorprender a quen só quere probar. *(Substituída o 2026-10-14: xa non se crea; o inicio amosa «Novo proxecto».)*
 - **suposición tomada** (clarify, autopiloto) — Destino por defecto segundo a táboa; o resumo de «Meter» ten un selector «Destino» (proxecto aberto / proxecto novo) para cambialo sen máis preguntas. *Base:* intervención mínima sen quitar control. *Risco:* ningún; un clic opcional.
 - **suposición tomada** (clarify, autopiloto) — Un `.json` vello de curso ou de actas segue a mesma regra ca un documento: o proxecto aberto se non ten ese documento, se non proxecto novo. *Base:* coherencia coa táboa.
 - **suposición tomada** (clarify, autopiloto) — «Desfacer» garda as 5 últimas versións anteriores (actualizacións, restauracións e migración); a máis vella bórrase ao crear a sexta. *Base:* abonda para corrixir un erro recente sen encher o disco. *Risco:* unha copia completa grande ocupa espazo cinco veces.

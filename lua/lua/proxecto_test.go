@@ -249,45 +249,119 @@ func TestBovedaDoProxectoConectaSoaEPodeDesconectarse(t *testing.T) {
 	}
 }
 
-func TestCarpetasDeProxectos(t *testing.T) {
-	proxectosTemporal(t)
-	p1, _ := crearProxecto("Un", "", nil)
-	p2, _ := crearProxecto("Dous", "", nil)
-	c, err := crearCarpetaProxectos("  Inglés  2º ")
-	if err != nil || len(c) != 1 || c[0].Nome != "Inglés 2º" || !idFormularioRe.MatchString(c[0].ID) {
-		t.Fatalf("crear: %+v %v", c, err)
+func TestMoverProxectoAOutroCartafol(t *testing.T) {
+	arrel := proxectosTemporal(t)
+	destino := filepath.Join(arrel, "Clases")
+	if err := os.MkdirAll(destino, 0o755); err != nil {
+		t.Fatal(err)
 	}
-	if _, err := crearCarpetaProxectos("inglés 2º"); err == nil {
-		t.Error("nome repetido (sen mirar maiúsculas) debe fallar")
+	p, _ := crearProxecto("Gramática: 1º/ESO", "", nil)
+	orixe, _ := dirProxecto(p.ID)
+	if _, err := moverProxecto(p.ID, destino); err != nil {
+		t.Fatal(err)
 	}
-	if _, err := crearCarpetaProxectos("  "); err == nil {
-		t.Error("sen nome debe fallar")
+	dir, _ := dirProxecto(p.ID)
+	if dir != filepath.Join(destino, "Gramática 1º ESO") {
+		t.Fatalf("o proxecto vai nun subcartafol co seu nome: %s", dir)
 	}
-	id := c[0].ID
-	if _, err := moverProxecto(p1.ID, "inexistente"); err == nil {
-		t.Error("mover a un cartafol que non existe debe fallar")
+	if _, err := os.Stat(filepath.Join(dir, "proxecto.json")); err != nil {
+		t.Errorf("os ficheiros deben estar no cartafol novo: %v", err)
 	}
-	moverProxecto(p1.ID, id)
-	moverProxecto(p2.ID, id)
-	if l, _ := listarProxectos(); l[0].Carpeta != id || l[1].Carpeta != id {
-		t.Errorf("os proxectos deben levar o cartafol: %+v", l)
-	}
-	if c, err = renomearCarpetaProxectos(id, "Inglés"); err != nil || c[0].Nome != "Inglés" {
-		t.Errorf("renomear: %+v %v", c, err)
-	}
-	// Borrar o cartafol non borra proxectos: pasan a sen cartafol.
-	if c, err = eliminarCarpetaProxectos(id); err != nil || len(c) != 0 {
-		t.Fatalf("eliminar: %+v %v", c, err)
+	if _, err := os.Stat(orixe); !os.IsNotExist(err) {
+		t.Errorf("o cartafol vello debe desaparecer: %v", err)
 	}
 	l, _ := listarProxectos()
-	if len(l) != 2 || l[0].Carpeta != "" || l[1].Carpeta != "" {
-		t.Errorf("os proxectos quedan sen cartafol: %+v", l)
+	if len(l) != 1 || l[0].Ubicacion != destino || l[0].Ruta != dir {
+		t.Errorf("a lista debe dicir onde está: %+v", l)
 	}
-	if _, err := eliminarCarpetaProxectos(id); err == nil {
-		t.Error("borrar un cartafol que non existe debe fallar")
+	// Outro co mesmo nome no mesmo sitio non pisa o primeiro.
+	p2, _ := crearProxecto("Gramática: 1º/ESO", "", nil)
+	if p2.ID == p.ID {
+		t.Fatal("un proxecto doutro cartafol non debe perder o seu id")
 	}
-	// carpetas.json non se confunde cun proxecto.
-	if len(l) != 2 {
-		t.Error("carpetas.json non é un proxecto")
+	moverProxecto(p2.ID, destino)
+	if d2, _ := dirProxecto(p2.ID); d2 != filepath.Join(destino, "Gramática 1º ESO (2)") {
+		t.Errorf("nome repetido: %s", d2)
+	}
+	// Volver ao cartafol de Lúa.
+	if _, err := moverProxecto(p2.ID, ""); err != nil {
+		t.Fatal(err)
+	}
+	if d2, _ := dirProxecto(p2.ID); d2 != filepath.Join(arrel, "proxectos", p2.ID) {
+		t.Errorf("de volta: %s", d2)
+	}
+	// Eliminar borra o subcartafol, pero non o cartafol escollido.
+	if err := eliminarProxecto(p.ID); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := os.Stat(dir); !os.IsNotExist(err) {
+		t.Error("eliminar debe borrar o proxecto")
+	}
+	if _, err := os.Stat(destino); err != nil {
+		t.Error("eliminar non debe borrar o cartafol escollido")
+	}
+	if l, _ := listarProxectos(); len(l) != 1 || l[0].ID != p2.ID || l[0].Ubicacion != "" {
+		t.Errorf("despois de eliminar: %+v", l)
+	}
+}
+
+func TestMoverProxectoRexeita(t *testing.T) {
+	arrel := proxectosTemporal(t)
+	p, _ := crearProxecto("Un", "", nil)
+	dir, _ := dirProxecto(p.ID)
+	if _, err := moverProxecto(p.ID, "relativo/dir"); err == nil {
+		t.Error("unha ruta relativa debe fallar")
+	}
+	if _, err := moverProxecto(p.ID, filepath.Join(arrel, "non-existe")); err == nil {
+		t.Error("un cartafol que non existe debe fallar")
+	}
+	if _, err := moverProxecto(p.ID, filepath.Join(dir, "boveda")); err == nil {
+		t.Error("non se pode mover dentro de si mesmo")
+	}
+	activarProxecto(p.ID)
+	if _, err := moverProxecto(p.ID, arrel); err == nil {
+		t.Error("un proxecto aberto non se move")
+	}
+	activarProxecto("")
+	if d, _ := dirProxecto(p.ID); d != dir {
+		t.Errorf("tras os erros segue onde estaba: %s", d)
+	}
+}
+
+// Cada proxecto pode levar a cor que escolla o usuario: só #rrggbb (gárdase en
+// minúsculas) ou "" para volver á de por defecto.
+func TestCorDoProxecto(t *testing.T) {
+	proxectosTemporal(t)
+	p, _ := crearProxecto("P", "", nil)
+	q, err := fixarCorProxecto(p.ID, " #3A7BD5 ")
+	if err != nil || q.Cor != "#3a7bd5" {
+		t.Fatalf("cor: %+v %v", q, err)
+	}
+	if l, _ := listarProxectos(); len(l) != 1 || l[0].Cor != "#3a7bd5" {
+		t.Errorf("a cor ten que gardarse na ficha: %+v", l)
+	}
+	for _, mala := range []string{"azul", "#12345", "#gggggg", "red;}", "#1234567"} {
+		if _, err := fixarCorProxecto(p.ID, mala); err == nil {
+			t.Errorf("debería rexeitar %q", mala)
+		}
+	}
+	if q, _ := lerProxecto(p.ID); q.Cor != "#3a7bd5" {
+		t.Errorf("unha cor mala non cambia a que había: %q", q.Cor)
+	}
+	if q, err := fixarCorProxecto(p.ID, ""); err != nil || q.Cor != "" {
+		t.Errorf("baleira = por defecto: %+v %v", q, err)
+	}
+	if _, err := fixarCorProxecto("nonexiste", "#000000"); err == nil {
+		t.Error("un proxecto que non existe non ten cor")
+	}
+	// Unha ficha que chega doutro sitio (un paquete importado) cunha cor mala
+	// lese coa de por defecto.
+	q, _ = lerProxecto(p.ID)
+	q.Cor = "red;}"
+	if err := escribirProxecto(q); err != nil {
+		t.Fatal(err)
+	}
+	if q, _ := lerProxecto(p.ID); q.Cor != "" {
+		t.Errorf("cor mala lida: %q", q.Cor)
 	}
 }

@@ -55,7 +55,7 @@ exames, informes) e queren telos ordenados por temas.
 
 ## Behaviour
 ### Panel de Proxectos
-- «Novo proxecto»: nome e materia; «Crear e abrir» crea un proxecto sen ferramentas e ábreo.
+- «Novo proxecto»: nome e materia; «Crear» crea un proxecto sen ferramentas (sen abrilo), que sae despregado, e a columna pasa a «Configurar»: cartafol do equipo onde se garda («Escoller cartafol…»), fontes de coñecemento (Buxo) e «Abrir proxecto» ou «Agora non».
 - Cada proxecto existente sae nunha liña pregada (nome, data, materia). Ao premer desprégase: ferramentas, bóveda e botóns (Abrir, cartafol, Fontes de coñecemento, Eliminar).
 - Non hai botón «Ferramentas…».
 

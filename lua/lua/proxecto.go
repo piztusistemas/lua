@@ -32,6 +32,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strings"
 	"sync"
@@ -54,11 +55,12 @@ type Proxecto struct {
 	// BovedaDesconectada: o usuario desconectou a bóveda do proxecto do
 	// asistente. Por defecto, se o proxecto ten bóveda, o asistente úsaa.
 	BovedaDesconectada bool `json:"bovedaDesconectada,omitempty"`
-	// Carpeta: id do cartafol que agrupa o proxecto por temática ("" = sen cartafol).
-	Carpeta string `json:"carpeta,omitempty"`
 	// BovedaAutomatica: formularios que se engaden á bóveda en cada Xerar
 	// (boveda_traballos.go). Por defecto, ningún.
 	BovedaAutomatica []string `json:"bovedaAutomatica,omitempty"`
+	// Cor: a que escolleu o usuario para o proxecto (#rrggbb). Baleira = a de
+	// por defecto, que o frontend reparte entre os proxectos.
+	Cor string `json:"cor,omitempty"`
 }
 
 // ProxectoInfo é o que ve a lista de proxectos: a ficha e o estado da bóveda.
@@ -70,6 +72,10 @@ type ProxectoInfo struct {
 	Boveda bool `json:"boveda"`
 	Fontes int  `json:"fontes"`
 	Wiki   int  `json:"wiki"`
+	// Ruta: o cartafol do proxecto. Ubicacion: o cartafol que escolleu o
+	// usuario para gardalo ("" = o cartafol de Lúa).
+	Ruta      string `json:"ruta"`
+	Ubicacion string `json:"ubicacion,omitempty"`
 }
 
 // dirProxectos é o cartafol de todos os proxectos (variable para os tests).
@@ -92,16 +98,38 @@ func idProxectoActivo() string {
 	return proxectoActivoID
 }
 
-// dirProxecto devolve o cartafol dun proxecto (sen mirar se existe).
+// dirProxecto devolve o cartafol dun proxecto (sen mirar se existe): o que
+// escolleu o usuario ou, se non escolleu ningún, <proxectos>/<id>.
 func dirProxecto(id string) (string, error) {
 	if !idFormularioRe.MatchString(id) {
 		return "", fmt.Errorf("identificador de proxecto non válido: %q", id)
+	}
+	if r, ok := lerUbicacions()[id]; ok {
+		return r, nil
 	}
 	base, err := dirProxectos()
 	if err != nil {
 		return "", err
 	}
 	return filepath.Join(base, id), nil
+}
+
+// idsProxectos: os cartafoles de <proxectos> e os proxectos gardados fóra.
+// Non mira se son proxectos de verdade (iso faino lerProxecto).
+func idsProxectos() []string {
+	vistos := map[string]bool{}
+	if base, err := dirProxectos(); err == nil {
+		ents, _ := os.ReadDir(base)
+		for _, e := range ents {
+			if e.IsDir() {
+				vistos[e.Name()] = true
+			}
+		}
+	}
+	for id := range lerUbicacions() {
+		vistos[id] = true
+	}
+	return ordenados(vistos)
 }
 
 // dirProxectoActivo devolve o cartafol do proxecto activo ("" se non hai).
@@ -142,6 +170,9 @@ func lerProxecto(id string) (Proxecto, error) {
 	p.ID = id
 	if p.Ferramentas == nil {
 		p.Ferramentas = []string{}
+	}
+	if !corProxectoRe.MatchString(p.Cor) {
+		p.Cor = "" // unha cor mala (a man, nun paquete) vale a de por defecto
 	}
 	return p, nil
 }
@@ -209,17 +240,13 @@ func crearProxecto(nome, materia string, ferramentas []string) (Proxecto, error)
 	if nome == "" {
 		return Proxecto{}, errors.New("o proxecto necesita un nome")
 	}
-	base, err := dirProxectos()
-	if err != nil {
-		return Proxecto{}, err
-	}
-	existentes, _ := os.ReadDir(base)
+	existentes := idsProxectos()
 	if len(existentes) >= maxProxectos {
 		return Proxecto{}, fmt.Errorf("hai máis de %d proxectos", maxProxectos)
 	}
 	usados := map[string]bool{}
-	for _, e := range existentes {
-		usados[e.Name()] = true
+	for _, id := range existentes {
+		usados[id] = true
 	}
 	slug := slugFormulario(nome)
 	if slug == "" {
@@ -331,24 +358,13 @@ func quitarDoProxecto(id, ferramenta string) (Proxecto, error) {
 }
 
 func listarProxectos() ([]ProxectoInfo, error) {
-	base, err := dirProxectos()
-	if err != nil {
-		return nil, err
-	}
-	ents, err := os.ReadDir(base)
-	if os.IsNotExist(err) {
-		return []ProxectoInfo{}, nil
-	}
-	if err != nil {
+	if _, err := dirProxectos(); err != nil {
 		return nil, err
 	}
 	out := []ProxectoInfo{}
 	activo := idProxectoActivo()
-	for _, e := range ents {
-		if !e.IsDir() {
-			continue
-		}
-		p, err := lerProxecto(e.Name())
+	for _, id := range idsProxectos() {
+		p, err := lerProxecto(id)
 		if err != nil {
 			continue // un proxecto estragado non impide ver os demais
 		}
@@ -362,6 +378,10 @@ func listarProxectos() ([]ProxectoInfo, error) {
 
 func infoProxecto(p Proxecto, activo bool) ProxectoInfo {
 	i := ProxectoInfo{Proxecto: p, Activo: activo}
+	i.Ruta, _ = dirProxecto(p.ID)
+	if _, fora := lerUbicacions()[p.ID]; fora {
+		i.Ubicacion = filepath.Dir(i.Ruta)
+	}
 	if raiz := bovedaDoProxecto(p.ID); raiz != "" {
 		i.Boveda = true
 		for _, f := range (boveda{raiz}).inventario() {
@@ -409,7 +429,17 @@ func eliminarProxecto(id string) error {
 	if idProxectoActivo() == id {
 		return errors.New("o proxecto está aberto: péchao antes de borralo")
 	}
-	return os.RemoveAll(dir)
+	if err := os.RemoveAll(dir); err != nil {
+		return err
+	}
+	ubicacionsMu.Lock()
+	defer ubicacionsMu.Unlock()
+	u := lerUbicacions()
+	if _, ok := u[id]; !ok {
+		return nil
+	}
+	delete(u, id)
+	return gardarUbicacions(u)
 }
 
 // activarProxecto fai que Lua traballe dentro do proxecto ("" = fóra de
@@ -446,167 +476,152 @@ func desconectarBovedaDoProxecto(id string, desconectar bool) error {
 	return escribirProxecto(p)
 }
 
-// ---------- Cartafoles de proxectos ----------
-// Agrupan os proxectos por temática. Gárdanse en <proxectos>/carpetas.json; un
-// proxecto só garda o id do seu cartafol. Borrar un cartafol NUNCA borra
-// proxectos: pasan a «sen cartafol».
+var corProxectoRe = regexp.MustCompile(`^#[0-9a-f]{6}$`)
 
-const (
-	maxCarpetasProxectos   = 100
-	maxNomeCarpetaProxecto = 60
-)
-
-// CarpetaProxectos é un cartafol de proxectos.
-type CarpetaProxectos struct {
-	ID   string `json:"id"`
-	Nome string `json:"nome"`
+// fixarCorProxecto garda a cor do proxecto (#rrggbb; "" = a de por defecto).
+func fixarCorProxecto(id, cor string) (Proxecto, error) {
+	cor = strings.ToLower(strings.TrimSpace(cor))
+	if cor != "" && !corProxectoRe.MatchString(cor) {
+		return Proxecto{}, idioma.Errorf("go.proxecto.cor_mala", "a cor do proxecto ten que ser da forma #rrggbb (por exemplo, #3a7bd5)")
+	}
+	p, err := lerProxecto(id)
+	if err != nil {
+		return p, err
+	}
+	p.Cor = cor
+	return p, escribirProxecto(p)
 }
 
-func rutaCarpetasProxectos() (string, error) {
+// ---------- Onde se garda cada proxecto ----------
+// Un proxecto vive en <proxectos>/<id> ou, se o usuario escolleu outro
+// cartafol do equipo, en <ese cartafol>/<Nome do proxecto>. Estes últimos
+// anótanse en <proxectos>/ubicacions.json (id → ruta absoluta).
+
+var ubicacionsMu sync.Mutex
+
+func rutaUbicacions() (string, error) {
 	base, err := dirProxectos()
 	if err != nil {
 		return "", err
 	}
-	return filepath.Join(base, "carpetas.json"), nil
+	return filepath.Join(base, "ubicacions.json"), nil
 }
 
-func lerCarpetasProxectos() ([]CarpetaProxectos, error) {
-	ruta, err := rutaCarpetasProxectos()
+// lerUbicacions devolve os proxectos gardados fóra (nunca nil).
+func lerUbicacions() map[string]string {
+	u := map[string]string{}
+	ruta, err := rutaUbicacions()
 	if err != nil {
-		return nil, err
+		return u
 	}
 	d, err := os.ReadFile(ruta)
-	if err != nil {
-		return []CarpetaProxectos{}, nil
+	if err != nil || json.Unmarshal(d, &u) != nil || u == nil {
+		return map[string]string{} // estragado: os proxectos de Lúa seguen víndose
 	}
-	var c []CarpetaProxectos
-	if json.Unmarshal(d, &c) != nil {
-		return []CarpetaProxectos{}, nil // estragado: non impide ver os proxectos
+	for id, r := range u {
+		if !idFormularioRe.MatchString(id) || !filepath.IsAbs(r) {
+			delete(u, id)
+		}
 	}
-	if c == nil {
-		c = []CarpetaProxectos{}
-	}
-	return c, nil
+	return u
 }
 
-func gardarCarpetasProxectos(c []CarpetaProxectos) error {
-	ruta, err := rutaCarpetasProxectos()
+func gardarUbicacions(u map[string]string) error {
+	ruta, err := rutaUbicacions()
 	if err != nil {
 		return err
 	}
 	if err := os.MkdirAll(filepath.Dir(ruta), 0o755); err != nil {
 		return err
 	}
-	d, err := json.MarshalIndent(c, "", "  ")
-	if err != nil {
-		return err
-	}
-	tmp := ruta + ".tmp"
-	if err := os.WriteFile(tmp, d, 0o644); err != nil {
-		return err
-	}
-	return os.Rename(tmp, ruta)
+	return escribirXSONAtomico(ruta, u)
 }
 
-func nomeCarpetaRepetido(c []CarpetaProxectos, nome, excepto string) bool {
-	for _, x := range c {
-		if x.ID != excepto && strings.EqualFold(x.Nome, nome) {
-			return true
+// nomeCartafolProxecto: o nome do proxecto sen os caracteres que non admiten
+// os sistemas de ficheiros.
+func nomeCartafolProxecto(nome string) string {
+	n := strings.Map(func(r rune) rune {
+		if strings.ContainsRune(`/\:*?"<>|`, r) || r < 32 {
+			return ' '
 		}
+		return r
+	}, nome)
+	n = strings.Trim(strings.Join(strings.Fields(n), " "), ". ")
+	if n == "" {
+		n = "proxecto"
 	}
-	return false
+	return n
 }
 
-func crearCarpetaProxectos(nome string) ([]CarpetaProxectos, error) {
-	nome = limparTexto(nome, maxNomeCarpetaProxecto)
-	if nome == "" {
-		return nil, idioma.Errorf("go.cartafol.sen_nome", "o cartafol necesita un nome")
-	}
-	c, _ := lerCarpetasProxectos()
-	if len(c) >= maxCarpetasProxectos {
-		return c, fmt.Errorf("hai máis de %d cartafoles", maxCarpetasProxectos)
-	}
-	if nomeCarpetaRepetido(c, nome, "") {
-		return c, idioma.Errorf("go.cartafol.repetido", "xa hai un cartafol chamado «%s»", nome)
-	}
-	usados := map[string]bool{}
-	for _, x := range c {
-		usados[x.ID] = true
-	}
-	base := slugFormulario(nome)
-	if base == "" {
-		base = "cartafol"
-	}
-	c = append(c, CarpetaProxectos{ID: idLibre(base, usados), Nome: nome})
-	return c, gardarCarpetasProxectos(c)
-}
-
-func renomearCarpetaProxectos(id, nome string) ([]CarpetaProxectos, error) {
-	nome = limparTexto(nome, maxNomeCarpetaProxecto)
-	if nome == "" {
-		return nil, idioma.Errorf("go.cartafol.sen_nome", "o cartafol necesita un nome")
-	}
-	c, _ := lerCarpetasProxectos()
-	if nomeCarpetaRepetido(c, nome, id) {
-		return c, idioma.Errorf("go.cartafol.repetido", "xa hai un cartafol chamado «%s»", nome)
-	}
-	for i := range c {
-		if c[i].ID == id {
-			c[i].Nome = nome
-			return c, gardarCarpetasProxectos(c)
-		}
-	}
-	return c, fmt.Errorf("non existe o cartafol «%s»", id)
-}
-
-// eliminarCarpetaProxectos borra o cartafol; os seus proxectos pasan a «sen cartafol».
-func eliminarCarpetaProxectos(id string) ([]CarpetaProxectos, error) {
-	c, _ := lerCarpetasProxectos()
-	novo := []CarpetaProxectos{}
-	atopado := false
-	for _, x := range c {
-		if x.ID == id {
-			atopado = true
-			continue
-		}
-		novo = append(novo, x)
-	}
-	if !atopado {
-		return c, fmt.Errorf("non existe o cartafol «%s»", id)
-	}
-	if err := gardarCarpetasProxectos(novo); err != nil {
-		return c, err
-	}
-	base, _ := dirProxectos()
-	ents, _ := os.ReadDir(base)
-	for _, e := range ents {
-		if !e.IsDir() {
-			continue
-		}
-		if p, err := lerProxecto(e.Name()); err == nil && p.Carpeta == id {
-			p.Carpeta = ""
-			_ = escribirProxecto(p)
-		}
-	}
-	return novo, nil
-}
-
-// moverProxecto pon un proxecto nun cartafol ("" = sen cartafol).
-func moverProxecto(id, carpeta string) (Proxecto, error) {
+// moverProxecto leva os ficheiros dun proxecto a <destino>/<Nome do proxecto>
+// (destino "" = o cartafol de Lúa). Un nome repetido vai coma «Nome (2)».
+func moverProxecto(id, destino string) (Proxecto, error) {
 	p, err := lerProxecto(id)
 	if err != nil {
 		return p, err
 	}
-	if carpeta != "" {
-		c, _ := lerCarpetasProxectos()
-		ok := false
-		for _, x := range c {
-			ok = ok || x.ID == carpeta
+	if idProxectoActivo() == id {
+		return p, idioma.Errorf("go.proxecto.mover_aberto", "o proxecto está aberto: péchao antes de movelo")
+	}
+	base, err := dirProxectos()
+	if err != nil {
+		return p, err
+	}
+	orixe, _ := dirProxecto(id)
+	destino = strings.TrimSpace(destino)
+	if destino != "" {
+		if !filepath.IsAbs(destino) {
+			return p, idioma.Errorf("go.proxecto.ruta_relativa", "escolle un cartafol co selector: «%s» non é unha ruta completa", destino)
 		}
-		if !ok {
-			return p, fmt.Errorf("non existe o cartafol «%s»", carpeta)
+		destino = filepath.Clean(destino)
+		if st, err := os.Stat(destino); err != nil || !st.IsDir() {
+			return p, idioma.Errorf("go.cartafol.non_existe", "non existe o cartafol «%s»", destino)
+		}
+		if dentroDe(orixe, destino) {
+			return p, idioma.Errorf("go.proxecto.dentro_si", "non se pode gardar un proxecto dentro do seu propio cartafol")
+		}
+		if destino == filepath.Clean(base) {
+			destino = ""
 		}
 	}
-	p.Carpeta = carpeta
-	return p, escribirProxecto(p)
+	novo := filepath.Join(base, id)
+	if destino != "" {
+		if filepath.Dir(orixe) == destino {
+			return p, nil // xa está aí
+		}
+		nome := nomeCartafolProxecto(p.Nome)
+		novo = filepath.Join(destino, nome)
+		for n := 2; ; n++ {
+			if _, err := os.Lstat(novo); os.IsNotExist(err) {
+				break
+			}
+			novo = filepath.Join(destino, fmt.Sprintf("%s (%d)", nome, n))
+		}
+	}
+	if novo == orixe {
+		return p, nil
+	}
+	ubicacionsMu.Lock()
+	defer ubicacionsMu.Unlock()
+	if err := moverOuCopiar(orixe, novo); err != nil {
+		_ = os.RemoveAll(novo)
+		return p, err
+	}
+	u := lerUbicacions()
+	if destino == "" {
+		delete(u, id)
+	} else {
+		u[id] = novo
+	}
+	if err := gardarUbicacions(u); err != nil {
+		// Que non quede perdido: se se copiou, o orixinal segue enteiro.
+		if _, e := os.Stat(orixe); e == nil {
+			_ = os.RemoveAll(novo)
+		} else {
+			_ = moverOuCopiar(novo, orixe)
+		}
+		return p, err
+	}
+	_ = os.RemoveAll(orixe) // se se copiou (outro disco), aínda está
+	return p, nil
 }

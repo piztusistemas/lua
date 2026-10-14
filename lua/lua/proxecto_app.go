@@ -1,12 +1,15 @@
 package main
 
 import (
+	"edicion/idioma"
 	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
 	"sort"
 	"strings"
+
+	"github.com/wailsapp/wails/v3/pkg/application"
 )
 
 // Métodos de App para os proxectos (ver proxecto.go).
@@ -127,25 +130,22 @@ func (a *App) BovedaProxectoConectar(conectar bool) error {
 	return desconectarBovedaDoProxecto(pid, !conectar)
 }
 
-// ListarCarpetasProxectos devolve os cartafoles de proxectos.
-func (a *App) ListarCarpetasProxectos() ([]CarpetaProxectos, error) { return lerCarpetasProxectos() }
-
-// CrearCarpetaProxectos crea un cartafol e devolve a lista.
-func (a *App) CrearCarpetaProxectos(nome string) ([]CarpetaProxectos, error) {
-	return crearCarpetaProxectos(nome)
+// MoverProxecto leva o proxecto a <destino>/<Nome do proxecto> ("" = o
+// cartafol de Lúa).
+func (a *App) MoverProxecto(id, destino string) (Proxecto, error) {
+	return moverProxecto(id, destino)
 }
 
-// RenomearCarpetaProxectos cambia o nome dun cartafol.
-func (a *App) RenomearCarpetaProxectos(id, nome string) ([]CarpetaProxectos, error) {
-	return renomearCarpetaProxectos(id, nome)
+// FixarCorProxecto garda a cor que escolleu o usuario para o proxecto
+// (#rrggbb; "" = a de por defecto).
+func (a *App) FixarCorProxecto(id, cor string) (Proxecto, error) {
+	return fixarCorProxecto(id, cor)
 }
 
-// EliminarCarpetaProxectos borra un cartafol (os proxectos non se borran).
-func (a *App) EliminarCarpetaProxectos(id string) ([]CarpetaProxectos, error) {
-	return eliminarCarpetaProxectos(id)
-}
-
-// MoverProxecto pon un proxecto nun cartafol ("" = sen cartafol).
-func (a *App) MoverProxecto(id, carpeta string) (Proxecto, error) {
-	return moverProxecto(id, carpeta)
+// EscollerCartafolProxecto abre o selector de cartafoles ("" = cancelado).
+func (a *App) EscollerCartafolProxecto() (string, error) {
+	return application.Get().Dialog.OpenFile().
+		SetTitle(idioma.T("go.proxecto.titulo_cartafol", "Onde gardar o proxecto")).
+		CanChooseDirectories(true).CanChooseFiles(false).CanCreateDirectories(true).
+		PromptForSingleSelection()
 }

@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="./src/formularios/formularios.css"/>
     <link rel="stylesheet" href="./src/asistente/asistente.css"/>
 </head>
-<body>
+<body class="inicio">
 <div id="app" data-file-drop-target>
     <div id="latexWarning" class="banner hidden">
         <span id="latexWarningText" data-i18n="banner.latex.text">⚠ Falta LaTeX neste equipo.</span>
@@ -98,7 +98,7 @@
              ou as actas do departamento; irán entrando máis (ver
              cambiarFerramenta en main.js). -->
         <nav id="ferramentasNav" class="ferramentas-nav" data-i18n-aria-label="ferramentas.aria" aria-label="Ferramentas">
-            <button type="button" id="btnProxectos" class="ferramenta-btn ferramenta-btn--proxectos" data-i18n-title="proxectos.btn.title" data-i18n-aria-label="proxectos.btn.title" title="Proxectos: unha documentación feita con formularios da biblioteca, cos seus propios datos" aria-label="Proxectos">
+            <button type="button" id="btnProxectos" class="ferramenta-btn ferramenta-btn--proxectos" data-i18n-title="proxectos.btn.title" data-i18n-aria-label="proxectos.btn.title" title="Proxectos: unha documentación feita con formularios da biblioteca, cos seus propios datos" aria-label="Proxectos" aria-pressed="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="7.5" width="17" height="12" rx="2"/><path d="M9 7.5V6a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 6v1.5"/><path d="M3.5 12.5h17"/></svg>
             </button>
             <!-- Zona FIXA: o cronograma, as actas e os formularios que o usuario fixe (non se
@@ -126,6 +126,9 @@
              main.js): unha tira pequena á dereita cun botón que amplía o editor
              ao 100% do ancho da pantalla (e volve ao ancho normal). -->
         <div class="pane pane-editor">
+            <!-- Inicio (formularios/proxectos.js): «Novo proxecto» e os proxectos.
+                 Só se ve con body.inicio, que é como arrinca Lúa. -->
+            <div id="inicioEsquerda" class="inicio-panel"></div>
             <div id="informeEditor"></div>
             <div id="actasEditor" hidden></div>
             <!-- Aquí crea main.js un contedor por cada formulario propio. -->
@@ -201,6 +204,8 @@
                     <span class="sr-only" data-i18n="preview.remoto.desacoplarLabel">Desacoplar</span>
                 </button>
             </div>
+            <!-- Os proxectos que non caben no panel da esquerda (inicio). -->
+            <div id="inicioDereita" class="inicio-panel"></div>
             <iframe id="preview" data-i18n-title="preview.iframe.title" title="Previsualización do informe"></iframe>
         </div>
         <!-- Só se amosa co resultado desacoplado (botón "Desacoplar" enriba),

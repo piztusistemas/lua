@@ -521,7 +521,7 @@ func (a *App) meterPaquete(ruta string, r ResumoMeter) (ResultadoMeter, error) {
 					return idioma.Errorf("go.trasladar.danado", "o ficheiro parece de Lúa pero está danado: %w", fmt.Errorf("ferramenta %q", f))
 				}
 			}
-			pr.ID, pr.Nome, pr.Carpeta = novos[i], nomeProxectoLibre(pr.Nome), ""
+			pr.ID, pr.Nome = novos[i], nomeProxectoLibre(pr.Nome)
 			if pr.Ferramentas == nil {
 				pr.Ferramentas = []string{}
 			}
@@ -604,11 +604,6 @@ func (a *App) restaurarCopia(ruta string) (ResultadoMeter, error) {
 	}
 	if err := moverOuCopiar(filepath.Join(tmp, "proxectos"), base); err != nil {
 		return fallo(err)
-	}
-	if d, err := p.ler("configuracion/carpetas.json", maxBytesManifesto); err == nil {
-		if c, err := rutaCarpetasProxectos(); err == nil {
-			_ = escribirAtomicoCrono(c, d)
-		}
 	}
 	if err := os.RemoveAll(lib); err != nil {
 		return fallo(err)

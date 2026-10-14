@@ -186,9 +186,6 @@ func escribirPaquete(w io.Writer, sel SeleccionSacar, s Settings) (ManifestoPaqu
 		if lib, err := dirBibliotecaFormularios(); err == nil {
 			_ = engadirFicheiroZip(zw, filepath.Join(filepath.Dir(lib), "biblioteca_formularios.json"), "configuracion/biblioteca_formularios.json")
 		}
-		if c, err := rutaCarpetasProxectos(); err == nil {
-			_ = engadirFicheiroZip(zw, c, "configuracion/carpetas.json")
-		}
 	}
 	if err := engadirJSONZip(zw, "manifest.json", m); err != nil {
 		return m, err

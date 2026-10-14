@@ -241,14 +241,9 @@ func escribirXSONAtomico(ruta string, v any) error {
 
 func idsEProxectos() (map[string]bool, map[string]bool) {
 	ids, nomes := map[string]bool{}, map[string]bool{}
-	base, err := dirProxectos()
-	if err != nil {
-		return ids, nomes
-	}
-	ents, _ := os.ReadDir(base)
-	for _, e := range ents {
-		ids[e.Name()] = true
-		if p, err := lerProxecto(e.Name()); err == nil {
+	for _, id := range idsProxectos() {
+		ids[id] = true
+		if p, err := lerProxecto(id); err == nil {
 			nomes[strings.ToLower(p.Nome)] = true
 		}
 	}

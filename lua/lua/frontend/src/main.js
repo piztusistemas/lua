@@ -25,7 +25,7 @@ import {
   ArboreTraslado, SacarTenDatosProducion, SacarTraslado, SacarDocumentoJSON, EscollerFicheiroMeter, EscollerCartafolMeter,
   AnalizarMeter, AplicarMeter, DesfacerTraslado, MigracionTraballoSolto,
   BuxoEstadoActual, BuxoActivar, BuxoActualizar,
-  ListarCarpetasProxectos, CrearCarpetaProxectos, RenomearCarpetaProxectos, EliminarCarpetaProxectos, MoverProxecto,
+  EscollerCartafolProxecto, MoverProxecto, FixarCorProxecto,
   ListarProxectos, ListarFormulariosBiblioteca, CrearProxecto, ActivarProxecto, ProxectoActivo, QuitarDoProxecto, EliminarProxecto, AbrirBuxoDoProxecto,
   EngadirTraballoBoveda, BovedaAutomaticaDe, FixarBovedaAutomatica,
   CatalogoFormularios, CrearCarpetaCatalogo, RenomearCarpetaCatalogo, EliminarCarpetaCatalogo, MoverFormularioCatalogo, ReutilizarNoProxecto,
@@ -49,7 +49,7 @@ import { abrirDisenador } from './formularios/disenador.js'
 import { svgIcona, coresFormularios, valorCor, aparenciaLibre } from './formularios/iconas.js'
 import { haiContidoFormulario, novoEsquema } from './formularios/modelo.js'
 import { abrirBibliotecaFormularios } from './formularios/biblioteca.js'
-import { abrirProxectos } from './formularios/proxectos.js'
+import { crearInicio, corProxecto } from './formularios/proxectos.js'
 import { abrirCatalogo } from './formularios/catalogo.js'
 import { crearColumna } from './formularios/columna.js'
 import { escollerIcona } from './formularios/escoller-icona.js'
@@ -753,7 +753,7 @@ function crearInformes() {
   aplicarFerramentaNaInterface()
   // Os formularios propios entran despois (hai que ler a biblioteca); se o
   // último que se usou era un deles, volve a el cando estea listo.
-  cargarFormularios(inicial).then(recollerMigracion).then(restaurarProxecto).then(asegurarProxectoAberto).catch((err) => { setStatus(t('formularios.erro.carga', 'Non se puido ler a biblioteca de formularios')); showWarnings([mensaxeErro(err)]) })
+  cargarFormularios(inicial).then(recollerMigracion).then(mostrarInicio).catch((err) => { setStatus(t('formularios.erro.carga', 'Non se puido ler a biblioteca de formularios')); showWarnings([mensaxeErro(err)]) })
 }
 
 // aplicarFerramentaNaInterface amosa o editor da ferramenta activa, marca o
@@ -963,35 +963,34 @@ async function cargarFormularios(inicial) {
 // leva a súa copia deles e os seus propios datos (proxecto.go). Entrar nun
 // proxecto cambia en Go o sitio onde viven os formularios e os datos; aquí
 // recárganse as ferramentas para velo.
-const CLAVE_PROXECTO = 'lua.proxecto'
 const proxectoChip = document.getElementById('proxectoActivo')
 
 // Os datos pertencen sempre a un proxecto (spec trasladar): o chip só di cal
-// está aberto; para cambiar, o panel de Proxectos.
-function pintarChipProxecto(nome) {
+// está aberto, coa súa cor; para cambiar, o inicio (botón Proxectos).
+function pintarChipProxecto(p) {
   if (!proxectoChip) return
   proxectoChip.hidden = !proxectoAberto
   proxectoChip.replaceChildren()
   if (!proxectoAberto) return
-  proxectoChip.append(t('proxectos.chip', 'Proxecto: {nome}', { nome }))
+  proxectoChip.style.setProperty('--cor-proxecto', corProxecto(p))
+  proxectoChip.append(t('proxectos.chip', 'Proxecto: {nome}', { nome: p?.nome || '' }))
 }
 
 // cambiarProxecto entra no proxecto `id`. Os documentos en curso vólcanse ANTES
 // de cambiar o sitio dos datos, agás cando o que hai no disco é máis novo ca o
 // que hai en pantalla (despois de meter algo con Trasladar): `volcar: false`.
-// Fóra de proxecto (só ao arrincar) non hai nada que volcar.
+// Fóra de proxecto (ao arrincar Lúa está no inicio) non hai nada que volcar.
 let nomeProxectoAberto = ''
 async function cambiarProxecto(id, { volcar } = {}) {
   if (volcar ?? Boolean(proxectoAberto)) for (const c of controladores.values()) await c.volcarBorrador()
   const p = await ActivarProxecto(id)
   proxectoAberto = id
   nomeProxectoAberto = p?.nome || ''
-  try { if (id) localStorage.setItem(CLAVE_PROXECTO, id); else localStorage.removeItem(CLAVE_PROXECTO) } catch { /* sen persistencia */ }
   for (const fid of idsFormularios()) quitarFormulario(fid)
   await informesCrono.recargar()
   await informesActas.recargar()
   await cargarFormularios(null)
-  pintarChipProxecto(p?.nome || '')
+  pintarChipProxecto(p)
   // Os controladores dos formularios son OBXECTOS NOVOS: `informes` ten que apuntar
   // ao novo (senón Xerar/Gardar usarían o vello, que xa non ten os datos do editor).
   if (!controladores.has(ferramentaActiva)) ferramentaActiva = 'cronograma'
@@ -1002,69 +1001,73 @@ async function cambiarProxecto(id, { volcar } = {}) {
   setStatus(t('status.gardadoLua', 'Gardado en Lúa'))
 }
 
-// Ao arrincar, volve ao proxecto no que se estaba (se aínda existe).
-async function restaurarProxecto() {
-  let id = ''
-  try { id = localStorage.getItem(CLAVE_PROXECTO) || '' } catch { /* sen persistencia */ }
-  if (!id) return
-  try { await cambiarProxecto(id, { volcar: false }) } catch {
-    try { localStorage.removeItem(CLAVE_PROXECTO) } catch { /* sen persistencia */ }
-    await ActivarProxecto('').catch(() => {})
-  }
-}
-
 // recollerMigracion: se ao arrincar Go pasou o traballo solto dunha versión
-// anterior a un proxecto, ábrese ese e avísase unha vez.
+// anterior a un proxecto, avísase unha vez (o proxecto sae no inicio).
 let avisoMigracion = ''
 async function recollerMigracion() {
   try {
     const m = await MigracionTraballoSolto()
     if (!m?.proxecto) return
-    try { if (!localStorage.getItem(CLAVE_PROXECTO)) localStorage.setItem(CLAVE_PROXECTO, m.proxecto) } catch { /* sen persistencia */ }
     avisoMigracion = t('trasladar.migracion', 'O teu traballo de antes (fóra de proxectos) está agora no proxecto «{nome}». Lúa garda todo só; para levar algo fóra usa Trasladar.', { nome: m.nome })
   } catch (err) {
     showWarnings([mensaxeErro(err)])
   }
 }
 
-// asegurarProxectoAberto: sempre hai un proxecto aberto. Se non quedou ningún
-// do último uso, ábrese o primeiro; se non hai ningún, créase «O meu traballo».
-async function asegurarProxectoAberto() {
-  if (!proxectoAberto) {
-    const lista = (await ListarProxectos()) || []
-    const id = lista[0]?.id || (await CrearProxecto(t('proxectos.meuTraballo', 'O meu traballo'), '', [])).id
-    await cambiarProxecto(id, { volcar: false })
+// ── Inicio ──
+// Lúa arrinca sen proxecto aberto, no inicio (formularios/proxectos.js): o
+// panel da esquerda leva «Novo proxecto» e os proxectos, e os que non caben
+// seguen no da dereita. Ao abrir un, os paneis volven ser editor e resultado.
+// O botón Proxectos da columna volve ao inicio sen pechar o proxecto aberto.
+let inicio = null
+const btnProxectos = document.getElementById('btnProxectos')
+const enInicio = () => document.body.classList.contains('inicio')
+
+function mostrarInicio() {
+  if (!inicio) {
+    inicio = crearInicio({
+      t,
+      esquerda: document.getElementById('inicioEsquerda'),
+      dereita: document.getElementById('inicioDereita'),
+      accions: {
+        listar: () => ListarProxectos(),
+        formularios: async () => (await ListarFormulariosBiblioteca()) || [],
+        integradas: [
+          { id: 'cronograma', nome: nomeDeFerramenta('cronograma') },
+          { id: 'actas', nome: nomeDeFerramenta('actas') },
+        ],
+        crear: (nome, materia) => CrearProxecto(nome, materia, []),
+        abrir: async (id) => { if (id !== proxectoAberto) await cambiarProxecto(id); ocultarInicio() },
+        eliminar: (id) => EliminarProxecto(id),
+        fixarCor: async (id, cor) => { const p = await FixarCorProxecto(id, cor); if (id === proxectoAberto) pintarChipProxecto(p) },
+        buxo: () => BuxoEstadoActual(),
+        abrirBuxo: (id) => AbrirBuxoDoProxecto(id),
+        escollerCartafol: () => EscollerCartafolProxecto(),
+        mover: (id, destino) => MoverProxecto(id, destino),
+        confirmar,
+      },
+    })
   }
+  document.body.classList.add('inicio')
+  btnProxectos?.setAttribute('aria-pressed', 'true')
+  setStatus('')
   if (avisoMigracion) { showWarnings([avisoMigracion]); avisoMigracion = '' }
+  return inicio.recargar().then(() => inicio.enfocar())
 }
 
-async function abrirPanelProxectos() {
-  await abrirProxectos({
-    t,
-    accions: {
-      listar: () => ListarProxectos(),
-      formularios: async () => (await ListarFormulariosBiblioteca()) || [],
-      integradas: [
-        { id: 'cronograma', nome: nomeDeFerramenta('cronograma') },
-        { id: 'actas', nome: nomeDeFerramenta('actas') },
-      ],
-      crear: (nome, materia) => CrearProxecto(nome, materia, []),
-      abrir: (id) => cambiarProxecto(id),
-      eliminar: (id) => EliminarProxecto(id),
-      buxo: () => BuxoEstadoActual(),
-      abrirBuxo: (id) => AbrirBuxoDoProxecto(id),
-      carpetas: () => ListarCarpetasProxectos(),
-      crearCarpeta: (nome) => CrearCarpetaProxectos(nome),
-      renomearCarpeta: (id, nome) => RenomearCarpetaProxectos(id, nome),
-      eliminarCarpeta: (id) => EliminarCarpetaProxectos(id),
-      mover: (id, carpeta) => MoverProxecto(id, carpeta),
-      preguntar,
-      confirmar,
-    },
-  })
+function ocultarInicio() {
+  if (!enInicio()) return
+  document.body.classList.remove('inicio')
+  btnProxectos?.setAttribute('aria-pressed', 'false')
+  aplicarFerramentaNaInterface()
 }
-document.getElementById('btnProxectos')?.addEventListener('click', () => abrirPanelProxectos().catch((err) => showWarnings([mensaxeErro(err)])))
-document.getElementById('btnBenvidaProxectos')?.addEventListener('click', () => abrirPanelProxectos().catch((err) => showWarnings([mensaxeErro(err)])))
+
+// O botón Proxectos alterna: do proxecto ao inicio e, se hai un aberto, volta.
+btnProxectos?.addEventListener('click', () => {
+  if (enInicio() && proxectoAberto) ocultarInicio()
+  else mostrarInicio().catch((err) => showWarnings([mensaxeErro(err)]))
+})
+document.getElementById('btnBenvidaProxectos')?.addEventListener('click', () => mostrarInicio().catch((err) => showWarnings([mensaxeErro(err)])))
 document.getElementById('btnBenvidaProxectosEngadir')?.addEventListener('click', () => abrirCatalogoUI())
 document.getElementById('btnBenvidaFormulario')?.addEventListener('click', () => deseñarFormulario(null))
 
@@ -1178,12 +1181,15 @@ async function recargarDespoisDeMeter(res) {
   const existentes = ((await ListarProxectos()) || []).map((p) => p.id)
   if (res.abrirProxecto && !res.desfeito && existentes.includes(res.abrirProxecto)) {
     await cambiarProxecto(res.abrirProxecto, { volcar: false })
+    ocultarInicio()
   } else if (existentes.includes(proxectoAberto)) {
     await cambiarProxecto(proxectoAberto, { volcar: false })
   } else {
-    proxectoAberto = ''
-    await asegurarProxectoAberto()
+    // O proxecto aberto xa non existe (Desfacer, copia restaurada): ao inicio.
+    if (proxectoAberto) await cambiarProxecto('', { volcar: false })
+    await mostrarInicio()
   }
+  if (enInicio()) await inicio.recargar()
 }
 
 function abrirTrasladarUI(opcions = {}) {
@@ -1485,7 +1491,7 @@ function run() {
 // Sen ningunha ferramenta á vista (pantalla de benvida) a barra vese enteira,
 // pero o que traballa sobre un documento (novo, abrir, gardar, desfacer,
 // xerar, exportar) non fai nada: non hai documento.
-const haiFerramenta = () => !document.body.classList.contains('sen-ferramenta')
+const haiFerramenta = () => !document.body.classList.contains('sen-ferramenta') && !document.body.classList.contains('inicio')
 const conFerramenta = (fn) => (...args) => (haiFerramenta() ? fn(...args) : undefined)
 
 function gardadoOk() {
