@@ -195,8 +195,9 @@ func TestBloquesFormularioCableadoAutomatico(t *testing.T) {
 	for _, b := range bloques {
 		tipos = append(tipos, b.Tipo)
 	}
-	// sección, ficha (grupo…familias), sección, título+markdown, título+táboa, imaxe.
-	esperado := "titulo,ficha,titulo,titulo,markdown,titulo,taboa,imaxe"
+	// sección, ficha (grupo…familias), sección, markdown, táboa, imaxe: as
+	// etiquetas do texto longo, da táboa e da imaxe non saen.
+	esperado := "titulo,ficha,titulo,markdown,taboa,imaxe"
 	if strings.Join(tipos, ",") != esperado {
 		t.Fatalf("bloques = %s, quería %s", strings.Join(tipos, ","), esperado)
 	}
@@ -204,15 +205,15 @@ func TestBloquesFormularioCableadoAutomatico(t *testing.T) {
 	if len(ficha) != 5 || ficha[1] != [2]string{"Alumnado", "27"} || ficha[2] != [2]string{"Data da reunión", "15/01/2026"} || ficha[4] != [2]string{"Reunión coas familias", "Si"} {
 		t.Errorf("ficha = %v", ficha)
 	}
-	taboa := bloques[6]
+	taboa := bloques[4]
 	if len(taboa.Filas) != 2 || taboa.Filas[0][1] != "4,5" || taboa.Filas[1][1] != "7,25" || taboa.Filas[1][2] != "Non" {
 		t.Errorf("táboa (a fila baleira non debe saír) = %v", taboa.Filas)
 	}
 }
 
-// Un texto longo coa etiqueta sen cambiar («Texto longo», en calquera idioma)
-// só deixa o contido; cunha etiqueta propia, o título segue saíndo.
-func TestBloquesFormularioEtiquetaPorDefectoNonSae(t *testing.T) {
+// A etiqueta dun texto longo non sae no documento, sexa a do tipo («Texto
+// longo», en calquera idioma) ou unha propia («Pregunta 3»): só o contido.
+func TestBloquesFormularioEtiquetaNonSae(t *testing.T) {
 	f := normalizarFormulario(Formulario{ID: "exame", Nome: "Exame", Campos: []CampoFormulario{
 		{ID: "p1", Tipo: campoTextoLongo, Etiqueta: "Texto longo"},
 		{ID: "p2", Tipo: campoTextoLongo, Etiqueta: "Long text"},
@@ -229,7 +230,7 @@ func TestBloquesFormularioEtiquetaPorDefectoNonSae(t *testing.T) {
 		for _, b := range bloques {
 			partes = append(partes, b.Tipo+":"+b.Texto)
 		}
-		esperado := "markdown:Pregunta 1.,markdown:Pregunta 2.,titulo:Pregunta 3,markdown:Que é?"
+		esperado := "markdown:Pregunta 1.,markdown:Pregunta 2.,markdown:Que é?"
 		if strings.Join(partes, ",") != esperado {
 			t.Errorf("fluxo=%v: bloques = %s, quería %s", conFluxo, strings.Join(partes, ","), esperado)
 		}
@@ -290,10 +291,15 @@ func TestMarkdownFormulario(t *testing.T) {
 	for _, quere := range []string{
 		"## Datos do grupo",
 		"**Grupo:** 2.º B", "**Data da reunión:** 15/01/2026", "**Reunión coas familias:** Si",
-		"### Observacións", "**traballador**", "| Nome | Nota | Adaptación |", "| Uxía | 7,25 | Non |", "![Foto do grupo](",
+		"**traballador**", "| Nome | Nota | Adaptación |", "| Uxía | 7,25 | Non |", "![](",
 	} {
 		if !strings.Contains(md, quere) {
 			t.Errorf("falta %q no Markdown:\n%s", quere, md)
+		}
+	}
+	for _, etiqueta := range []string{"Observacións", "Alumnado con medidas", "Foto do grupo"} {
+		if strings.Contains(md, etiqueta) {
+			t.Errorf("a etiqueta %q non debe saír no Markdown", etiqueta)
 		}
 	}
 	if strings.Contains(md, "|  |  |") {

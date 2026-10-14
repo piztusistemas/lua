@@ -26,12 +26,17 @@ func TestDocxDoFormulario(t *testing.T) {
 	xmlBenFormado(t, "word/document.xml", doc)
 	for _, quere := range []string{
 		"Datos do grupo", "Grupo: ", "2.º B &amp; &lt;C&gt;", "<w:br/>", "segunda liña",
-		"<w:tbl>", "<w:tblHeader/>", "Brais _Q_", "7,25", "Alumnado con medidas" /* título da táboa */, "Foto do grupo", "<w:drawing>",
+		"<w:tbl>", "<w:tblHeader/>", "Brais _Q_", "7,25", "<w:drawing>",
 		"Ana Pérez", // quen asina (sinatura)
 		"<w:pBdr>",  /* estilo dos títulos */
 	} {
 		if !strings.Contains(doc, quere) && !strings.Contains(z["word/styles.xml"], quere) {
 			t.Errorf("falta %q no Word", quere)
+		}
+	}
+	for _, etiqueta := range []string{"Observacións", "Alumnado con medidas", "Foto do grupo"} {
+		if strings.Contains(doc, etiqueta) {
+			t.Errorf("a etiqueta %q non debe saír no Word", etiqueta)
 		}
 	}
 	if n := strings.Count(doc, "<w:tr>"); n != 3 { // cabeceira + 2 filas (a baleira non sae)
