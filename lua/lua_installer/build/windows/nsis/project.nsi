@@ -22,7 +22,7 @@ Unicode true
 ## !define INFO_PROJECTNAME    "my-project" # Default "lua-installer"
 ## !define INFO_COMPANYNAME    "My Company" # Default "Piztu"
 ## !define INFO_PRODUCTNAME    "My Product Name" # Default "Lua"
-## !define INFO_PRODUCTVERSION "1.0.0"     # Default "26.10.5"
+## !define INFO_PRODUCTVERSION "1.0.0"     # Default "26.10.6"
 ## !define INFO_COPYRIGHT      "(c) Now, My Company" # Default "Copyright © Piztu"
 ###
 ## !define PRODUCT_EXECUTABLE  "Application.exe"      # Default "${INFO_PROJECTNAME}.exe"

@@ -17,7 +17,7 @@
         PackageDisplayName="Lua"
         PublisherName="CN=Piztu"
         PublisherDisplayName="Piztu"
-        Version="26.10.5.0"
+        Version="26.10.6.0"
         PackageDescription="Instalador de Lua">
         <Capabilities>
             <Capability Name="runFullTrust" />
