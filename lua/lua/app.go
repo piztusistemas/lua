@@ -49,7 +49,7 @@ type App struct {
 
 	// actualizacion é a última foto de se hai unha versión nova de Lua
 	// publicada en GitHub (ver comprobarActualizacionLua, actualizacion.go).
-	// Consultada en fondo ao arrincar; o botón "i" da barra pinta fondo azul
+	// Consultada en fondo ao arrincar; o botón "i" da barra pinta fondo laranxa
 	// se hai actualización (evento actualizacion_lua_cambiada).
 	actualizacionMu sync.Mutex
 	actualizacion   EstadoActualizacionLua
@@ -135,7 +135,7 @@ func (a *App) IdiomaPiztu() string {
 
 // comprobarActualizacionLua consulta as Releases de piztusistemas/lua en
 // GitHub (ver actualizacion.go) e avisa o frontend (evento
-// actualizacion_lua_cambiada) para que o botón "i" amose fondo azul.
+// actualizacion_lua_cambiada) para que o botón "i" amose fondo laranxa.
 func (a *App) comprobarActualizacionLua() {
 	estado := ComprobarActualizacionLua()
 	a.actualizacionMu.Lock()

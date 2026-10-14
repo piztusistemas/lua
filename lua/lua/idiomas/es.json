@@ -9,7 +9,7 @@
   "about.license": "Licencia GNU Affero General Public License v3 (AGPLv3)",
   "about.licenseText": "Software libre: se puede usar, estudiar, modificar y redistribuir libremente. Cualquier trabajo derivado redistribuido también debe publicarse bajo AGPLv3, con el código fuente disponible, incluso si se ofrece como servicio en red (copyleft). Texto completo en el archivo LICENSE.",
   "about.nome": "Piztu Lúa",
-  "about.novaversion": "Nueva versión disponible: {v}",
+  "about.novaversion": "Hay una versión nueva de Lúa ({v}) para descargar e instalar.",
   "about.title": "Acerca de Lúa",
   "about.version": "Versión",
   "actas.acordos": "Acuerdos",

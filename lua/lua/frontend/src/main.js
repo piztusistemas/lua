@@ -2390,7 +2390,7 @@ function pintarActualizacionLua() {
   btnAbout.classList.toggle('btn-actualizacion-dispo', dispo)
 
   if (dispo) {
-    sobreActualizacion.textContent = t('about.novaversion', 'Nova versión dispoñible: {v}', {
+    sobreActualizacion.textContent = t('about.novaversion', 'Hai unha versión nova de Lúa ({v}) para descargar e instalar.', {
       v: actualizacionLua.versionRemota,
     })
     sobreActualizacion.classList.remove('hidden')
@@ -2408,7 +2408,7 @@ function aplicarActualizacionLua(estado) {
   pintarActualizacionLua()
 }
 
-// Instala en quente a última versión de Lua e reinicia (← fondo azul no
+// Instala en quente a última versión de Lua e reinicia (← fondo laranxa no
 // botón "i" cando GetActualizacionLua/evento actualizacion_lua_cambiada
 // din que hai unha nova). Lua péchase só e reábrese xa actualizado.
 btnActualizarLua.addEventListener('click', async () => {

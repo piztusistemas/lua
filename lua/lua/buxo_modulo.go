@@ -49,6 +49,10 @@ const intervaloBuxo = time.Hour
 // algunha aberta non se substitúe o módulo (tócalle na seguinte comprobación).
 var buxoAbertos atomic.Int32
 
+// buxoSaltado marca que unha comprobación non se fixo porque buxo estaba
+// aberto: ao pechar o último faise entón.
+var buxoSaltado atomic.Bool
+
 const eventoBuxoCambiou = "buxo_cambiou"
 
 func init() {
@@ -133,9 +137,17 @@ func (a *App) sincronizarBuxo(forzar bool) error {
 		if forzar {
 			return fmt.Errorf("pecha Buxo antes de actualizalo")
 		}
+		buxoSaltado.Store(true)
 		return nil
 	}
 	return a.xestorBuxo().Sincronizar(a.avisarBuxo)
+}
+
+// buxoPendente di se a última comprobación atopou unha versión de buxo maior
+// cá instalada (quedou sen instalar porque buxo estaba aberto).
+func (a *App) buxoPendente() bool {
+	m := a.xestorBuxo().Estado()
+	return m.Instalado && m.VersionRemota != "" && actualizacion.VersionMaior(m.VersionRemota, m.Version)
 }
 
 // vixiarBuxo sincroniza buxo ao arrincar e despois cada intervaloBuxo.
@@ -185,9 +197,15 @@ func (a *App) abrirBuxo(raiz, materia, id string) error {
 	buxoAbertos.Add(1)
 	go func() {
 		_ = cmd.Wait()
-		buxoAbertos.Add(-1)
+		quedan := buxoAbertos.Add(-1)
 		// Ao pechar buxo o token deixa de valer; a bóveda segue sendo do proxecto.
 		a.api.Revogar("buxo:" + id)
+		// Se mentres estaba aberto se saltou unha comprobación ou se viu unha
+		// versión nova, actualízase agora en silencio en vez de agardar á
+		// seguinte volta de vixiarBuxo.
+		if quedan == 0 && (buxoSaltado.Swap(false) || a.buxoPendente()) {
+			_ = a.sincronizarBuxo(false)
+		}
 	}()
 	return nil
 }

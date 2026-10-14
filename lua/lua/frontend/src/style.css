@@ -51,8 +51,8 @@
     /* Azul, non violeta coma en piztu/frontend/src/app.css — desviación
        intencional da sincronía de cores de arriba: pedido explicitamente
        así para o botón "i" de Lua cando hai actualización. */
-    --actualizacion: #2563eb;
-    --actualizacion-hover: #1d4ed8;
+    --actualizacion: #ea580c;
+    --actualizacion-hover: #c2410c;
 
     --radius-lg: 16px;
     --radius: 10px;
@@ -1005,12 +1005,23 @@ body.editor-ancho-completo .pane-editor { width: 100% !important; flex: 1; }
 
 /* Botón "i" cando hai actualización de Lua dispoñible (ver
    pintarActualizacionLua, main.js) — mesmo mecanismo có botón "i" de
-   Piztu, fondo azul en vez de violeta. Selector "#toolbar button.…" (non
+   Piztu, fondo laranxa e un latexo para que se note. Selector "#toolbar button.…" (non
    só ".btn-actualizacion-dispo") a propósito: "#toolbar button" (arriba)
    leva un ID e gañaría por especificidade a unha regra que só fose de
    clase, deixando o fondo sempre transparente. */
 
-#toolbar button.btn-actualizacion-dispo { background: var(--actualizacion); color: #fff; }
+#toolbar button.btn-actualizacion-dispo {
+    background: var(--actualizacion);
+    color: #fff;
+    animation: actualizacion-latexo 1.6s ease-in-out infinite;
+}
+
+@keyframes actualizacion-latexo {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(234, 88, 12, 0.6); }
+    50% { box-shadow: 0 0 0 6px rgba(234, 88, 12, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) { #toolbar button.btn-actualizacion-dispo { animation: none; } }
 
 #toolbar button.btn-actualizacion-dispo:hover { background: var(--actualizacion-hover); }
 
