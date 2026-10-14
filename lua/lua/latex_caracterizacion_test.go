@@ -42,7 +42,7 @@ func casosCaracterizacionLatex() map[string]any {
 	for _, f := range []float64{0, 1, 1.15, 2.5, 10.125} {
 		out["trimFloat/"+strings.ReplaceAll(trimFloat(f), ".", "_")] = trimFloat(f)
 	}
-	out["babelLine"] = babelLine()
+	// babelLine depende de que estea instalado o galego de babel: vai en TestBabelLine.
 	logs := map[string]string{
 		"fonte":   "! Package fontspec Error: The font \"Comic Sans\" cannot be found.",
 		"paquete": "! LaTeX Error: File `circuitikz.sty' not found.",
@@ -82,5 +82,16 @@ func TestCaracterizacionLatex(t *testing.T) {
 		ruta := filepath.Join(t.TempDir(), "actual.json")
 		_ = os.WriteFile(ruta, actual, 0o644)
 		t.Errorf("as funcións de LaTeX cambiaron o que xeran.\n  referencia: %s\n  actual:     %s", ficheiroCaracterizacionLatex, ruta)
+	}
+}
+
+// TestBabelLine: co galego de babel instalado, os documentos cárgano sen
+// atallos (shorthands=off). Sen el, babelLine non pon nada (ver latex.BabelLine).
+func TestBabelLine(t *testing.T) {
+	if !kpsewhichFound("galician.ldf") {
+		t.Skip("sen galician.ldf (babel galego) neste equipo")
+	}
+	if got, want := babelLine(), "\\usepackage[galician,shorthands=off]{babel}\n"; got != want {
+		t.Errorf("babelLine() = %q, quero %q", got, want)
 	}
 }

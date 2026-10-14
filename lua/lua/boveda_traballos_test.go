@@ -93,7 +93,8 @@ func TestTraballoProduccionBloqueado(t *testing.T) {
 	if _, err := cambiarModoFormulario(f.ID, modoProduccion); err != nil {
 		t.Fatal(err)
 	}
-	f.Modo = "" // aínda que o frontend o mande sen modo, mírase o gardado
+	// Aínda que o frontend o mande sen modo, mírase o gardado.
+	f.Modo = ""
 	if _, err := a.EngadirTraballoBoveda(pedidoFormularioProba(f), "", "Informe"); err == nil || err.Error() != erroProduccionBoveda().Error() { // no idioma activo
 		t.Fatalf("produción tiña que bloquearse: %v", err)
 	}
