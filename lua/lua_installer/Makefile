@@ -69,15 +69,17 @@ copia-macos:
 ## busca assets "lua_*" e o instalador chámase "lua-installer-*".
 zip-actualizacion-macos:
 	@test -f files/Contents/MacOS/lua || (echo "❌ falta files/Contents/MacOS/lua: executa make build" && exit 1)
-	@rm -rf dist/.lua-exe && mkdir -p dist/.lua-exe
-	@cp files/Contents/MacOS/lua dist/.lua-exe/lua && chmod 755 dist/.lua-exe/lua
+	@# --keepParent: o zip leva lua_<versión>/lua. O actualizador busca "lua"
+	@# polo nome base (extraerExecutable), así que o cartafol pai non estorba.
+	@rm -rf dist/lua_$(VERSION) && mkdir -p dist/lua_$(VERSION)
+	@cp files/Contents/MacOS/lua dist/lua_$(VERSION)/lua && chmod 755 dist/lua_$(VERSION)/lua
 	@for ARQ in arm64 amd64; do \
 		NOME=lua_$(VERSION)_darwin_$$ARQ.zip; \
 		rm -f dist/$$NOME; \
-		ditto -c -k --norsrc --noextattr --noqtn dist/.lua-exe dist/$$NOME; \
+		ditto -c -k --keepParent --norsrc --noextattr --noqtn dist/lua_$(VERSION) dist/$$NOME; \
 		(cd dist && shasum -a 256 $$NOME > $$NOME.sha256 && cat $$NOME.sha256); \
 	done
-	@rm -rf dist/.lua-exe
+	@rm -rf dist/lua_$(VERSION)
 
 ## assets/logo.png: Copia o logo dende Lua
 ## Depende de ../lua/logo.png (non abondaba con "assets/logo.png:"
