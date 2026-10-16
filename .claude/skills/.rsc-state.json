@@ -2,189 +2,189 @@
   "skills": {
     "analyze": {
       "files": [
-        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/analyze"
+        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/analyze"
       ],
-      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/analyze"
+      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/analyze"
     },
     "automation-strategy": {
       "files": [
-        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/automation-strategy"
+        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/automation-strategy"
       ],
-      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/automation-strategy"
+      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/automation-strategy"
     },
     "clarify": {
       "files": [
-        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/clarify"
+        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/clarify"
       ],
-      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/clarify"
+      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/clarify"
     },
     "constitution": {
       "files": [
-        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/constitution"
+        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/constitution"
       ],
-      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/constitution"
+      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/constitution"
     },
     "debug": {
       "files": [
-        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/debug"
+        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/debug"
       ],
-      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/debug"
+      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/debug"
     },
     "decision-challenge": {
       "files": [
-        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/decision-challenge"
+        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/decision-challenge"
       ],
-      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/decision-challenge"
+      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/decision-challenge"
     },
     "deprecation": {
       "files": [
-        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/deprecation"
+        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/deprecation"
       ],
-      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/deprecation"
+      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/deprecation"
     },
     "fable-operator": {
       "files": [
-        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/fable-operator"
+        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/fable-operator"
       ],
-      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/fable-operator"
+      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/fable-operator"
     },
     "ftd": {
       "files": [
-        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/ftd"
+        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/ftd"
       ],
-      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/ftd"
+      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/ftd"
     },
     "go": {
       "files": [
-        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/go"
+        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/go"
       ],
-      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/go"
+      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/go"
     },
     "harness": {
       "files": [
-        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/harness"
+        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/harness"
       ],
-      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/harness"
+      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/harness"
     },
     "idea-refinement": {
       "files": [
-        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/idea-refinement"
+        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/idea-refinement"
       ],
-      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/idea-refinement"
+      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/idea-refinement"
     },
     "implement": {
       "files": [
-        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/implement"
+        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/implement"
       ],
-      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/implement"
+      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/implement"
     },
     "init": {
       "files": [
-        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/init"
+        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/init"
       ],
-      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/init"
+      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/init"
     },
     "orient": {
       "files": [
-        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/orient"
+        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/orient"
       ],
-      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/orient"
+      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/orient"
     },
     "parallel": {
       "files": [
-        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/parallel"
+        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/parallel"
       ],
-      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/parallel"
+      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/parallel"
     },
     "plan": {
       "files": [
-        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/plan"
+        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/plan"
       ],
-      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/plan"
+      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/plan"
     },
     "python": {
       "files": [
-        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/python"
+        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/python"
       ],
-      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/python"
+      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/python"
     },
     "review": {
       "files": [
-        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/review"
+        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/review"
       ],
-      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/review"
+      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/review"
     },
     "sdd": {
       "files": [
-        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/sdd"
+        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/sdd"
       ],
-      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/sdd"
+      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/sdd"
     },
     "sdd-init": {
       "files": [
-        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/sdd-init"
+        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/sdd-init"
       ],
-      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/sdd-init"
+      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/sdd-init"
     },
     "ship": {
       "files": [
-        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/ship"
+        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/ship"
       ],
-      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/ship"
+      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/ship"
     },
     "simplify-code": {
       "files": [
-        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/simplify-code"
+        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/simplify-code"
       ],
-      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/simplify-code"
+      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/simplify-code"
     },
     "source-grounded-development": {
       "files": [
-        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/source-grounded-development"
+        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/source-grounded-development"
       ],
-      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/source-grounded-development"
+      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/source-grounded-development"
     },
     "specify": {
       "files": [
-        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/specify"
+        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/specify"
       ],
-      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/specify"
+      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/specify"
     },
     "suggest": {
       "files": [
-        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/suggest"
+        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/suggest"
       ],
-      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/suggest"
+      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/suggest"
     },
     "tasks": {
       "files": [
-        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/tasks"
+        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/tasks"
       ],
-      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/tasks"
+      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/tasks"
     },
     "ui-engineering": {
       "files": [
-        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/ui-engineering"
+        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/ui-engineering"
       ],
-      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/ui-engineering"
+      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/ui-engineering"
     },
     "unslop": {
       "files": [
-        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/unslop"
+        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/unslop"
       ],
-      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/unslop"
+      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/unslop"
     },
     "verify": {
       "files": [
-        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/verify"
+        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/verify"
       ],
-      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/verify"
+      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/verify"
     },
     "worktrees": {
       "files": [
-        "/Users/martin/Desktop/lua_yang/lua_yang/.claude/skills/worktrees"
+        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/worktrees"
       ],
-      "base": "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/skills/worktrees"
+      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/worktrees"
     }
   },
   "agents": [
@@ -199,15 +199,24 @@
   ],
   "agentCollisions": [],
   "agentsKept": [],
-  "explicitAgents": [],
+  "explicitAgents": [
+    "developer",
+    "finding-verifier",
+    "go-build-resolver",
+    "go-reviewer",
+    "python-reviewer",
+    "refuter-correctness",
+    "refuter-security",
+    "refuter-tests"
+  ],
   "memory": {
     "mode": "full",
     "reason": "wired",
     "paths": [
-      "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/session-memory-core.mjs",
-      "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/session-memory-adapter.mjs",
-      "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/session-memory.mjs",
-      "/Users/martin/Desktop/lua_yang/lua_yang/.claude/settings.local.json"
+      "/Users/martin/Documents/desenvolvemento/lua/.rsc/session-memory-core.mjs",
+      "/Users/martin/Documents/desenvolvemento/lua/.rsc/session-memory-adapter.mjs",
+      "/Users/martin/Documents/desenvolvemento/lua/.rsc/session-memory.mjs",
+      "/Users/martin/Documents/desenvolvemento/lua/.claude/settings.local.json"
     ]
   },
   "update": {
@@ -217,14 +226,14 @@
     "mode": "wired",
     "reason": null,
     "paths": [
-      "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/knowledge-sync.mjs",
-      "/Users/martin/Desktop/lua_yang/lua_yang/.rsc/trunk-policy.mjs",
-      "/Users/martin/Desktop/lua_yang/lua_yang/.claude/settings.local.json"
+      "/Users/martin/Documents/desenvolvemento/lua/.rsc/knowledge-sync.mjs",
+      "/Users/martin/Documents/desenvolvemento/lua/.rsc/trunk-policy.mjs",
+      "/Users/martin/Documents/desenvolvemento/lua/.claude/settings.local.json"
     ]
   },
   "gitPermissions": {
     "mode": "wired",
-    "path": "/Users/martin/Desktop/lua_yang/lua_yang/.claude/settings.json"
+    "path": "/Users/martin/Documents/desenvolvemento/lua/.claude/settings.json"
   },
   "policy": {
     "baseAgents": true,
@@ -247,5 +256,55 @@
     "save-session"
   ],
   "commandCollisions": [],
-  "version": "3.0.12"
+  "version": "3.0.12",
+  "ignoreEntriesAdded": [
+    ".claude/agents/developer.md",
+    ".claude/agents/finding-verifier.md",
+    ".claude/agents/go-build-resolver.md",
+    ".claude/agents/go-reviewer.md",
+    ".claude/agents/python-reviewer.md",
+    ".claude/agents/refuter-correctness.md",
+    ".claude/agents/refuter-security.md",
+    ".claude/agents/refuter-tests.md",
+    ".claude/commands/build-fix.md",
+    ".claude/commands/checkpoint.md",
+    ".claude/commands/go-build.md",
+    ".claude/commands/go-review.md",
+    ".claude/commands/learn.md",
+    ".claude/commands/python-review.md",
+    ".claude/commands/resume-session.md",
+    ".claude/commands/save-session.md",
+    ".claude/skills/.rsc-state.json",
+    ".claude/skills/analyze",
+    ".claude/skills/automation-strategy",
+    ".claude/skills/clarify",
+    ".claude/skills/constitution",
+    ".claude/skills/debug",
+    ".claude/skills/decision-challenge",
+    ".claude/skills/deprecation",
+    ".claude/skills/fable-operator",
+    ".claude/skills/ftd",
+    ".claude/skills/go",
+    ".claude/skills/harness",
+    ".claude/skills/idea-refinement",
+    ".claude/skills/implement",
+    ".claude/skills/init",
+    ".claude/skills/orient",
+    ".claude/skills/parallel",
+    ".claude/skills/plan",
+    ".claude/skills/python",
+    ".claude/skills/review",
+    ".claude/skills/sdd",
+    ".claude/skills/sdd-init",
+    ".claude/skills/ship",
+    ".claude/skills/simplify-code",
+    ".claude/skills/source-grounded-development",
+    ".claude/skills/specify",
+    ".claude/skills/suggest",
+    ".claude/skills/tasks",
+    ".claude/skills/ui-engineering",
+    ".claude/skills/unslop",
+    ".claude/skills/verify",
+    ".claude/skills/worktrees"
+  ]
 }
