@@ -10,11 +10,11 @@
         <key>CFBundleIdentifier</key>
             <string>gal.omeu.piztu.lua-installer</string>
         <key>CFBundleVersion</key>
-            <string>26.10.6</string>
+            <string>26.10.7</string>
         <key>CFBundleGetInfoString</key>
             <string>Instalador de Lua — xerador de informes para centros educativos (LaTeX)</string>
         <key>CFBundleShortVersionString</key>
-            <string>26.10.6</string>
+            <string>26.10.7</string>
         <key>CFBundleIconFile</key>
             <string>icons</string>
         <key>LSMinimumSystemVersion</key>
