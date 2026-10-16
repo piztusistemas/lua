@@ -21,6 +21,10 @@ topic: index
 | Plan: reutilizar formularios | [sdd/plans/reutilizar-formularios.md](sdd/plans/reutilizar-formularios.md) |
 | Spec: traballos na bóveda | [sdd/specs/traballos-boveda.md](sdd/specs/traballos-boveda.md) |
 | Plan: traballos na bóveda | [sdd/plans/traballos-boveda.md](sdd/plans/traballos-boveda.md) |
+| Spec: deseño dos documentos sen LaTeX | [sdd/specs/deseno-documentos.md](sdd/specs/deseno-documentos.md) |
+| Plan: deseño dos documentos | [sdd/plans/deseno-documentos.md](sdd/plans/deseno-documentos.md) |
+| Análise crítica e proxecto de melloras: deseño | [sdd/analysis/deseno-documentos.md](sdd/analysis/deseno-documentos.md) |
+| Verificación: deseño (2026-10-16) | [sdd/verifications/deseno-documentos-2026-10-16.md](sdd/verifications/deseno-documentos-2026-10-16.md) |
 | Plan: Buxo no idioma de Lúa (draft) | [sdd/plans/buxo-idiomas.md](sdd/plans/buxo-idiomas.md) |
 | Plan: mensaxes frecuentes, coa lista de 74 (draft) | [sdd/plans/mensaxes-go-idiomas.md](sdd/plans/mensaxes-go-idiomas.md) |
 | Análise: mensaxes-go-idiomas (PASS) | [sdd/analysis/mensaxes-go-idiomas.md](sdd/analysis/mensaxes-go-idiomas.md) |

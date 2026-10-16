@@ -107,3 +107,30 @@ Why        — Non se debilita un test para avanzar, e cada commit queda verde.
 - Decisións do usuario: nota Markdown + PDF; en `wiki/traballos/`; botón e marca opcional «engadir sempre» (desmarcada por defecto); produción bloqueada.
 - A bóveda é a que xa usa o asistente para ese documento (`bovedaDe`); se non hai ningunha, créase a do proxecto. Volver engadir substitúe.
 - A marca vive no proxecto (`proxecto.json` → `bovedaAutomatica`), non no esquema do formulario: así non cambia o formulario (que en produción está conxelado) e cada proxecto decide.
+
+## 2026-10-14 — Proxectos en cartafoles do equipo
+- Decisións do usuario: «Crear» só crea o proxecto e abre o paso «Configurar» (cartafol, fontes de coñecemento, «Abrir proxecto» / «Agora non»); o proxecto novo sae despregado; os cartafoles son cartafoles reais do equipo e substitúen as etiquetas temáticas; o proxecto vai nun subcartafol co seu nome (`<cartafol>/<Nome>`, «Nome (2)» se se repite).
+- Os proxectos gardados fóra anótanse en `<proxectos>/ubicacions.json` (id → ruta absoluta); `dirProxecto` consúltao e o resto de Lúa non cambia. Mover entre discos copia e despois borra. Un proxecto aberto non se move.
+- Retíranse `ListarCarpetasProxectos`, `CrearCarpetaProxectos`, `RenomearCarpetaProxectos`, `EliminarCarpetaProxectos` e o campo `carpeta` do proxecto; `carpetas.json` xa non viaxa na copia completa (as copias vellas que o levan lense igual).
+- Risco anotado: «Restaurar copia» volve deixar todos os proxectos no cartafol de Lúa; os que estaban fóra quedan no disco pero Lúa deixa de velos.
+
+## 2026-10-14 — Inicio nos dous paneis e cor de cada proxecto
+- Decisións do usuario: Lúa arrinca nunha pantalla de inicio que ocupa os dous paneis: no da esquerda, «Novo proxecto» e debaixo os proxectos creados ou metidos con Trasladar; os que non caben seguen no da dereita. Os paneis énchense co editor e o resultado ao abrir un proxecto. Cada proxecto ten a cor que escolla o usuario.
+- Ao arrincar xa non se reabre o último proxecto nin se crea «O meu traballo» se non hai ningún (substitúe a suposición da spec `trasladar` «sempre hai un proxecto aberto» só para o arranque: no inicio non hai editor á vista, así que tampouco hai traballo solto). Desaparece a clave `lua.proxecto` de `localStorage`.
+- A ventá flotante de Proxectos desaparece: o botón Proxectos da columna leva ao inicio e, se hai un proxecto aberto, volve a el (o proxecto non se pecha).
+- O reparto entre paneis mídese no DOM (`cantasCaben` con alturas reais) e recalcúlase ao cambiar o tamaño. Se o panel da dereita non se ve (resultado noutra xanela), todo queda á esquerda con scroll. Opción descartada: CSS multicolumna, porque os dous paneis son elementos distintos co divisor no medio.
+- A cor gárdase en `proxecto.json` → `cor` (`#rrggbb`, ou baleira = a de por defecto, que sae dunha paleta de oito segundo o id e non cambia cando nacen outros). Escóllese co selector de cor do sistema (accesible co teclado); viaxa cos paquetes porque vai na ficha. Novo binding `FixarCorProxecto`.
+
+## 2026-10-16 — Deseño dos documentos coma datos (spec `deseno-documentos`)
+- Decisión do usuario: automatizar o deseño do PDF para o profesorado sen perder o control; facer todas as fases en autopiloto.
+- O deseño do PDF pasa a ser **datos** na plantilla (`deseno`, `edicion/plantilla/deseno.go`, versión 1) e Lúa xera o LaTeX (`lua/deseno_latex.go`). Opcións descartadas: seguir co LaTeX libre como única vía (é o problema de partida) e un editor WYSIWYG en HTML (non sería o PDF real).
+- Prioridade: `estilo` (LaTeX libre) > `deseno` > Axustes do texto > deseño de Lúa. As plantillas existentes non cambian: as que teñen `estilo` seguen igual e o editor ofrece pasar ao visual.
+- **Letra por papeis** (`edicion/latex/letras.go`): corpo (`\setmainfont`), títulos (`\setsansfont`), etiquetas (`\fontchip`) e fórmulas (`unicode-math`). Causa do erro «a letra non se reflicte»: só se cambiaba o corpo, os títulos quedaban en Latin Modern Sans, as etiquetas en Open Sans, «Sans» era igual ca o por defecto e o tamaño non chegaba a `\normalsize`. As fontes cárganse por ficheiro (TeX Live / `fonts/` de Lúa), con substituta se faltan.
+- O tamaño vai con `scrextend` (`fontsize=`) e os títulos escalan co corpo. Sen `scrextend` ou `unicode-math` (TeX Live mínimo) o documento segue compilando: o tamaño vai tras `\begin{document}` e as fórmulas na letra de sempre.
+- Unha plantilla completa que xa fixa a súa letra consérvaa e o resultado avisa; se non a fixa, recibe a do deseño.
+- Interruptores do mundo real (branco e negro, aforrar papel, lectura fácil) aplícanse ao xerar e non tocan os valores gardados.
+- Inspector: cada elemento escribe a súa posición (`\pdfsavepos`) en `doc.lpos`; vai sempre, non só na vista previa, para que a vista previa e o PDF final sexan idénticos.
+- IA: o asistente cambia `deseno` (parche validado no frontend e normalizado no backend; respecta `fixados`). Para outras IA, `lua/skills/deseno-documentos/SKILL.md` + `EsquemaDeseno` (JSON Schema).
+- Sen dependencias novas de execución (Go nin npm). Os paquetes de LaTeX novos (`scrextend`, `unicode-math`, fontes TeX Gyre Math, Fira, Libertinus, Source Serif) son opcionais e engadíronse á táboa de instalación baixo demanda.
+- Fóra do alcance desta entrega (ver análise): PDF accesible etiquetado, catálogo de fontes descargable, deseño de Word/ODT desde o editor visual, e os exames de Yang (só reciben a letra por papeis).
+
