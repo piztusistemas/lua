@@ -25,6 +25,8 @@ topic: index
 | Plan: deseño dos documentos | [sdd/plans/deseno-documentos.md](sdd/plans/deseno-documentos.md) |
 | Análise crítica e proxecto de melloras: deseño | [sdd/analysis/deseno-documentos.md](sdd/analysis/deseno-documentos.md) |
 | Verificación: deseño (2026-10-16) | [sdd/verifications/deseno-documentos-2026-10-16.md](sdd/verifications/deseno-documentos-2026-10-16.md) |
+| Plan: melloras do deseño | [sdd/plans/deseno-melloras.md](sdd/plans/deseno-melloras.md) |
+| Protocolo de proba con docentes (deseño) | [sdd/analysis/deseno-proba-docentes.md](sdd/analysis/deseno-proba-docentes.md) |
 | Plan: Buxo no idioma de Lúa (draft) | [sdd/plans/buxo-idiomas.md](sdd/plans/buxo-idiomas.md) |
 | Plan: mensaxes frecuentes, coa lista de 74 (draft) | [sdd/plans/mensaxes-go-idiomas.md](sdd/plans/mensaxes-go-idiomas.md) |
 | Análise: mensaxes-go-idiomas (PASS) | [sdd/analysis/mensaxes-go-idiomas.md](sdd/analysis/mensaxes-go-idiomas.md) |

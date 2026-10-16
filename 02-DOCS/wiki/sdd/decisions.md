@@ -134,3 +134,17 @@ Why        — Non se debilita un test para avanzar, e cada commit queda verde.
 - Sen dependencias novas de execución (Go nin npm). Os paquetes de LaTeX novos (`scrextend`, `unicode-math`, fontes TeX Gyre Math, Fira, Libertinus, Source Serif) son opcionais e engadíronse á táboa de instalación baixo demanda.
 - Fóra do alcance desta entrega (ver análise): PDF accesible etiquetado, catálogo de fontes descargable, deseño de Word/ODT desde o editor visual, e os exames de Yang (só reciben a letra por papeis).
 
+## 2026-10-16 — Melloras do deseño (plan `deseno-melloras`)
+- Decisión do usuario: executar en autopiloto o proxecto de melloras da análise crítica.
+- **Estudio de deseño**: o deseño vai nunha columna propia, primeira e ancha; de primeiras só está aberto o deseño (unha plantilla nova abre tamén Identidade porque precisa nome). A vista previa faise ao abrir, é máis grande e salta á páxina da parte que se cambiou.
+- **Tempo máximo e cancelación** (constitución 5.4 e 7.1): todas as pasadas de LaTeX dos informes van con `exec.CommandContext` e un máximo de 3 min; a vista previa do editor rexistra o seu cartafol e `CancelarVistaPrevia` mata o proceso. Unha compilación cancelada ou parada non proba outro motor.
+- **Inspector visible**: resalte e nome da parte baixo o rato, a partir das marcas `doc.lpos`.
+- **Portada por modelos** (`deseno.portada`: de cor, sobria, oficial, sen) e posición do logotipo; a portada en LaTeX da plantilla segue mandando. A portada de cor usa as cores do deseño.
+- **Cabeceira e pé sen LaTeX** (`deseno.cabeceira`, `deseno.pe`, tres zonas con texto, variables, `@logo`, `@imaxe`; `deseno.numeroPaxina`). Van ao principio do corpo, despois da maqueta, para mandar sobre ela só cando se enchen. Word/ODT toman as zonas se o seu bloque está baleiro (unha caixa cun aliñamento: perde a distribución en tres zonas).
+- **Letras embebidas**: Fira Sans e Fira Math, Libertinus Serif e Libertinus Math (OFL), como xa se facía con Open Sans; só se escriben ao carón do .tex as que usa o documento. Atkinson Hyperlegible descartouse (licenza propia, non OFL). A interface usa as mesmas fontes (e as TeX Gyre, GUST Font License) para as mostras «Aa». O binario medra uns 4 MB e o frontend 1,4 MB.
+- **Kit do centro**: ficheiro `.luadeseno` (`formato: lua-deseno`, versión 1, só o deseño) e «Aplicar a todas as miñas plantillas» (as de exemplo non se tocan).
+- **Barras reversibles**: lembran os valores de partida (`barras.base`) e restáuranos ao volver ao medio.
+- **LaTeX dunha parte**: compróbase nun documento mínimo antes de usalo (`ComprobarElementoDeseno`); se falla, non se aplica salvo «Usar igualmente».
+- **Nomes**: as barras chámanse «Carácter do documento»; «Letra de cada parte».
+- `task dev` arranxado (script `build:dev` en `package.json`).
+
