@@ -47,9 +47,13 @@ type Plantilla struct {
 	// Introducion é o texto da introdución (con {{VARIABLES}}: o centro, o
 	// curso, o departamento...). Baleiro = o texto por defecto.
 	Introducion string `json:"introducion"`
-	// Estilo é o DESEÑO do documento en LaTeX (títulos, etiquetas, cabeceiras).
-	// Baleiro = o deseño por defecto da aplicación.
+	// Estilo é o DESEÑO do documento en LaTeX libre (títulos, etiquetas,
+	// cabeceiras). Se ten algo, manda sobre Deseno. Baleiro = Deseno ou, sen
+	// el, o deseño por defecto da aplicación.
 	Estilo string `json:"estilo"`
+	// Deseno é o deseño do PDF coma datos (deseno.go): o que edita o editor
+	// visual e a IA. nil = o deseño de Lúa.
+	Deseno *Deseno `json:"deseno,omitempty"`
 	// Textos son os textos fixos do documento que esta plantilla cambia
 	// (clave -> texto). Os que faltan usan o valor por defecto da aplicación.
 	Textos map[string]string `json:"textos,omitempty"`

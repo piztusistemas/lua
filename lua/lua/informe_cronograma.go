@@ -597,6 +597,11 @@ func preambuloInformeCrono(engine string, tip *TipografiaOpts, logo *imaxeCrono,
 // do deseño: os documentos que levan macros propios (os formularios) engádeos
 // aí sen que cronograma nin actas cambien.
 func preambuloInformeCronoCon(engine string, tip *TipografiaOpts, logo *imaxeCrono, plantilla *PlantillaLatex, extra string) string {
+	return preambuloDeseno(engine, compoñerDeseno(engine, tip, logo, plantilla), extra)
+}
+
+// preambuloDeseno é o preámbulo de Lúa co deseño xa resolto (dd).
+func preambuloDeseno(engine string, dd desenoDoc, extra string) string {
 	var p strings.Builder
 	p.WriteString("\\documentclass[11pt,a4paper]{article}\n")
 	if engineUnicodeNativo(engine) {
@@ -606,20 +611,10 @@ func preambuloInformeCronoCon(engine string, tip *TipografiaOpts, logo *imaxeCro
 		p.WriteString(latexUnicodeDeclarations)
 	}
 	p.WriteString(babelLine())
-	if fonte := tipografiaPreambulo(tip, engine); fonte != "" {
-		p.WriteString(fonte)
-	} else if engineUnicodeNativo(engine) {
-		// Sen fonte escollida: Helvetica-like, coma o informe orixinal.
-		if kpsewhichFound("texgyreheros-regular.otf") {
-			p.WriteString(setmainfontTeXGyre("texgyreheros"))
-		} else {
-			p.WriteString("\\renewcommand{\\familydefault}{\\sfdefault}\n")
-		}
-	} else {
-		p.WriteString("\\usepackage[scaled=0.95]{helvet}\n\\renewcommand{\\familydefault}{\\sfdefault}\n")
-	}
-	p.WriteString(`\usepackage[a4paper,margin=20mm]{geometry}
-\usepackage{graphicx}
+	// Tamaño, interliñado e letras de todos os papeis (deseno_latex.go).
+	p.WriteString(dd.Preambulo)
+	fmt.Fprintf(&p, "\\usepackage[a4paper,margin=%smm]{geometry}\n", trimFloat(dd.Marxe))
+	p.WriteString(`\usepackage{graphicx}
 \usepackage[table]{xcolor}
 \usepackage{array,longtable}
 \usepackage{enumitem}
@@ -632,7 +627,7 @@ func preambuloInformeCronoCon(engine string, tip *TipografiaOpts, logo *imaxeCro
 \usepackage{fancyhdr}
 \usepackage[hidelinks]{hyperref}
 `)
-	p.WriteString(bloqueInformeCrono(logo, engineUnicodeNativo(engine), plantilla))
+	p.WriteString(dd.Bloque)
 	p.WriteString(extra)
 	return p.String()
 }
@@ -653,6 +648,7 @@ var paquetesInformeCrono = []paqueteRequirido{
 	{Nome: "amsmath", Linha: `\usepackage{amsmath}`}, // as fórmulas dos problemas (\dfrac, align...)
 	{Nome: "amssymb", Linha: `\usepackage{amssymb}`},
 	{Nome: "hyperref", Linha: `\usepackage[hidelinks]{hyperref}`},
+	{Nome: "fancyhdr", Linha: `\usepackage{fancyhdr}`}, // a cabeceira e o pé do deseño
 }
 
 // latexInformeCrono compón o documento LaTeX completo do informe e devolve
@@ -671,17 +667,18 @@ func latexInformeCrono(p PlanCrono, engine string, tip *TipografiaOpts, dir stri
 	auto := variablesCorpoCrono(p, nomeDoc, agora)
 	tx := novosTextosDoc(plantilla, auto)
 	tx.engadirVariables(auto, "TITULO_CRONOGRAMA")
-	if engineUnicodeNativo(engine) {
-		if err := escribirFontesInformeCrono(dir); err != nil {
-			esc.avisos = append(esc.avisos, "non se puido escribir a fonte do cronograma: "+err.Error())
-		}
-	}
 
 	// b é o CORPO (índice, introdución, cronograma e desenvolvemento): a
 	// portada e a sinatura vanse a parte, ver partesInformeCrono.
 	var b strings.Builder
+	dd := compoñerDeseno(engine, tip, logo, plantilla)
+	if engineUnicodeNativo(engine) {
+		if err := escribirFontesInformeCrono(dir, dd.Fontes); err != nil {
+			esc.avisos = append(esc.avisos, "non se puido escribir a fonte do cronograma: "+err.Error())
+		}
+	}
 	b.WriteString(babelListquotFix)
-	b.WriteString(tipografiaCorpo(tip))
+	b.WriteString(dd.Corpo)
 	b.WriteString("\\renewcommand{\\contentsname}{" + tx.L("INDICE") + "}\n")
 
 	// --- Índice ---
@@ -759,13 +756,13 @@ func latexInformeCrono(p PlanCrono, engine string, tip *TipografiaOpts, dir stri
 	}
 
 	doc, avisosPlantilla, err := documentoLatexConPlantilla(
-		preambuloInformeCrono(engine, tip, logo, plantilla),
-		partesInformeCrono{PortadaDef: portadaPorDefectoLatex, Corpo: b.String(), SinaturaDef: sinaturaPorDefectoLatex},
-		engine, plantilla, auto, paquetesInformeCrono, bloqueInformeCrono(logo, engineUnicodeNativo(engine), plantilla))
+		preambuloDeseno(engine, dd, ""),
+		partesInformeCrono{PortadaDef: dd.PortadaDef, CabeceiraPe: dd.CabeceiraPe, Corpo: b.String(), SinaturaDef: sinaturaPorDefectoLatex, SenPortada: dd.SenPortada},
+		engine, plantilla, auto, paquetesInformeCrono, dd.BloqueCompleta)
 	if err != nil {
 		return "", nil, err
 	}
-	return doc, engadirSenRepetir(esc.avisos, avisosIntro, avisosPlantilla), nil
+	return doc, engadirSenRepetir(esc.avisos, avisosIntro, avisosPlantilla, dd.Avisos), nil
 }
 
 // variablesCorpoCrono son as variables automáticas máis un valor de mostra
@@ -792,13 +789,19 @@ func executarLatexCrono(dir, engine string) (string, error) {
 	if motorMiKTeX(engine) {
 		args = append([]string{"--enable-installer"}, args...)
 	}
-	cmd := exec.Command(engine, args...)
+	// Tempo máximo e cancelación (compilacion_control.go).
+	ctx, cancel := contextoCompilacion(dir)
+	defer cancel()
+	cmd := exec.CommandContext(ctx, engine, args...)
 	cmd.Dir = dir
 	ocultarConsola(cmd)
 	var out bytes.Buffer
 	cmd.Stdout = &out
 	cmd.Stderr = &out
 	err := cmd.Run()
+	if e := erroContexto(ctx); e != nil {
+		return out.String(), e
+	}
 	return out.String(), err
 }
 
@@ -839,6 +842,10 @@ func compilarLatexCrono(dir, tex, engine string) (pdf []byte, log string, err er
 	var primeiro []byte
 	for pasada := 0; pasada < 2; pasada++ {
 		l, runErr := executarLatexCrono(dir, engine)
+		if runErr != nil && compilacionParada(runErr) {
+			// Cancelada ou parada por tempo: non ten sentido outra pasada.
+			return nil, l, runErr
+		}
 		data, readErr := os.ReadFile(filepath.Join(dir, "doc.pdf"))
 		if readErr != nil || runErr != nil {
 			if pasada == 1 && primeiro != nil {
@@ -930,6 +937,9 @@ func compilarComMotores(preferido string, tip *TipografiaOpts, dir string, plant
 			return res, err // a plantilla é inválida: outro motor non o arranxa
 		}
 		pdf, log, err := compilarLatexCrono(dir, tex, motor)
+		if err != nil && compilacionParada(err) {
+			return res, err // cancelada ou parada por tempo: outro motor non o arranxa
+		}
 		if i == 0 {
 			res.Tex, res.Log, res.Avisos = tex, log, avisos
 		}
@@ -981,6 +991,11 @@ func (a *App) xerarPDFPedido(req XerarInformeCronogramaRequest, plantilla *Plant
 	}
 	limparPaqueteQueFalta()
 	result.PDFBase64 = base64.StdEncoding.EncodeToString(res.PDF)
+	// Inspector da vista previa e corrector (deseno_marcas.go).
+	result.Marcas = lerMarcasDeseno(filepath.Join(dir, "doc.lpos"))
+	if aviso := avisoMarxe(res.Log); aviso != "" {
+		result.Warnings = append(result.Warnings, aviso)
+	}
 
 	if commandExists("pdftoppm") {
 		imaxes, imgErr := pdfPageImages(dir, filepath.Join(dir, "doc.pdf"))

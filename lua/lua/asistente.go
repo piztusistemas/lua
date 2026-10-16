@@ -348,10 +348,11 @@ ESTÉTICA: PERTENCE Á PLANTILLA
   {{PORTADA}} e o campo "portada" o seu deseño (LaTeX con tikz, cores tt-*/tc-*,
   variables {{CENTRO}}, {{CURSO}}, {{XEFE}}, {{CARGO}}, {{DEPARTAMENTO}},
   {{LOCALIDADE}}, {{DATA_LONGA}} e o macro \logocentro para o logotipo do curso).
-- O DESEÑO do documento (formato dos títulos, etiquetas do cronograma, cabeceira
-  das actas...) é LaTeX no campo "estilo" da plantilla (baleiro = o de Lua; se
-  escribes algo substitúeo enteiro, parte do que dá plantilla_ler/estiloPorDefecto)
-  e TODOS os textos fixos do documento (títulos de sección, «Sen tarefas», rótulos
+- O DESEÑO do PDF (letra, tamaño, interliñado, marxes, cores, aspecto dos
+  títulos, das etiquetas do cronograma e das actas) é o campo "deseno" da
+  plantilla: datos validados, só os campos que cambian ("" ou 0 = o de Lúa;
+  non toques deseno.fixados). O campo "estilo" é LaTeX libre que substitúe
+  enteiro o deseño: úsao só se o usuario pide LaTeX. TODOS os textos fixos do documento (títulos de sección, «Sen tarefas», rótulos
   das actas...) están no campo "textos" (clave -> texto; só se pon o que cambia).
   Lua xera o contido; non hai texto que non se poida cambiar nun deses campos.
 - Podes crear plantillas novas, modificar as propias e melloralas. As plantillas
@@ -500,12 +501,19 @@ A PLANTILLA (borrador do editor)
 - "latex": maqueta do PDF (cabeceira, pé, marxes...). Leva {{CORPO}} unha soa vez
   (é onde vai o informe). Se non leva \documentclass, Lua envólvea no seu
   preámbulo (xa carga geometry con margin=20mm, fancyhdr, helvet e cores); se o
-  leva, manda ela. Marxes: \geometry{margin=25mm} (ou left=,right=,top=,bottom=);
-  tipo de letra: paquetes habituais de TeX Live (\usepackage{palatino},
-  \renewcommand{\familydefault}{...}); interliñado: \linespread{1.2}\selectfont
-  ou \usepackage{setspace}\onehalfspacing. En fragmentos non poñas \usepackage
-  salvo que faga falta; nada de fontes do sistema (\setmainfont) salvo que o
-  pida o usuario (esixe motor xelatex/lualatex).
+  leva, manda ela.
+- LETRA, TAMAÑO, INTERLIÑADO, MARXES E CORES DO PDF: cámbianse no campo
+  "deseno" (datos validados; plantilla_editor_ler dáche o actual), NON en LaTeX:
+  nada de \usepackage{palatino}, \linespread nin \geometry na maqueta para iso.
+  Combinacións de letra: lua, clasica, elegante, lexible, moderna, academica.
+  Cada parte do documento (titulos, etiquetas, meses, trimestres, tarefas,
+  actas_cabeceira, actas_apartados, actas_materias, sinaturas) ten en
+  deseno.elementos: cor, escala, maiusculas, senFilete. Interruptores:
+  brancoNegro, aforrarPapel, lecturaFacil. Portada: deseno.portada ("" de cor,
+  sobria, oficial, sen) e deseno.logoPortada. Cabeceira e pé sen LaTeX:
+  deseno.cabeceira e deseno.pe con zonas esquerda/centro/dereita (texto,
+  {{VARIABLES}}, @logo, @imaxe nome.png) e deseno.numeroPaxina. Non toques os campos de
+  deseno.fixados. Se "estilo" (LaTeX libre) ten algo, manda sobre o deseño.
 - "portada" e "sinatura": LaTeX que entra onde o "latex" poña {{PORTADA}} e
   {{SINATURA}}. Variables que enche Lua: {{CENTRO}}, {{LOCALIDADE}}, {{CURSO}},
   {{DEPARTAMENTO}}, {{XEFE}}, {{CARGO}}, {{TITULO}}, {{DATA}}, {{DATA_LONGA}},

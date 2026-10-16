@@ -50,14 +50,14 @@ afterEach(() => {
 })
 
 describe('editor en bloques e columnas', () => {
-  it('ten tres columnas con bloques, a vista previa e o pé con Aplicar / Gardar / Cancelar', async () => {
+  it('ten catro columnas (o deseño primeiro), a vista previa e o pé con Aplicar / Gardar / Cancelar', async () => {
     await abrirEditorPlantilla({ t, api: apiFalsa(), plantilla: { ...P } })
     const m = visible()
     expect(m.classList.contains('plantilla-pantalla')).toBe(true)
     const cols = m.querySelectorAll('.plantilla-columna')
-    expect(cols).toHaveLength(3)
-    expect([...cols].map((c) => c.querySelector('.plantilla-columna__tit').textContent)).toEqual(['Datos e recursos', 'PDF e LaTeX', 'Word e OpenDocument'])
-    for (const c of cols) expect(c.querySelectorAll('.plantilla-bloque').length).toBeGreaterThanOrEqual(2)
+    expect(cols).toHaveLength(4)
+    expect([...cols].map((c) => c.querySelector('.plantilla-columna__tit').textContent)).toEqual(['Deseño', 'Datos e recursos', 'PDF e LaTeX', 'Word e OpenDocument'])
+    for (const c of [...cols].slice(1)) expect(c.querySelectorAll('.plantilla-bloque').length).toBeGreaterThanOrEqual(2)
     expect(m.querySelector('.plantilla-vista')).toBeTruthy()
     const nomes = [...m.querySelectorAll('.modal-actions button')].map((b) => b.textContent)
     expect(nomes).toEqual(expect.arrayContaining(['Cancelar', 'Aplicar', 'Gardar']))
@@ -96,7 +96,8 @@ describe('Aplicar: gardar sen pechar e seguir editando', () => {
     expect(api.gardar.mock.calls[0][0].latex).toBe('NOVO\n{{CORPO}}')
     expect(api.aplicada.mock.calls[0][0].id).toBe('p1')
     expect(document.querySelector('.overlay:not(.hidden)')).toBeTruthy() // non se pechou
-    await vi.waitFor(() => expect(api.previsualizar).toHaveBeenCalledTimes(1)) // "Actualizar ao aplicar" (activo por defecto)
+    // Unha ao abrir e outra tras aplicar ("Actualizar ao aplicar", activo por defecto).
+    await vi.waitFor(() => expect(api.previsualizar).toHaveBeenCalledTimes(2))
     await vi.waitFor(() => expect(m.querySelectorAll('.plantilla-previa__paxina')).toHaveLength(1))
     expect(m.querySelector('.tarefa-cab__estado').textContent).toBe('✓ Gardado')
   })
@@ -215,7 +216,7 @@ describe('vista previa', () => {
     botonDe(m.querySelector('.modal-actions'), 'Aplicar').click()
     await vi.waitFor(() => expect(api.gardar).toHaveBeenCalled())
     await new Promise((r) => setTimeout(r, 30))
-    expect(api.previsualizar).toHaveBeenCalledTimes(1) // non se volveu compilar
+    expect(api.previsualizar).toHaveBeenCalledTimes(2) // a de abrir e a do botón: non se volveu compilar
     expect(localStorage.getItem('lua.plantilla.autoVista')).toBe('0')
   })
 })
@@ -277,18 +278,19 @@ describe('lanzador de bloques (só se despregan os que se chaman)', () => {
   const abertos = (m) => [...m.querySelectorAll('.plantilla-bloque:not([hidden])')].map((b) => b.dataset.bloque)
   const chip = (m, id) => m.querySelector(`.plantilla-chip[data-bloque="${id}"]`)
 
-  it('de primeiras só están á vista a identidade e a maqueta, e cada bloque ten o seu botón', async () => {
+  it('de primeiras só está á vista o deseño, e cada bloque ten o seu botón', async () => {
     await abrirEditorPlantilla({ t, api: apiFalsa(), plantilla: { ...P } })
     const m = visible()
-    expect(abertos(m).sort()).toEqual(['identidade', 'latex'])
+    expect(abertos(m).sort()).toEqual(['deseno'])
     const ids = [...m.querySelectorAll('.plantilla-bloque')].map((b) => b.dataset.bloque)
-    expect(ids).toHaveLength(14)
+    expect(ids).toHaveLength(15)
     for (const id of ids) expect(chip(m, id), id).toBeTruthy()
-    // A columna de Word/OpenDocument non ten nada á vista: agóchase.
+    // As columnas sen nada á vista agóchanse: só queda a do deseño.
     const cols = m.querySelectorAll('.plantilla-columna')
     expect(cols[0].hidden).toBe(false)
-    expect(cols[2].hidden).toBe(true)
-    expect(chip(m, 'latex').getAttribute('aria-pressed')).toBe('true')
+    expect([...cols].slice(1).every((c) => c.hidden)).toBe(true)
+    expect(chip(m, 'deseno').getAttribute('aria-pressed')).toBe('true')
+    expect(chip(m, 'latex').getAttribute('aria-pressed')).toBe('false')
     expect(chip(m, 'estilo').getAttribute('aria-pressed')).toBe('false')
   })
 
@@ -297,10 +299,10 @@ describe('lanzador de bloques (só se despregan os que se chaman)', () => {
     const m = visible()
     chip(m, 'cores').click()
     expect(abertos(m)).toContain('cores')
-    expect(m.querySelectorAll('.plantilla-columna')[2].hidden).toBe(false)
+    expect(m.querySelectorAll('.plantilla-columna')[3].hidden).toBe(false)
     chip(m, 'cores').click()
     expect(abertos(m)).not.toContain('cores')
-    expect(m.querySelectorAll('.plantilla-columna')[2].hidden).toBe(true)
+    expect(m.querySelectorAll('.plantilla-columna')[3].hidden).toBe(true)
     chip(m, 'estilo').click()
     m.querySelector('.plantilla-bloque[data-bloque="estilo"] .plantilla-bloque__x').click()
     expect(abertos(m)).not.toContain('estilo')

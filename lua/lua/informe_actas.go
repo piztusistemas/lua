@@ -349,17 +349,18 @@ func latexInformeActas(p PlanActas, ambito, engine string, tip *TipografiaOpts, 
 	auto := variablesActas(p, nomeDoc, agora)
 	tx := novosTextosDoc(plantilla, auto)
 	tx.engadirVariables(auto, "TITULO_ACTAS")
-	if engineUnicodeNativo(engine) {
-		if err := escribirFontesInformeCrono(dir); err != nil {
-			esc.avisos = append(esc.avisos, "non se puido escribir a fonte do documento: "+err.Error())
-		}
-	}
 	curso := ambito == "" || ambito == ambitoCursoActas
 	actas := actasResoltas(p, ambito)
 
+	dd := compoñerDeseno(engine, tip, logo, plantilla)
+	if engineUnicodeNativo(engine) {
+		if err := escribirFontesInformeCrono(dir, dd.Fontes); err != nil {
+			esc.avisos = append(esc.avisos, "non se puido escribir a fonte do documento: "+err.Error())
+		}
+	}
 	var b strings.Builder
 	b.WriteString(babelListquotFix)
-	b.WriteString(tipografiaCorpo(tip))
+	b.WriteString(dd.Corpo)
 	if curso {
 		b.WriteString("\\renewcommand{\\contentsname}{" + tx.L("ACTAS_LISTA") + "}\n\\tableofcontents\n\\clearpage\n")
 	}
@@ -377,13 +378,13 @@ func latexInformeActas(p PlanActas, ambito, engine string, tip *TipografiaOpts, 
 	}
 
 	doc, avisosPlantilla, err := documentoLatexConPlantilla(
-		preambuloInformeCrono(engine, tip, logo, plantilla),
-		partesInformeCrono{PortadaDef: portadaPorDefectoLatex, Corpo: b.String(), SenPortada: !curso, SenSinatura: true},
-		engine, plantilla, auto, paquetesInformeCrono, bloqueInformeCrono(logo, engineUnicodeNativo(engine), plantilla))
+		preambuloDeseno(engine, dd, ""),
+		partesInformeCrono{PortadaDef: dd.PortadaDef, CabeceiraPe: dd.CabeceiraPe, Corpo: b.String(), SenPortada: !curso || dd.SenPortada, SenSinatura: true},
+		engine, plantilla, auto, paquetesInformeCrono, dd.BloqueCompleta)
 	if err != nil {
 		return "", nil, err
 	}
-	return doc, engadirSenRepetir(esc.avisos, avisosPlantilla), nil
+	return doc, engadirSenRepetir(esc.avisos, avisosPlantilla, dd.Avisos), nil
 }
 
 // validarDatasActas é validarDatasCrono para o rango do curso de actas.

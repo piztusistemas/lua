@@ -18,6 +18,8 @@ import {
   PrevisualizarPlantillaDe, PrevisualizarPlantillaDocumento, PrevisualizarPlantillaOfimaticaDocumento, PrevisualizarPlantilla,
   PaqueteLatexQueFalta, InstalarPaqueteLatex,
   ListarFontesSistema,
+  CombinacionsLetras, CoresDaImaxe, ImportarDesenoDeFicheiro, EstiloElementoDeseno, SkillDeseno,
+  CancelarVistaPrevia, ComprobarElementoDeseno, GardarDesenoFicheiro, LerDesenoFicheiro, AplicarDesenoATodas,
   XerarInformeCronograma, ExportarInformeTex, ExportarInformeMarkdown, ExportarInformeDocx, ExportarInformeOdt,
   GardarBorradorInforme, LerBorradorInforme,
   ListarFormularios, GardarFormulario, EliminarFormulario, CambiarModoFormulario,
@@ -337,7 +339,8 @@ try {
   tipografia = {
     tamanoPt: Number(g.tamanoPt) || 0,
     interlinado: Number(g.interlinado) || 0,
-    fonte: typeof g.fonte === 'string' ? g.fonte : '',
+    // Os valores vellos (serif, sans, palatino) pasan á combinación equivalente.
+    fonte: typeof g.fonte === 'string' ? ({ serif: 'clasica', sans: '', palatino: 'elegante' }[g.fonte] ?? g.fonte) : '',
   }
 } catch { /* localStorage corrupto: quédanse os valores por defecto */ }
 
@@ -354,7 +357,7 @@ const optTextoLeading = document.getElementById('optTextoLeading')
 const optTextoFont = document.getElementById('optTextoFont')
 const optTextoFontRecom = document.getElementById('optTextoFontRecom')
 const optTextoFontSistema = document.getElementById('optTextoFontSistema')
-if (optTextoFontRecom) optTextoFontRecom.label = t('axustesTexto.font.recom', 'Recomendadas')
+if (optTextoFontRecom) optTextoFontRecom.label = t('axustesTexto.font.recom', 'Combinacións')
 if (optTextoFontSistema) optTextoFontSistema.label = t('axustesTexto.font.sistema', 'Do sistema (xelatex)')
 
 // fontesSistemaCargadas: as familias que devolve ListarFontesSistema
@@ -1614,6 +1617,17 @@ const apiPlantillas = {
   // A petición do documento en edición (só na xanela principal; a do editor recíbea ao abrirse).
   documentoActual: () => (document.body.classList.contains('sen-ferramenta') ? null : (informes?.peticionActual?.() ?? null)),
   fontes: () => ListarFontesSistema(),
+  // Deseño do PDF (deseno/editor.js).
+  combinacions: () => CombinacionsLetras(),
+  coresImaxe: (datos) => CoresDaImaxe(datos),
+  importarDeseno: (nome, datosB64) => ImportarDesenoDeFicheiro(nome, datosB64),
+  estiloElemento: (d, id) => EstiloElementoDeseno(d, id),
+  skillDeseno: () => SkillDeseno(),
+  cancelarVista: () => CancelarVistaPrevia(),
+  comprobarElemento: (d, id, latex) => ComprobarElementoDeseno(d, id, latex),
+  gardarDesenoFicheiro: (d, nome) => GardarDesenoFicheiro(d, nome),
+  lerDesenoFicheiro: (texto) => LerDesenoFicheiro(texto),
+  aplicarDesenoATodas: (d) => AplicarDesenoATodas(d),
   // O editor abre nunha xanela propia (a nova xanela non abre outras). Sen
   // xanelas nativas (proba en navegador) devolve false e o editor ábrese a
   // pantalla completa nesta mesma xanela.

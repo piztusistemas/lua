@@ -120,6 +120,7 @@ func (a *App) GardarPlantilla(p PlantillaLatex) (PlantillaLatex, error) {
 		return PlantillaLatex{}, err
 	}
 	p.Ofimatica = ofi
+	p.Deseno = normalizarDeseno(p.Deseno)
 
 	// A partir de aquí (crear, actualizar, bifurcar se é de fábrica, gardar e
 	// resolver as imaxes) é maquinaria común: ver edicion/plantilla.Deposito.
@@ -380,6 +381,9 @@ func geometriaDaMaqueta(latex string) string {
 // introdución, cronograma e desenvolvemento).
 type partesInformeCrono struct {
 	PortadaDef, Corpo, SinaturaDef string
+	// CabeceiraPe é a cabeceira e o pé do deseño: vai ao principio do corpo
+	// (despois da maqueta) e leva {{VARIABLES}}.
+	CabeceiraPe string
 	// SenPortada e SenSinatura quitan esas partes (unha acta solta non leva
 	// portada; as actas asinan cada unha no seu corpo).
 	SenPortada, SenSinatura bool
@@ -400,6 +404,14 @@ type partesInformeCrono struct {
 // variablesAutomaticasCrono).
 func documentoLatexConPlantilla(preambulo string, partes partesInformeCrono, engine string, plantilla *PlantillaLatex, auto map[string]string, paquetes []paqueteRequirido, bloque string) (string, []string, error) {
 	vacia := &PlantillaLatex{}
+	if strings.TrimSpace(partes.CabeceiraPe) != "" {
+		pl := plantilla
+		if pl == nil {
+			pl = vacia
+		}
+		cab, _ := substituirVariables(partes.CabeceiraPe, pl, auto, baleiroLatex, EscapeLatexProse)
+		partes.Corpo = cab + partes.Corpo
+	}
 	if plantilla == nil {
 		plantilla = vacia
 		portada, av1 := substituirVariables(partes.PortadaDef, plantilla, auto, baleiroLatex, EscapeLatexProse)
@@ -538,6 +550,8 @@ func (a *App) previsualizarPlantillaPedido(p PlantillaLatex, pedido XerarInforme
 		return GeneratePDFResult{}, err
 	}
 	defer os.RemoveAll(tmpDir)
+	// A vista previa pódese cancelar (CancelarVistaPrevia).
+	defer rexistrarVistaPrevia(tmpDir)()
 	p.Textos = normalizarTextosDoc(p.Textos)
 	return a.xerarPDFPedido(pedido, &p, tmpDir)
 }

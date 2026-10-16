@@ -97,6 +97,7 @@ func ConstruirBundle(p Plantilla, o Opcions) (Bundle, error) {
 			Sinatura:    p.Sinatura,
 			Introducion: p.Introducion,
 			Estilo:      p.Estilo,
+			Deseno:      NormalizarDeseno(p.Deseno),
 			Textos:      textos,
 			Markdown:    p.Markdown,
 			Ofimatica:   p.Ofimatica,

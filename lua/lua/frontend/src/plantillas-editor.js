@@ -31,14 +31,19 @@ import { crearPanelAsistente } from './asistente/panel.js'
 import { crearFerramentasPlantilla } from './asistente/ferramentas-plantilla.js'
 import { TAREFAS_PLANTILLA } from './asistente/tarefas.js'
 import { logoProvedor } from './asistente/logos.js'
+import { montarBloqueDeseno } from './deseno/editor.js'
+import { marcaEnPunto, caixaMarca } from './deseno/modelo.js'
 
 const MARCADOR_CORPO = '{{CORPO}}'
 const MARCADOR_PORTADA = '{{PORTADA}}'
 const MARCADOR_SINATURA = '{{SINATURA}}'
 const CLAVE_AUTO_VISTA = 'lua.plantilla.autoVista'
 const CLAVE_BLOCOS = 'lua.plantilla.blocos'
-// Os bloques á vista de primeiras: o resto chámase co lanzador.
-const BLOCOS_POR_DEFECTO = ['identidade', 'latex']
+// Os bloques á vista de primeiras: o resto chámase co lanzador. O deseño vai
+// primeiro: é o que cambia o aspecto do PDF sen saber LaTeX.
+const BLOCOS_POR_DEFECTO = ['deseno']
+// Quen xa tiña bloques gardados de antes do bloque Deseño veo unha vez aberto.
+const CLAVE_DESENO_VISTO = 'lua.plantilla.desenoVisto'
 
 const ICONA_X = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 5l10 10M15 5L5 15"/></svg>'
 
@@ -67,7 +72,14 @@ function gardarAutoVista(v) {
 function lerBlocosAbertos() {
   try {
     const bruto = JSON.parse(localStorage.getItem(CLAVE_BLOCOS) || 'null')
-    if (Array.isArray(bruto)) return new Set(bruto.map(String))
+    if (Array.isArray(bruto)) {
+      const set = new Set(bruto.map(String))
+      if (!localStorage.getItem(CLAVE_DESENO_VISTO)) {
+        set.add('deseno')
+        localStorage.setItem(CLAVE_DESENO_VISTO, '1')
+      }
+      return set
+    }
   } catch { /* sen persistencia */ }
   return new Set(BLOCOS_POR_DEFECTO)
 }
@@ -115,12 +127,13 @@ export async function montarEditorPlantilla(container, {
     : {
         id: '', nome: '', descricion: '', latex: PLANTILLA_BALEIRA, markdown: '', motor: '', variables: [], imaxes: [], ofimatica: {},
         portada: porDefecto.portada, sinatura: porDefecto.sinatura, introducion: porDefecto.introducion,
-        estilo: '', textos: {},
+        estilo: '', textos: {}, deseno: {},
       }
   actual.portada = actual.portada || ''
   actual.sinatura = actual.sinatura || ''
   actual.introducion = actual.introducion || ''
   actual.estilo = actual.estilo || ''
+  actual.deseno = actual.deseno || {}
   actual.variables = actual.variables || []
   actual.imaxes = actual.imaxes || []
   const ofi = { ...(actual.ofimatica || {}) }
@@ -359,6 +372,14 @@ export async function montarEditorPlantilla(container, {
   }
 
   // ---------- PDF: a maqueta LaTeX ----------
+  // ---------- Deseño do PDF (sen LaTeX) ----------
+  // O bloque créase aquí para que vaia o primeiro no lanzador; móntase máis
+  // abaixo, cando xa existe o bloque Estilo (o LaTeX libre manda sobre el).
+  const bloqueDeseno = bloque('🎨 ' + t('plantillas.bloque.deseno', 'Deseño do PDF'), 'deseno', 'pdf', t('plantillas.chip.deseno', 'Deseño'))
+  bloqueDeseno.classList.add('plantilla-bloque--deseno')
+  const corpoDeseno = el('div', 'deseno')
+  bloqueDeseno.appendChild(corpoDeseno)
+
   const bloqueLatex = bloque(t('plantillas.bloque.latex', 'Maqueta do PDF (LaTeX)'), 'latex', 'pdf', t('plantillas.chip.latex', 'Maqueta'))
   const latexLabel = el('label', 'modal-label', t('plantillas.latex', 'LaTeX da plantilla'))
   const latexArea = el('textarea', 'plantilla-codigo plantilla-codigo--grande')
@@ -432,13 +453,46 @@ export async function montarEditorPlantilla(container, {
   })
 
   // ---------- Estilo: o deseño do documento, en LaTeX ----------
-  const bloqueEstilo = bloque(t('plantillas.bloque.estilo', 'Estilo do documento (LaTeX)'), 'estilo', 'pdf', t('plantillas.chip.estilo', 'Estilo'))
+  const bloqueEstilo = bloque(t('plantillas.bloque.estilo', 'Estilo do documento (LaTeX libre)'), 'estilo', 'pdf', t('plantillas.chip.estilo', 'Estilo LaTeX'))
   const estiloArea = campoParte(bloqueEstilo, {
     clave: 'estilo', codigo: true, filas: 18,
     etiqueta: t('plantillas.estilo', 'Estilo (LaTeX)'),
     axudaTexto: t('plantillas.estiloHelp',
       'O deseño do documento vai aquí, non no código de Lúa: formato dos parágrafos e dos títulos, as etiquetas do cronograma (\\chip, \\mesbadge, ambiente trimestre), a cabeceira das actas (\\actacab, \\actasecc, \\actasinaturas...). Baleiro, Lúa usa o seu estilo; se escribes algo, substitúeo enteiro (parte do de Lúa co botón de abaixo). As cores das tarefas (tf-*, tt-*, tb-*, tc-*), gris-linea, gris-texto, \\fontchip e \\logocentro vén sempre de Lúa. Só se aplica ao PDF e ao .tex.'),
     botonTexto: t('plantillas.useDefaultStyle', 'Usar o estilo de Lúa'),
+  })
+  estiloArea.addEventListener('input', () => desenoUI?.pintar())
+
+  // O deseño vive en actual.deseno; cada cambio refresca a vista previa (se
+  // está activo «Actualizar ao aplicar»), sen esperar a Aplicar.
+  let temporizadorDeseno = null
+  // A parte do documento que máis cambiou: a vista previa salta á súa páxina.
+  let parteCambiada = ''
+  const desenoUI = montarBloqueDeseno(corpoDeseno, {
+    t, api,
+    nomePlantilla: () => nomeInput.value.trim(),
+    ler: () => actual.deseno || {},
+    cambiar: (d, parte) => {
+      actual.deseno = d
+      if (parte) parteCambiada = parte
+      marcarCambios()
+      clearTimeout(temporizadorDeseno)
+      temporizadorDeseno = setTimeout(() => { if (autoVista.checked && !vista.hidden && formatoVista.value === 'pdf') previsualizar() }, 700)
+    },
+    estiloLibre: () => estiloArea.value,
+    quitarEstiloLibre: () => {
+      estiloArea.value = ''
+      actual.estilo = ''
+      marcarCambios()
+    },
+    imaxeLogo: async () => {
+      const imaxes = actual.imaxes || []
+      const nome = imaxes.find((n) => /logo/i.test(n) && /\.(png|jpe?g|gif)$/i.test(n)) || imaxes.find((n) => /\.(png|jpe?g|gif)$/i.test(n))
+      if (!nome || !actual.id || !api.vistaImaxe) return null
+      return api.vistaImaxe(actual.id, nome)
+    },
+    previsualizarCon: api.previsualizar ? (d) => api.previsualizar({ ...datosActuais(), deseno: d }, mostraVista.value, documento) : null,
+    pedirIA: api.asistente ? (texto) => { asistente?.abrir(); asistente?.escribir?.(texto) } : null,
   })
 
   // ---------- Textos: todos os textos fixos do documento ----------
@@ -654,8 +708,17 @@ export async function montarEditorPlantilla(container, {
   const avisoVista = el('p', 'plantilla-vista__aviso', t('plantillas.vista.vella', 'Hai cambios que aínda non se ven aquí.'))
   avisoVista.hidden = true
   const refrescarBtn = boton('↻ ' + t('plantillas.vista.actualizar', 'Actualizar'), null, () => previsualizar())
+  // Mentres compila: progreso e Cancelar (mata a compilación de LaTeX).
+  const progresoVista = el('span', 'plantilla-vista__progreso', t('plantillas.previewing', 'Compilando a vista previa…'))
+  progresoVista.hidden = true
+  progresoVista.setAttribute('role', 'status')
+  const cancelarVistaBtn = boton('✕ ' + t('plantillas.vista.cancelar', 'Cancelar'), 'plantilla-vista__cancelar', () => {
+    vistaPendente = false
+    api.cancelarVista?.()
+  })
+  cancelarVistaBtn.hidden = true
   const vistaCab = el('div', 'plantilla-vista__cab')
-  vistaCab.append(el('strong', null, t('plantillas.vista.titulo', 'Vista previa')), formatoVista, refrescarBtn, autoLabel)
+  vistaCab.append(el('strong', null, t('plantillas.vista.titulo', 'Vista previa')), formatoVista, refrescarBtn, autoLabel, progresoVista, cancelarVistaBtn)
   const vista = el('aside', 'plantilla-vista')
   vista.append(vistaCab, avisoVista, previaWrap)
   formatoVista.addEventListener('change', () => { if (autoVista.checked) previsualizar() })
@@ -722,10 +785,14 @@ export async function montarEditorPlantilla(container, {
     return c
   }
   const colDatos = columna(t('plantillas.col.datos', 'Datos e recursos'), bloqueIdentidade, bloqueTextos, bloqueVariables, bloqueImaxes)
+  // O deseño vai nunha columna propia, a primeira e a máis ancha: é o que se
+  // usa máis e o que non precisa LaTeX.
+  const colDeseno = columna(t('plantillas.col.deseno', 'Deseño'), bloqueDeseno)
+  colDeseno.classList.add('plantilla-columna--deseno')
   const colPdf = columna(t('plantillas.col.pdf', 'PDF e LaTeX'), bloqueLatex, bloquePortada, bloqueSinatura, bloqueIntro, bloqueEstilo, bloqueMd)
   const colOfi = columna(t('plantillas.col.ofi', 'Word e OpenDocument'), bloqueTipo, bloqueCores, bloqueCabPe, bloqueOfiPortada)
   const columnas = el('div', 'plantilla-columnas')
-  columnas.append(colDatos, colPdf, colOfi)
+  columnas.append(colDeseno, colDatos, colPdf, colOfi)
 
   // O lanzador: un botón por bloque, agrupados como as columnas. Premer un
   // botón despraga (ou pecha) o seu bloque; unha columna sen bloques á vista
@@ -753,7 +820,8 @@ export async function montarEditorPlantilla(container, {
       chip.setAttribute('aria-pressed', String(aberto))
       chip.setAttribute('aria-expanded', String(aberto))
     }
-    for (const c of [colDatos, colPdf, colOfi]) c.hidden = !c.querySelector('.plantilla-bloque:not([hidden])')
+    for (const c of [colDeseno, colDatos, colPdf, colOfi]) c.hidden = !c.querySelector('.plantilla-bloque:not([hidden])')
+    columnas.classList.toggle('plantilla-columnas--so-deseno', !colDeseno.hidden && [colDatos, colPdf, colOfi].every((c) => c.hidden))
   }
   alternarBloque = (id, abrir) => {
     const abrirAgora = abrir === undefined ? !blocosAbertos.has(id) : abrir
@@ -790,13 +858,14 @@ export async function montarEditorPlantilla(container, {
       estilo: estiloArea.value,
       textos: { ...textos },
       ofimatica: { ...ofi },
+      deseno: actual.deseno && Object.keys(actual.deseno).length ? actual.deseno : null,
     }
   }
 
   const instantanea = () => {
     const d = datosActuais()
     return JSON.stringify([d.nome, d.descricion, d.latex, d.markdown, d.motor, d.portada, d.sinatura, d.introducion, d.estilo,
-      (d.variables || []).map((v) => [v.nome, v.etiqueta, v.valor]), ofiLimpa(d.ofimatica), ofiLimpa(d.textos)])
+      (d.variables || []).map((v) => [v.nome, v.etiqueta, v.valor]), ofiLimpa(d.ofimatica), ofiLimpa(d.textos), d.deseno || {}])
   }
   let inicial = instantanea()
   let sucioAvisado = false
@@ -819,11 +888,18 @@ export async function montarEditorPlantilla(container, {
   container.addEventListener('click', () => setTimeout(marcarCambios, 0))
 
   // ---------- Vista previa: compilar o borrador ----------
+  // Inspector: onde está cada parte do deseño nas páxinas da última vista previa.
+  let marcasVista = []
+  let vistaPendente = false
   async function previsualizar() {
-    if (compilando || pechado) return
+    if (pechado) return
+    // Se xa se está compilando, vólvese compilar ao rematar (o deseño cambiou).
+    if (compilando) { vistaPendente = true; return }
     compilando = true
     previaBtn.disabled = true
     refrescarBtn.disabled = true
+    progresoVista.hidden = false
+    cancelarVistaBtn.hidden = !api.cancelarVista
     estado.textContent = t('plantillas.previewing', 'Compilando a vista previa…')
     previaWrap.innerHTML = ''
     const formato = formatoVista.value
@@ -835,11 +911,22 @@ export async function montarEditorPlantilla(container, {
       else if (api.previsualizarOfi) res = await api.previsualizarOfi(datos, formato, mostraVista.value, documento)
       else throw new Error(t('plantillas.vista.sen.ofi', 'A vista previa de Word/OpenDocument non está dispoñible.'))
       estado.textContent = (res.warnings || []).join(' · ')
-      for (const img of res.pageImages || []) {
+      marcasVista = formato === 'pdf' ? (res.marcas || []) : []
+      previaWrap.classList.toggle('plantilla-previa--inspector', marcasVista.length > 0)
+      ;(res.pageImages || []).forEach((img, i) => {
+        // Cada páxina vai nunha folla co resalte do inspector por riba.
+        const folla = el('div', 'plantilla-previa__folla')
         const im = el('img', 'plantilla-previa__paxina')
         im.src = img
-        previaWrap.appendChild(im)
-      }
+        im.dataset.paxina = String(i + 1)
+        if (marcasVista.length) im.title = t('deseno.inspector', 'Preme nunha parte para cambiar o seu deseño')
+        const resalte = el('div', 'plantilla-previa__resalte')
+        resalte.hidden = true
+        resalte.appendChild(el('span', 'plantilla-previa__resalte-nome'))
+        folla.append(im, resalte)
+        previaWrap.appendChild(folla)
+      })
+      saltarAParte()
       if (!(res.pageImages || []).length) {
         previaWrap.appendChild(el('p', 'plantilla-axuda', t('plantillas.previewNoPages',
           'Compilou, pero non se puido debuxar a vista previa (falta pdftoppm).')))
@@ -847,19 +934,65 @@ export async function montarEditorPlantilla(container, {
       vistaDe = instante
       pintarAvisoVista()
     } catch (err) {
-      estado.textContent = String(err && err.message ? err.message : err)
+      const msg = String(err && err.message ? err.message : err)
+      estado.textContent = /cancelada/.test(msg) ? t('plantillas.vista.cancelada', 'Vista previa cancelada.') : msg
     } finally {
       compilando = false
       previaBtn.disabled = false
       refrescarBtn.disabled = false
+      progresoVista.hidden = true
+      cancelarVistaBtn.hidden = true
+      if (vistaPendente) { vistaPendente = false; previsualizar() }
     }
   }
+
+  // A vista previa amosa a páxina onde está a parte que se acaba de cambiar.
+  function saltarAParte() {
+    if (!parteCambiada) return
+    const parte = parteCambiada
+    parteCambiada = ''
+    const pax = parte === 'portada' ? 1 : marcasVista.find((m) => m.elemento === parte)?.paxina
+    const folla = pax && previaWrap.querySelector(`.plantilla-previa__paxina[data-paxina="${pax}"]`)?.parentElement
+    if (folla && previaWrap.scrollTo) previaWrap.scrollTo({ top: folla.offsetTop - previaWrap.offsetTop - 8, behavior: 'smooth' })
+  }
+
+  // Inspector: a marca (parte do documento) que hai baixo o punteiro.
+  const marcaBaixo = (e) => {
+    const im = e.target.closest?.('.plantilla-previa__paxina')
+    if (!im || !marcasVista.length) return null
+    const r = im.getBoundingClientRect()
+    const pax = Number(im.dataset.paxina)
+    return { im, marca: marcaEnPunto(marcasVista, pax, (e.clientX - r.left) / r.width, (e.clientY - r.top) / r.height) }
+  }
+  // Ao pasar o rato resáltase a parte e dise o seu nome: así se ve que se pode premer.
+  previaWrap.addEventListener('mousemove', (e) => {
+    for (const r of previaWrap.querySelectorAll('.plantilla-previa__resalte')) r.hidden = true
+    const b = marcaBaixo(e)
+    if (!b || !b.marca) return
+    const res = b.im.parentElement.querySelector('.plantilla-previa__resalte')
+    const c = caixaMarca(marcasVista, b.marca)
+    Object.assign(res.style, { left: c.x * 100 + '%', top: c.y * 100 + '%', width: c.w * 100 + '%', height: c.h * 100 + '%' })
+    res.firstChild.textContent = t(`deseno.el.${b.marca.elemento}`, b.marca.elemento)
+    res.hidden = false
+  })
+  previaWrap.addEventListener('mouseleave', () => {
+    for (const r of previaWrap.querySelectorAll('.plantilla-previa__resalte')) r.hidden = true
+  })
+  // Premer nunha páxina da vista previa abre a parte do deseño que hai alí.
+  previaWrap.addEventListener('click', (e) => {
+    const b = marcaBaixo(e)
+    if (!b) return
+    alternarBloque('deseno', true)
+    desenoUI.abrirElemento(b.marca?.elemento || 'texto')
+  })
 
   // ---------- Gardar / Aplicar ----------
   async function gardar({ pechar: pecharAoRematar }) {
     if (ocupado || pechado) return false
     const datos = datosActuais()
     if (!datos.nome) {
+      alternarBloque('identidade', true)
+      nomeInput.focus()
       estado.textContent = t('plantillas.needName', 'Dálle un nome á plantilla.')
       return false
     }
@@ -879,6 +1012,8 @@ export async function montarEditorPlantilla(container, {
       for (const k of Object.keys(textos)) delete textos[k]
       Object.assign(textos, gardada.textos || {})
       actual.textos = textos
+      actual.deseno = gardada.deseno || {}
+      desenoUI.pintar()
       pintarTextos()
       pintarVariables()
       pintarImaxes()
@@ -945,6 +1080,7 @@ export async function montarEditorPlantilla(container, {
     return JSON.parse(JSON.stringify({
       nome: d.nome, descricion: d.descricion, latex: d.latex, markdown: d.markdown, motor: d.motor, portada: d.portada,
       sinatura: d.sinatura, introducion: d.introducion, estilo: d.estilo, textos: d.textos, variables: d.variables, ofimatica: d.ofimatica,
+      deseno: d.deseno || {},
     }))
   }
   function fixarBorrador(c, { substituirOfi = false } = {}) {
@@ -970,6 +1106,11 @@ export async function montarEditorPlantilla(container, {
       Object.assign(ofi, c.ofimatica)
       pintarOfimatica()
     }
+    if (c.deseno !== undefined) {
+      actual.deseno = c.deseno || {}
+      desenoUI.pintar()
+    }
+    if (c.estilo !== undefined) desenoUI.pintar()
     marcarCambios()
   }
 
@@ -995,6 +1136,10 @@ export async function montarEditorPlantilla(container, {
         introducion: d.introducion, markdown: d.markdown, variables: d.variables,
         estilo: d.estilo, textos: ofiLimpa(d.textos),
         imaxes: [...actual.imaxes], ofimatica: ofiLimpa(d.ofimatica), cambiosSenAplicar: cambiado(),
+        // O deseño do PDF coma datos: é o que hai que cambiar para letra, cores,
+        // tamaños e espazos (o campo «deseno» de plantilla_editor_cambiar).
+        deseno: d.deseno || {},
+        desenoLibre: !!d.estilo.trim(),
       }
       // Baleiro = o de Lua: dáse a base para partir dela e as claves dos textos.
       if (!d.estilo.trim() && porDefecto.estilo) saida.estiloPorDefecto = porDefecto.estilo
@@ -1010,7 +1155,7 @@ export async function montarEditorPlantilla(container, {
       return {
         id: actual.id || '', nome: d.nome, descricion: d.descricion, latex: d.latex, markdown: d.markdown, motor: d.motor,
         portada: d.portada, sinatura: d.sinatura, introducion: d.introducion, estilo: d.estilo, textos: { ...textos },
-        variables: d.variables, ofimatica: { ...ofi },
+        variables: d.variables, ofimatica: { ...ofi }, deseno: d.deseno,
       }
     },
     id: () => actual.id,
@@ -1071,7 +1216,13 @@ export async function montarEditorPlantilla(container, {
   // "Crear con IA" (biblioteca) abre o editor co asistente xa á vista: describir a
   // plantilla, dar unha URL ou xuntar un documento modelo faise nel.
   if (abrirIA && asistente) asistente.abrir()
-  else requestAnimationFrame(() => nomeInput.focus())
+  else requestAnimationFrame(() => {
+    // Unha plantilla nova precisa nome: a identidade vai á vista. Se non, o
+    // foco vai ao deseño, que é o que se vén cambiar.
+    if (!actual.id) { alternarBloque('identidade', true); nomeInput.focus() } else corpoDeseno.querySelector('[role="radio"][tabindex="0"]')?.focus()
+  })
+  // A vista previa faise xa ao abrir: o deseño vese desde o primeiro momento.
+  if (api.previsualizar && autoVista.checked && !abrirIA) setTimeout(() => { if (!pechado) previsualizar() }, 0)
 
   return {
     cambiado,

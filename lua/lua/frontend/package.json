@@ -6,7 +6,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "build:dev": "vite build --mode development"
   },
   "devDependencies": {
     "jsdom": "^26.1.0",

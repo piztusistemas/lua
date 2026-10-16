@@ -226,6 +226,13 @@ var paquetesDebian = map[string]string{
 	// LaTeX da aplicación).
 	"mathptmx": "texlive-latex-recommended", "helvet": "texlive-latex-recommended",
 	"mathpazo": "texlive-latex-recommended",
+	// Deseño do PDF (letras por papel, tamaño): ver edicion/latex/letras.go.
+	"scrextend": "texlive-latex-recommended", "unicode-math": "texlive-latex-extra",
+	"texgyretermes-math": "fonts-texgyre-math", "texgyrepagella-math": "fonts-texgyre-math",
+	"texgyreschola-math": "fonts-texgyre-math", "texgyrebonum-math": "fonts-texgyre-math",
+	"FiraMath-Regular": "texlive-fonts-extra", "LibertinusMath-Regular": "texlive-fonts-extra",
+	"LibertinusSerif-Regular": "texlive-fonts-extra", "FiraSans-Regular": "texlive-fonts-extra",
+	"SourceSerif4-Regular": "texlive-fonts-extra",
 }
 
 // PaqueteDebianPorDefecto é a colección grande na que cae o que non estea na

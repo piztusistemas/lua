@@ -19,9 +19,9 @@ import (
 // as cores e \fontchip do bloque dinámico (ver estilo_doc.go), que sempre están.
 const estiloFormularioPorDefectoLatex = `% FORMULARIOS — macros dos bloques dun formulario. Redefínea no Estilo da plantilla con \newcommand.
 % Título do documento (se non leva portada): título, subtítulo e un filete.
-\providecommand{\formtitulo}[2]{\par\noindent{\sffamily\bfseries\fontsize{22}{26}\selectfont #1\par}\ifx\relax#2\relax\else\vspace{0.5mm}\noindent{\fontchip\fontsize{10.5}{13}\selectfont\color{gris-texto}#2\par}\fi\vspace{1.5mm}\noindent{\color{tc-indigo}\rule{16mm}{2pt}}\par\vspace{2mm}}
+\providecommand{\formtitulo}[2]{\par\noindent{\sffamily\bfseries\fontsize{22}{26}\selectfont #1\par}\ifx\relax#2\relax\else\vspace{0.5mm}\noindent{\fontchip\fontsize{10.5}{13}\selectfont\color{gris-texto}#2\par}\fi\vspace{1.5mm}\noindent{\color{lua-principal}\rule{16mm}{2pt}}\par\vspace{2mm}}
 % Sección (campo «sección»): título con filete.
-\providecommand{\formseccion}[1]{\par\vspace{3.5mm}\noindent{\fontchip\bfseries\fontsize{10.5}{13}\selectfont\color{tt-indigo}#1}\par\nopagebreak\vspace{0.6mm}\nopagebreak\noindent{\color{tb-indigo}\rule{\linewidth}{0.8pt}}\par\nopagebreak\vspace{1mm}}
+\providecommand{\formseccion}[1]{\par\vspace{3.5mm}\noindent{\fontchip\bfseries\fontsize{10.5}{13}\selectfont\color{lua-escura}#1}\par\nopagebreak\vspace{0.6mm}\nopagebreak\noindent{\color{lua-suave}\rule{\linewidth}{0.8pt}}\par\nopagebreak\vspace{1mm}}
 % Título pequeno dun texto longo, dunha táboa ou dunha imaxe.
 \providecommand{\formsubseccion}[1]{\par\smallskip\noindent{\fontchip\bfseries\fontsize{8.5}{11}\selectfont\color{gris-texto}#1}\par\nopagebreak}
 % Un dato da ficha: rótulo e valor na MESMA liña (comparten liña base; unha
@@ -37,17 +37,17 @@ const estiloFormularioPorDefectoLatex = `% FORMULARIOS — macros dos bloques du
     \makebox[38mm][l]{\usebox{\formcaixa}}#2\par
   \fi}
 % Cela de cabeceira dunha táboa (o fondo da fila vai co propio bloque).
-\providecommand{\formcabeceira}[1]{{\fontchip\bfseries\fontsize{8.5}{11}\selectfont\color{tt-indigo}#1}}
+\providecommand{\formcabeceira}[1]{{\fontchip\bfseries\fontsize{8.5}{11}\selectfont\color{lua-escura}#1}}
 % Pé dunha imaxe.
 \providecommand{\formpe}[1]{{\fontchip\fontsize{8.5}{11}\selectfont\color{gris-texto}#1}}
 % Solución dunha pregunta (campo «problemas»): rótulo e texto, cun filete á esquerda.
-\providecommand{\formsolucion}[2]{\par\smallskip\noindent{\fontchip\bfseries\fontsize{9}{12}\selectfont\color{tt-indigo}#1}\par\nopagebreak\begin{list}{}{\setlength{\leftmargin}{5mm}\setlength{\topsep}{0pt}\setlength{\itemsep}{0pt}}\item[]#2\end{list}\par\medskip}
+\providecommand{\formsolucion}[2]{\par\smallskip\noindent{\fontchip\bfseries\fontsize{9}{12}\selectfont\color{lua-escura}#1}\par\nopagebreak\begin{list}{}{\setlength{\leftmargin}{5mm}\setlength{\topsep}{0pt}\setlength{\itemsep}{0pt}}\item[]#2\end{list}\par\medskip}
 `
 
 // bloqueInformeFormulario é bloqueInformeCrono máis os macros dos formularios
 // (despois do Estilo, ver a nota do principio).
-func bloqueInformeFormulario(logo *imaxeCrono, fontes bool, plantilla *PlantillaLatex) string {
-	return bloqueInformeCrono(logo, fontes, plantilla) + estiloFormularioPorDefectoLatex
+func bloqueInformeFormulario(logo *imaxeCrono, engine string, plantilla *PlantillaLatex) string {
+	return bloqueInformeCrono(logo, engine, nil, plantilla) + estiloFormularioPorDefectoLatex
 }
 
 // larguraImaxeMaxMMFormulario é o ancho máximo dunha imaxe dun formulario.
@@ -129,7 +129,7 @@ func latexTaboaFormulario(bl bloqueDoc) string {
 	// Ancho de cada columna: o da páxina menos os espazos e filetes, entre n.
 	ancho := `p{\dimexpr(\linewidth-` + strconv.Itoa(2*n) + `\tabcolsep-` + strconv.Itoa(n+1) + `\arrayrulewidth)/` + nc + `\relax}`
 	var b strings.Builder
-	b.WriteString(`\begingroup\arrayrulecolor{tb-indigo}\renewcommand{\arraystretch}{1.25}\par\smallskip` + "\n")
+	b.WriteString(`\begingroup\arrayrulecolor{lua-suave}\renewcommand{\arraystretch}{1.25}\par\smallskip` + "\n")
 	b.WriteString(`\begin{longtable}{|` + strings.Repeat(ancho+"|", n) + "}\n\\hline\n")
 	celas := make([]string, n)
 	for i, c := range bl.Cabeceira {
@@ -163,29 +163,30 @@ func latexFormulario(p PedidoFormulario, engine string, tip *TipografiaOpts, dir
 	auto := variablesFormulario(f, d, nomeDoc, agora, plantilla)
 	tx := novosTextosDoc(plantilla, auto)
 	tx.engadirVariables(auto, "TITULO_FORMULARIO")
+	bloques, avisosDatos := bloquesDocumentoFormulario(p, f, d, tx)
+
+	dd := compoñerDeseno(engine, tip, logo, plantilla)
 	if engineUnicodeNativo(engine) {
-		if err := escribirFontesInformeCrono(dir); err != nil {
+		if err := escribirFontesInformeCrono(dir, dd.Fontes); err != nil {
 			esc.avisos = append(esc.avisos, "non se puido escribir a fonte do documento: "+err.Error())
 		}
 	}
-	bloques, avisosDatos := bloquesDocumentoFormulario(p, f, d, tx)
-
 	var b strings.Builder
 	b.WriteString(babelListquotFix)
-	b.WriteString(tipografiaCorpo(tip))
+	b.WriteString(dd.Corpo)
 	// Sen título automático: o corpo é só o que ten o formulario. O título vai
 	// na plantilla (portada, cabeceira: {{TITULO}}) ou nun campo do formulario.
 	b.WriteString(latexBloquesFormulario(bloques, esc))
 
-	bloque := bloqueInformeFormulario(logo, engineUnicodeNativo(engine), plantilla)
+	bloque := dd.BloqueCompleta + estiloFormularioPorDefectoLatex
 	doc, avisosPlantilla, err := documentoLatexConPlantilla(
-		preambuloInformeCronoCon(engine, tip, logo, plantilla, estiloFormularioPorDefectoLatex),
-		partesInformeCrono{PortadaDef: portadaPorDefectoLatex, Corpo: b.String(), SinaturaDef: sinaturaPorDefectoLatex, SenPortada: !f.Portada, SenSinatura: !f.Sinatura},
+		preambuloDeseno(engine, dd, estiloFormularioPorDefectoLatex),
+		partesInformeCrono{PortadaDef: dd.PortadaDef, CabeceiraPe: dd.CabeceiraPe, Corpo: b.String(), SinaturaDef: sinaturaPorDefectoLatex, SenPortada: !f.Portada || dd.SenPortada, SenSinatura: !f.Sinatura},
 		engine, plantilla, auto, paquetesInformeCrono, bloque)
 	if err != nil {
 		return "", nil, err
 	}
-	return doc, engadirSenRepetir(engadirSenRepetir(avisosDatos, esc.avisos), avisosPlantilla), nil
+	return doc, engadirSenRepetir(engadirSenRepetir(avisosDatos, esc.avisos), avisosPlantilla, dd.Avisos), nil
 }
 
 // compilarFormulario compila o formulario co motor preferido (ver compilarComMotores).

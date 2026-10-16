@@ -35,19 +35,19 @@ func TestTipografiaPreambulo(t *testing.T) {
 	if got := tipografiaPreambulo(&TipografiaOpts{Fonte: "inventada"}, "pdflatex"); got != "" {
 		t.Errorf("preset descoñecido: got %q", got)
 	}
-	if got := tipografiaPreambulo(&TipografiaOpts{Fonte: "serif"}, "pdflatex"); !strings.Contains(got, "mathptmx") {
-		t.Errorf("pdflatex serif debería cargar mathptmx: %q", got)
+	if got := tipografiaPreambulo(&TipografiaOpts{Fonte: "serif"}, "pdflatex"); !strings.Contains(got, `\renewcommand{\rmdefault}{qtm}`) {
+		t.Errorf("pdflatex serif debería usar Termes (qtm): %q", got)
 	}
 	if got := tipografiaPreambulo(&TipografiaOpts{Fonte: "serif"}, "xelatex"); !strings.Contains(got, "\\setmainfont{texgyretermes}") {
 		t.Errorf("xelatex serif debería usar \\setmainfont: %q", got)
 	}
-	if got := tipografiaPreambulo(&TipografiaOpts{Fonte: "sans"}, "pdflatex"); !strings.Contains(got, "helvet") {
-		t.Errorf("pdflatex sans debería cargar helvet: %q", got)
+	if got := tipografiaPreambulo(&TipografiaOpts{Fonte: "sans"}, "pdflatex"); !strings.Contains(got, `\renewcommand{\rmdefault}{qhv}`) {
+		t.Errorf("pdflatex sans debería usar Heros (qhv): %q", got)
 	}
 
-	// Fonte do sistema (nome de familia calquera): \setmainfont só con
+	// Fonte do sistema (nome de familia calquera): en todos os papeis, só con
 	// motor Unicode; nada con pdflatex.
-	if got := tipografiaPreambulo(&TipografiaOpts{Fonte: "DejaVu Serif"}, "xelatex"); got != "\\setmainfont{DejaVu Serif}\n" {
+	if got := tipografiaPreambulo(&TipografiaOpts{Fonte: "DejaVu Serif"}, "xelatex"); !strings.Contains(got, "\\setmainfont{DejaVu Serif}\n\\setsansfont{DejaVu Serif}\n") {
 		t.Errorf("fonte do sistema en xelatex: %q", got)
 	}
 	if got := tipografiaPreambulo(&TipografiaOpts{Fonte: "DejaVu Serif"}, "pdflatex"); got != "" {
@@ -70,7 +70,8 @@ func TestEsFonteDoSistema(t *testing.T) {
 
 // TestPresetsFonteCompilanConXelatex: as fontes TeX Gyre viven en TeX Live,
 // non no sistema, así que en macOS fontspec non as atopa polo nome. Cada
-// preset ten que compilar de verdade con xelatex.
+// combinación ten que compilar de verdade con xelatex, mesmo sen o cartafol
+// fonts/ que deixan os informes (un exame non o leva).
 func TestPresetsFonteCompilanConXelatex(t *testing.T) {
 	if !commandExists("xelatex") {
 		t.Skip("xelatex non está instalado")

@@ -435,7 +435,8 @@ func (d *Deposito) FabricaFoiEditada(actual, orixinal Plantilla) bool {
 		actual.Portada != orixinal.Portada || actual.Sinatura != orixinal.Sinatura ||
 		actual.Introducion != orixinal.Introducion || actual.Ofimatica != orixinal.Ofimatica ||
 		actual.Estilo != orixinal.Estilo || !textosIguais(actual.Textos, orixinal.Textos) ||
-		actual.Motor != orixinal.Motor || len(actual.Variables) != len(orixinal.Variables) {
+		actual.Motor != orixinal.Motor || len(actual.Variables) != len(orixinal.Variables) ||
+		!reflect.DeepEqual(actual.Deseno, orixinal.Deseno) {
 		return true
 	}
 	for i := range actual.Variables {

@@ -58,15 +58,15 @@ A programación ten en conta as características e as necesidades do {{CENTRO}} 
 // data. Todo se debuxa respecto ás esquinas da páxina, así vale para A4 e
 // para Letter. Pide dúas pasadas de LaTeX (as coordenadas "current page"),
 // que xa fai Lua.
-const portadaPorDefectoLatex = `% PORTADA — deseño de Lua. Cambia o que queiras: textos, cores (tt-indigo, tc-cyan...) e formas.
+const portadaPorDefectoLatex = `% PORTADA — deseño de Lua. Cambia o que queiras: textos, cores (lua-principal, lua-escura, tc-cyan...) e formas.
 \thispagestyle{empty}\noindent
 \begin{tikzpicture}[remember picture,overlay,every node/.append style={inner sep=0pt}]
   % Bloque de cor superior con formas
   \begin{scope}
     \clip (current page.north west) rectangle ([yshift=-132mm]current page.north east);
-    \fill[tt-indigo] (current page.north west) rectangle ([yshift=-132mm]current page.north east);
-    \fill[tc-indigo] ([shift={(-28mm,-10mm)}]current page.north east) circle (64mm);
-    \fill[tt-indigo] ([shift={(-28mm,-10mm)}]current page.north east) circle (38mm);
+    \fill[lua-escura] (current page.north west) rectangle ([yshift=-132mm]current page.north east);
+    \fill[lua-principal] ([shift={(-28mm,-10mm)}]current page.north east) circle (64mm);
+    \fill[lua-escura] ([shift={(-28mm,-10mm)}]current page.north east) circle (38mm);
     \fill[tc-cyan] ([shift={(-70mm,-126mm)}]current page.north east) circle (30mm);
     \fill[tc-rose] ([shift={(-16mm,-104mm)}]current page.north east) circle (11mm);
     \fill[tc-amber] ([shift={(-46mm,-64mm)}]current page.north east) circle (6mm);
@@ -79,14 +79,15 @@ const portadaPorDefectoLatex = `% PORTADA — deseño de Lua. Cambia o que queir
   % Título
   \node[anchor=south west,text=white,font=\sffamily\bfseries\normalsize,align=left]
     at ([shift={(20mm,-66mm)}]current page.north west) {\MakeUppercase{{{DEPARTAMENTO}}}};
-  \node[anchor=south west,text=white,font=\sffamily\bfseries,text width=165mm,align=left]
-    at ([shift={(20mm,-108mm)}]current page.north west) {\hyphenpenalty=10000 \fontsize{50}{54}\selectfont {{TITULO}}};
-  \node[anchor=south west,fill=white,text=tt-indigo,rounded corners=3.5mm,inner xsep=5mm,inner ysep=2.6mm,font=\sffamily\bfseries\Large]
+  % O tamaño vai en font=: dentro do texto do nodo, TikZ deixaba as palabras sen espazo.
+  \node[anchor=south west,text=white,font=\sffamily\bfseries\fontsize{50}{54}\selectfont,text width=165mm,align=left]
+    at ([shift={(20mm,-108mm)}]current page.north west) {\hyphenpenalty=10000 {{TITULO}}};
+  \node[anchor=south west,fill=white,text=lua-escura,rounded corners=3.5mm,inner xsep=5mm,inner ysep=2.6mm,font=\sffamily\bfseries\Large]
     at ([shift={(20mm,-124mm)}]current page.north west) {Curso {{{CURSO}}}};
   % Centro
-  \node[anchor=north west,text=black,font=\sffamily\bfseries,text width=170mm,align=left]
-    at ([shift={(20mm,-152mm)}]current page.north west) {\fontsize{24}{28}\selectfont {{{CENTRO}}}};
-  \fill[tc-indigo] ([shift={(20mm,-172mm)}]current page.north west) rectangle ++(18mm,1.6mm);
+  \node[anchor=north west,text=black,font=\sffamily\bfseries\fontsize{24}{28}\selectfont,text width=170mm,align=left]
+    at ([shift={(20mm,-152mm)}]current page.north west) {{{{CENTRO}}}};
+  \fill[lua-principal] ([shift={(20mm,-172mm)}]current page.north west) rectangle ++(18mm,1.6mm);
   \node[anchor=north west,text=gris-texto,font=\sffamily\large,text width=170mm,align=left]
     at ([shift={(20mm,-178mm)}]current page.north west) {\relax{{{XEFE}}}\\[1mm]\small{{{CARGO}}}};
   % Franxa de cores (as das tarefas do cronograma)

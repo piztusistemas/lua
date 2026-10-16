@@ -17,7 +17,13 @@ type (
 	bundlePlantilla    = plantilla.Bundle
 	imaxeBundle        = plantilla.ImaxeBundle
 	OfimaticaPlantilla = plantilla.Ofimatica
+	Deseno             = plantilla.Deseno
+	ElementoDeseno     = plantilla.Elemento
+	Zonas              = plantilla.Zonas
 )
+
+// normalizarDeseno: adaptador (ver edicion/plantilla/deseno.go).
+func normalizarDeseno(d *Deseno) *Deseno { return plantilla.NormalizarDeseno(d) }
 
 const (
 	marcadorCorpo            = plantilla.MarcadorCorpo

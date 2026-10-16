@@ -40,13 +40,16 @@ const (
 )
 
 var camposPlantilla = map[string]any{
+	// deseno: o deseño do PDF coma datos validados (edicion/plantilla/deseno.go).
+	// Só se cambian os campos indicados; os elementos mestúranse campo a campo.
+	"deseno":      esqDeseno(),
 	"nome":        esqTxt("Nome da plantilla."),
 	"descricion":  esqTxt("Descrición dunha liña."),
 	"latex":       esqTxt("LaTeX da maqueta (cabeceira, pé, marxes). Ten que levar {{CORPO}} unha soa vez."),
 	"portada":     esqTxt("LaTeX da portada (entra onde a plantilla poña {{PORTADA}})."),
 	"sinatura":    esqTxt("LaTeX da última folla (entra onde a plantilla poña {{SINATURA}})."),
 	"introducion": esqTxt("Texto da introdución por defecto, con variables {{CENTRO}}, {{CURSO}}..."),
-	"estilo":      esqTxt("DESEÑO do documento en LaTeX (formato dos títulos, etiquetas do cronograma, cabeceira das actas...): substitúe o de Lúa enteiro; baleiro = o de Lúa. Parte do estilo por defecto (plantilla_editor_ler dá estiloPorDefecto)."),
+	"estilo":      esqTxt("LaTeX LIBRE do deseño (formato dos títulos, etiquetas do cronograma, cabeceira das actas...): substitúe enteiro o deseño de Lúa e o campo deseno. Úsao só se o usuario pide LaTeX; para letra, cores, tamaños e espazos usa deseno. Baleiro = o deseño (deseno) ou o de Lúa."),
 	"textos": map[string]any{
 		"type": "object",
 		"description": "Textos fixos do documento (títulos de sección, «Sen tarefas», rótulos das actas...): clave -> texto; só se cambian os que indiques (un texto baleiro volve ao de Lúa). " +
@@ -316,11 +319,11 @@ var ferramentasFrontend = []IAFerramenta{
 	},
 	{
 		Nome: "axustes_texto", Tipo: tipoEscritura, Onde: "frontend",
-		Descricion: "Le ou cambia os axustes do texto do PDF: tamaño de letra, interliñado e familia tipográfica. Sen argumentos só le os valores actuais.",
+		Descricion: "Le ou cambia os axustes rápidos do texto do PDF deste equipo (tamaño, interliñado e letra). Só se aplican se a plantilla activa non ten deseño propio; para que viaxen coa plantilla, cámbiase o deseño no editor da plantilla. Sen argumentos só le os valores actuais.",
 		Parametros: esqObx(map[string]any{
 			"tamanoPt":    esqNum("Tamaño do corpo en pt (0 = por defecto)."),
 			"interlinado": esqNum("Factor de interliñado (0 = por defecto, 1.0)."),
-			"fonte":       esqTxt("Familia: '' (por defecto), 'serif', 'sans', 'palatino' ou o nome dunha fonte do sistema (esixe xelatex)."),
+			"fonte":       esqTxt("Letra: '' (a de Lúa), unha combinación (clasica, elegante, lexible, moderna, academica) ou o nome dunha fonte do sistema (esixe xelatex e non viaxa a outro equipo)."),
 		}),
 	},
 	{

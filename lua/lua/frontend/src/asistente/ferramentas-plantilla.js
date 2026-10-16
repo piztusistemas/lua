@@ -5,6 +5,8 @@
 // borrador (e o id da plantilla) que pon esta capa: a IA non escolle sobre
 // que plantilla traballa.
 
+import { validarParche, aplicarParche } from '../deseno/modelo.js'
+
 const MOTORES = ['', 'pdflatex', 'xelatex', 'lualatex']
 const TEXTOS = ['nome', 'descricion', 'latex', 'markdown', 'portada', 'sinatura', 'introducion', 'estilo']
 const TAMANO_MAX = 30000
@@ -106,7 +108,15 @@ export function crearFerramentasPlantilla({ editor, api, ui }) {
         if (descoñecidos.length) avisos.push(`campos de ofimatica descoñecidos, ignorados: ${descoñecidos.join(', ')}`)
         if (Object.keys(valores).length) cambios.ofimatica = valores
       }
-      const descoñecidosTop = Object.keys(a).filter((k) => ![...TEXTOS, 'motor', 'variables', 'textos', 'ofimatica', 'id'].includes(k))
+      if (a.deseno !== undefined) {
+        // O deseño do PDF coma datos: só os campos indicados; respéctanse os fixados.
+        const actual = editor.ler().deseno || {}
+        const { parche, avisos: avDeseno } = validarParche(a.deseno, actual)
+        avisos.push(...avDeseno)
+        if (Object.keys(parche).length) cambios.deseno = aplicarParche(actual, parche)
+        if (editor.ler().desenoLibre) avisos.push('a plantilla ten LaTeX libre no campo estilo, que manda sobre o deseño: baléirao (estilo: "") se queres que se vexa este deseño')
+      }
+      const descoñecidosTop = Object.keys(a).filter((k) => ![...TEXTOS, 'motor', 'variables', 'textos', 'ofimatica', 'deseno', 'id'].includes(k))
       if (descoñecidosTop.length) avisos.push(`campos ignorados (non existen): ${descoñecidosTop.join(', ')}`)
       if (Object.keys(cambios).length === 0) erro('non indicaches ningún campo válido a cambiar')
       if (cambios.ofimatica && cambios.ofimatica.cabeceira !== undefined) {

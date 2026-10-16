@@ -192,7 +192,7 @@ func TestSubstituirVariables(t *testing.T) {
 // componInforme é o atallo das probas de composición: preámbulo de Lua,
 // corpo dado e as definicións do informe, coma fai latexInformeCrono.
 func componInforme(corpo, engine string, p *PlantillaLatex, auto map[string]string) (string, []string, error) {
-	return documentoLatexConPlantilla(preambuloInformeCrono(engine, nil, nil, p), partesInformeCrono{Corpo: corpo}, engine, p, auto, paquetesInformeCrono, bloqueInformeCrono(nil, engineUnicodeNativo(engine), p))
+	return documentoLatexConPlantilla(preambuloInformeCrono(engine, nil, nil, p), partesInformeCrono{Corpo: corpo}, engine, p, auto, paquetesInformeCrono, bloqueInformeCrono(nil, engine, nil, p))
 }
 
 func TestDocumentoLatexConPlantillaFragmento(t *testing.T) {

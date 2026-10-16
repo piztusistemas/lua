@@ -46,8 +46,29 @@ Cada centro ten a súa cabeceira (logotipo, nome, departamento), o seu pé (nome
 - Pode ser un **fragmento** (só cabeceira e pé; Lúa pon o preámbulo) ou unha plantilla **completa** (co seu `\documentclass`, marxes e fontes).
 - O logotipo sóbese coma imaxe da plantilla e úsase por nome (`\includegraphics{logotipo.png}`).
 - Pódese **exportar** a un ficheiro `.json` (texto + imaxes) e **importar** noutro equipo, para que todo o departamento use o mesmo estilo; tamén se pode crear coa IA a partir dun documento de mostra.
-- **Lúa xera o contido; o deseño e os textos son da plantilla.** O deseño en LaTeX (formato dos títulos, etiquetas do cronograma, cabeceira e rótulos das actas: `lua/estilo_doc.go`) vai no bloque **Estilo** da plantilla (baleiro = o de Lúa), e **todos os textos fixos** do documento («Índice», «Sen tarefas», os rótulos das actas…: `lua/textos_doc.go`) no bloque **Textos do documento**. Non hai texto no documento que non teña onde cambiarse.
+- **Lúa xera o contido; o deseño e os textos son da plantilla.** O deseño do PDF é **datos** (`deseno` da plantilla, `edicion/plantilla/deseno.go`) e Lúa xera o LaTeX a partir del (`lua/deseno_latex.go`): **letra** por combinacións (Lúa, Clásica, Elegante, Lexible, Moderna, Académica), que cambia **á vez texto, títulos, etiquetas e fórmulas** (`edicion/latex/letras.go`, as fontes cárganse por ficheiro de TeX Live e, se falta unha, usa a máis parecida e avisa); tamaño (escala todo, `scrextend`), interliñado, marxes, cores, aspecto das etiquetas e cada parte do documento (títulos, etiquetas, meses, trimestres, tarefas, actas, sinaturas), que pode levar o seu propio LaTeX. Quen quere LaTeX libre enteiro segue tendo o bloque **Estilo** (se ten algo, manda sobre o deseño), e **todos os textos fixos** do documento («Índice», «Sen tarefas», os rótulos das actas…: `lua/textos_doc.go`) no bloque **Textos do documento**. Non hai texto no documento que non teña onde cambiarse.
 - Cada curso lembra a plantilla que usa. Aplícase á vista previa e ás exportacións PDF, TeX e Markdown; Word e OpenDocument usan os seus propios estilos e toman da plantilla o texto da introdución e as variables.
+
+#### O deseño do PDF, sen LaTeX
+
+O primeiro bloque do editor de plantillas, **Deseño do PDF** (`lua/frontend/src/deseno/`), cambia o aspecto sen escribir LaTeX e cos cambios á vista na vista previa:
+
+- É a **primeira columna** do editor e a única aberta de primeiras; a vista previa faise ao abrir, salta á páxina da parte cambiada e pódese **cancelar** (toda compilación de LaTeX ten tempo máximo).
+- **Letra** (combinacións con mostra na letra real; Fira e Libertinus van dentro de Lúa, coma Open Sans), **tamaño** (− / +) e **cor** (cores rápidas, outra cor ou **Tomar as cores do logotipo**: Lúa saca as cores da imaxe e bota brancos, negros e grises).
+- **Carácter do documento**: tres barras, Informal↔Formal, Compacto↔Aireado, Sobrio↔Colorido. Cada unha move varios valores á vez e, ao volver ao medio, recupera os de antes.
+- **Portada** por modelos (de cor, sobria, oficial, sen portada) e onde vai o logotipo. **Cabeceira e pé** por zonas (esquerda, centro, dereita) con texto, variables, `@logo` e `@imaxe`, e o número de páxina; valen tamén para Word e OpenDocument.
+- **Para que é**: *Vou imprimir en branco e negro* (as cores pasan a grises que se distinguen), *Aforrar papel* (marxes e espazos menores) e *Lectura fácil* (letra grande, máis espazo, sen xustificar nin cortar palabras). Aplícanse ao xerar e non borran o resto do deseño.
+- **Pasar o rato pola vista previa** resalta cada parte co seu nome; **premer** abre a parte do documento que hai debaixo (títulos, etiquetas, meses…): cada elemento deixa a súa posición nun ficheiro `doc.lpos` ao compilar (`lua/deseno_marcas.go`).
+- **Cada parte do documento**: cor, tamaño, maiúsculas, liña de cor e **Editar en LaTeX** (parte do LaTeX que xera Lúa e substitúe só esa parte). **Letra de cada papel** (texto, títulos, etiquetas, fórmulas), incluídas as fontes do equipo (non viaxan a outros equipos).
+- **Probar variantes**: dúas propostas lado a lado; escóllese a que gusta e Lúa propón as seguintes (letra, cor, espazos, etiquetas, tamaño).
+- **Copiar o deseño dun documento** (PDF ou Word): Lúa propón letra, tamaño e cores e di de onde saíu cada cousa.
+- **Deseño do centro**: gardar o deseño nun ficheiro `.luadeseno`, abrilo noutro equipo e **aplicalo a todas as plantillas propias** (`lua/deseno_kit.go`).
+- **Editar en LaTeX** comproba o LaTeX dunha parte nun documento mínimo antes de usalo e amosa o erro ao carón.
+- **Cadeados**: un campo fixado non o tocan as barras, as variantes nin a IA. **Desfacer** cada cambio.
+- **Corrector**: as cores claras escurécense nos rótulos e no texto (contraste WCAG AA) e Lúa dío («Arranxei…»); nunca queda a primeira ou a última liña dun parágrafo soa noutra páxina; avísase do texto que sae da marxe.
+- **IA**: o asistente da plantilla cambia o deseño coma datos validados (campo `deseno`). Para **calquera outra IA**, *Copiar instrucións para outra IA* copia a skill de deseño (`lua/skills/deseno-documentos/SKILL.md` e o JSON Schema) co deseño actual; o JSON que devolva pégase en *Aplicar este JSON* e valídase.
+- Word e OpenDocument toman do deseño a letra, o tamaño, o interliñado e as cores se o seu bloque os deixa baleiros.
+- O panel **Axustes do texto** da xanela principal queda coma cambio rápido deste equipo: só se aplica se a plantilla non ten deseño propio, e entón Lúa avisa.
 
 #### O editor de plantillas
 

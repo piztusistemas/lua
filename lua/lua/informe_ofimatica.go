@@ -152,7 +152,7 @@ type datosOfimatica struct {
 func baseOfimatica(plantilla *PlantillaLatex, vars map[string]string, tx textosDocumento, logo string, avisos []string) datosOfimatica {
 	ofi := OfimaticaPlantilla{}
 	if plantilla != nil {
-		ofi = plantilla.Ofimatica
+		ofi = ofimaticaDoDeseno(plantilla.Ofimatica, plantilla.Deseno)
 	}
 	pl := plantilla
 	if pl == nil {

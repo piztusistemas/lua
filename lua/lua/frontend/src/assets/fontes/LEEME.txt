@@ -1,0 +1,4 @@
+Fontes para as mostras «Aa» do bloque Deseño (deseno/editor.js): as mesmas letras ca o PDF.
+
+TeX Gyre Termes, Pagella, Schola e Heros: GUST Font License (copiadas de TeX Live, paquete tex-gyre).
+Fira Sans e Libertinus Serif: SIL Open Font License 1.1 (ver ../../../fontes_informe/).

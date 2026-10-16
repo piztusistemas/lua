@@ -236,7 +236,7 @@ func PdfPageImages(dir, pdfPath string) ([]string, error) {
 type TipografiaOpts struct {
 	TamanoPt    float64 `json:"tamanoPt"`    // corpo do texto en pt; 0 = por defecto
 	Interlinado float64 `json:"interlinado"` // factor de \linespread; 0 = 1.0 (sinxelo)
-	Fonte       string  `json:"fonte"`       // id dun preset (ver presetsFonte); "" = por defecto
+	Fonte       string  `json:"fonte"`       // combinación (letras.go), preset vello (serif, sans, palatino) ou fonte do sistema; "" = por defecto
 }
 
 // presetsFonte: id -> paquete a cargar en pdflatex / base do ficheiro TeX Gyre para
@@ -257,15 +257,12 @@ func SetmainfontTeXGyre(base string) string {
 }
 
 // EsFonteDoSistema di se `f` é un nome de familia do sistema (fc-list), é
-// dicir: non baleiro e non un dos presets. Estas fontes SÓ as pode usar
-// xelatex/lualatex - GeneratePDF forza o motor cando aparece unha.
+// dicir: non baleiro, non un dos presets vellos e non unha combinación do
+// catálogo (letras.go). Estas fontes SÓ as pode usar xelatex/lualatex -
+// GeneratePDF forza o motor cando aparece unha.
 func EsFonteDoSistema(f string) bool {
-	f = strings.TrimSpace(f)
-	if f == "" {
-		return false
-	}
-	_, ok := presetsFonte[f]
-	return !ok
+	_, sistema := CombinacionDePreset(f)
+	return sistema != ""
 }
 
 // fontNameSafeRe limpa o nome de familia que chega do frontend antes de
@@ -274,32 +271,21 @@ func EsFonteDoSistema(f string) bool {
 // LaTeX a través do valor do selector.
 var fontNameSafeRe = regexp.MustCompile(`[^\p{L}\p{N} .,'&()+_-]`)
 
-// TipografiaPreambulo: liña(s) que van no PREÁMBULO (carga da familia de
-// fonte). "" se non hai fonte escollida, ou se é unha fonte do sistema pero
-// o motor non é Unicode (nese caso GeneratePDF xa debería telo forzado).
+// TipografiaPreambulo: liñas que van no PREÁMBULO e poñen a letra escollida en
+// TODOS os papeis (corpo, títulos, etiquetas e fórmulas, ver letras.go). Antes
+// só cambiaba o corpo, e os títulos quedaban en Latin Modern Sans. "" se non hai
+// fonte escollida, ou se é unha fonte do sistema e o motor non é Unicode
+// (GeneratePDF xa debería ter forzado xelatex).
 func TipografiaPreambulo(t *TipografiaOpts, engine string) string {
 	if t == nil || strings.TrimSpace(t.Fonte) == "" {
 		return ""
 	}
-	f := strings.TrimSpace(t.Fonte)
-	if p, ok := presetsFonte[f]; ok {
-		if EngineUnicodeNativo(engine) {
-			if p.unicode == "" {
-				return ""
-			}
-			return SetmainfontTeXGyre(p.unicode)
-		}
-		return p.pdflatex + "\n"
-	}
-	// Fonte do sistema: só fontspec (xelatex/lualatex).
-	if !EngineUnicodeNativo(engine) {
+	comb, sistema := CombinacionDePreset(t.Fonte)
+	if sistema != "" && (!EngineUnicodeNativo(engine) || nomeSeguro(sistema) == "") {
 		return ""
 	}
-	nome := strings.TrimSpace(fontNameSafeRe.ReplaceAllString(f, ""))
-	if nome == "" {
-		return ""
-	}
-	return "\\setmainfont{" + nome + "}\n"
+	x := XerarLetras(LetrasDe(comb, sistema, "", "", ""), engine)
+	return x.Preambulo + x.Mates
 }
 
 // TipografiaCorpo: comandos que van XUSTO DESPOIS de \begin{document}
@@ -329,12 +315,12 @@ func TrimFloat(f float64) string {
 	return strings.TrimRight(s, ".")
 }
 
-// PresetsFonte devolve as claves das fontes predefinidas (serif, sans...), en orde.
+// PresetsFonte devolve as combinacións de letras que se poden escoller
+// (letras.go), na orde da interface.
 func PresetsFonte() []string {
-	out := make([]string, 0, len(presetsFonte))
-	for k := range presetsFonte {
-		out = append(out, k)
+	out := make([]string, 0, len(combinacions))
+	for _, c := range combinacions {
+		out = append(out, c.ID)
 	}
-	sort.Strings(out)
 	return out
 }

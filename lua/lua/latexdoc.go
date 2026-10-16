@@ -130,6 +130,8 @@ type GeneratePDFResult struct {
 	PageImages []string `json:"pageImages"`
 	Warnings   []string `json:"warnings"`
 	Log        string   `json:"log"` // pdflatex's own output, for troubleshooting a failed compile
+	// Marcas: onde está cada elemento do deseño nas páxinas (deseno_marcas.go).
+	Marcas []MarcaDeseno `json:"marcas,omitempty"`
 }
 
 // SavePDFDialog shows a native "save as" dialog and writes base64-encoded

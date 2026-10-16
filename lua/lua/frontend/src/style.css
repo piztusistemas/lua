@@ -1277,7 +1277,8 @@ body.editor-ancho-completo .pane-editor { width: 100% !important; flex: 1; }
    conviven dous (LaTeX e Markdown) e a lista de variables. */
 
 .plantilla-codigo,
-.plantilla-parte {
+.plantilla-parte,
+.deseno-codigo {
     font-family: "JetBrains Mono", ui-monospace, monospace;
     font-size: 0.82rem;
     line-height: 1.45;
@@ -1675,3 +1676,151 @@ body.xerando #status { display: none; }
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
 }
 .image-upload-row__btn--destacado:hover { background: var(--primary-hover); }
+
+/* ── Deseño do PDF (deseno/editor.js): o deseño sen LaTeX ── */
+.plantilla-bloque--deseno { border-color: var(--primary-soft-border); }
+.deseno { display: flex; flex-direction: column; gap: 0.85rem; }
+.deseno-fila { display: flex; flex-direction: column; gap: 0.4rem; }
+.deseno-fila__cab { display: flex; align-items: center; gap: 0.4rem; }
+.deseno-fila__tit { font-size: 0.8rem; font-weight: 700; color: var(--text-dark); }
+.deseno-cadeado {
+    border: none; background: none; padding: 0 0.2rem; font-size: 0.85rem; cursor: pointer; opacity: 0.55;
+    line-height: 1;
+}
+.deseno-cadeado[aria-pressed="true"] { opacity: 1; }
+.deseno-cadeado:hover, .deseno-cadeado:focus-visible { opacity: 1; }
+
+.deseno-letras { display: grid; grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr)); gap: 0.4rem; }
+.deseno-letra {
+    display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto; column-gap: 0.55rem;
+    align-items: center; text-align: left; padding: 0.45rem 0.55rem; cursor: pointer;
+    background: var(--panel-bg); color: var(--text-dark);
+    border: 1px solid var(--border-color); border-radius: var(--radius-sm);
+}
+.deseno-letra:hover { border-color: var(--border-strong); }
+.deseno-letra[aria-checked="true"] { border-color: var(--primary); background: var(--primary-soft); box-shadow: inset 0 0 0 1px var(--primary); }
+.deseno-letra__mostra { grid-row: 1 / span 2; font-size: 1.5rem; line-height: 1; }
+.deseno-letra__nome { font-size: 0.82rem; font-weight: 700; }
+.deseno-letra__desc { font-size: 0.7rem; color: var(--text-muted); line-height: 1.25; }
+
+.deseno-tamano { display: inline-flex; align-items: center; gap: 0.35rem; }
+.deseno-tamano__btn { width: 2rem; height: 2rem; padding: 0; font-size: 1.1rem; }
+.deseno-tamano__valor { min-width: 3.6rem; text-align: center; font-variant-numeric: tabular-nums; font-weight: 600; }
+
+.deseno-cores { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; }
+.deseno-cor {
+    width: 1.7rem; height: 1.7rem; padding: 0; border-radius: 50%; cursor: pointer;
+    border: 2px solid var(--panel-bg); box-shadow: 0 0 0 1px var(--border-strong);
+}
+.deseno-cor[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--text-dark); }
+.deseno-cores__sep { width: 1px; height: 1.4rem; background: var(--border-strong); margin: 0 0.15rem; }
+.deseno-cor__outra { width: 2rem; height: 1.8rem; padding: 0; border: 1px solid var(--border-color); border-radius: var(--radius-sm); background: none; cursor: pointer; }
+
+.deseno-barras { display: flex; flex-direction: column; gap: 0.3rem; }
+.deseno-barra { display: grid; grid-template-columns: 5.5rem 1fr 5.5rem; align-items: center; gap: 0.5rem; font-size: 0.78rem; color: var(--text-muted); }
+.deseno-barra__esq { text-align: right; }
+.deseno-barra input[type="range"] { width: 100%; accent-color: var(--primary); }
+
+.deseno-interruptores { display: flex; flex-direction: column; gap: 0.35rem; }
+.deseno-interruptor { display: flex; align-items: flex-start; gap: 0.55rem; cursor: pointer; }
+.deseno-interruptor input { margin-top: 0.2rem; accent-color: var(--primary); }
+.deseno-interruptor__txt { display: flex; flex-direction: column; }
+.deseno-interruptor__txt strong { font-size: 0.82rem; font-weight: 600; }
+.deseno-interruptor__txt small { font-size: 0.72rem; color: var(--text-muted); }
+
+.deseno-accions { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.deseno-accion { font-size: 0.8rem; }
+.deseno-nota { margin: 0; font-size: 0.76rem; color: #92400e; background: #fef3c7; border: 1px solid #fde68a; border-radius: var(--radius-sm); padding: 0.35rem 0.5rem; }
+.deseno-aviso { display: flex; flex-direction: column; gap: 0.4rem; padding: 0.55rem 0.65rem; background: var(--amber-soft); border: 1px solid var(--amber-soft-border); border-radius: var(--radius-sm); font-size: 0.8rem; }
+.deseno-aviso p { margin: 0; }
+.deseno-aviso button { align-self: flex-start; }
+
+.deseno-detalles > summary { cursor: pointer; font-size: 0.82rem; font-weight: 700; color: var(--text-dark); padding: 0.2rem 0; }
+.deseno-elementos { display: flex; flex-direction: column; gap: 0.25rem; margin-top: 0.35rem; }
+.deseno-elemento { border: 1px solid var(--border-color); border-radius: var(--radius-sm); transition: box-shadow 0.3s, border-color 0.3s; }
+.deseno-elemento--destacado { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-soft-border); }
+.deseno-elemento__cab {
+    width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 0.5rem;
+    border: none; background: none; padding: 0.45rem 0.6rem; font-size: 0.82rem; text-align: left; cursor: pointer; color: var(--text-dark);
+}
+.deseno-elemento__cab[aria-expanded="true"] { font-weight: 700; border-bottom: 1px solid var(--border-color); }
+.deseno-elemento__marca { font-size: 0.68rem; font-weight: 600; color: var(--primary); background: var(--primary-soft); padding: 0.05rem 0.4rem; border-radius: 999px; }
+.deseno-elemento__corpo { display: flex; flex-direction: column; gap: 0.45rem; padding: 0.55rem 0.65rem 0.65rem; }
+.deseno-elemento__accions { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.deseno-elemento__accions button { font-size: 0.78rem; }
+.deseno-control { display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; }
+.deseno-control > span:first-child { min-width: 5.5rem; color: var(--text-muted); }
+.deseno-control input[type="range"] { flex: 1; accent-color: var(--primary); }
+.deseno-control select { flex: 1; min-width: 0; font: inherit; }
+.deseno-control--check > span:first-child { min-width: 0; color: var(--text-dark); }
+.deseno-latex > summary { cursor: pointer; font-size: 0.78rem; color: var(--text-muted); }
+.deseno-papeis, .deseno-json { display: flex; flex-direction: column; gap: 0.4rem; margin-top: 0.7rem; }
+.deseno-papeis h4, .deseno-json h4 { margin: 0; font-size: 0.8rem; }
+
+.deseno-codigo { width: 100%; tab-size: 2; resize: vertical; }
+
+/* Inspector: premer na vista previa abre a parte do deseño */
+.plantilla-previa--inspector .plantilla-previa__paxina { cursor: crosshair; }
+
+/* Variantes: dúas propostas lado a lado */
+.deseno-variantes__caixa { width: min(1100px, 94vw); max-height: 92vh; display: flex; flex-direction: column; gap: 0.6rem; }
+.deseno-variantes__caixa h3 { margin: 0; }
+.deseno-variantes__cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; min-height: 0; overflow: auto; }
+.deseno-variantes__col { display: flex; flex-direction: column; gap: 0.45rem; align-items: stretch; }
+.deseno-variantes__desc { margin: 0; font-size: 0.8rem; color: var(--text-muted); text-align: center; }
+.deseno-variantes__imx {
+    min-height: 18rem; display: flex; align-items: center; justify-content: center; text-align: center;
+    background: var(--bg-main); border: 1px solid var(--border-color); border-radius: var(--radius-sm); font-size: 0.8rem; color: var(--text-muted);
+}
+.deseno-variantes__imx img { width: 100%; height: auto; background: #fff; box-shadow: 0 1px 6px rgba(0, 0, 0, 0.18); }
+@media (max-width: 700px) { .deseno-variantes__cols { grid-template-columns: 1fr; } }
+
+/* ── Estudio de deseño (melloras) ── */
+.plantilla-columnas--so-deseno { grid-template-columns: 1fr; }
+.plantilla-columna--deseno .deseno { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 0.9rem 1.4rem; align-items: start; }
+.plantilla-columna--deseno .deseno > .deseno-aviso,
+.plantilla-columna--deseno .deseno > .plantilla-axuda,
+.plantilla-columna--deseno .deseno > .deseno-accions,
+.plantilla-columna--deseno .deseno > .deseno-detalles,
+.plantilla-columna--deseno .deseno > .deseno-cabpe,
+.plantilla-columna--deseno .deseno > .deseno-nota { grid-column: 1 / -1; }
+.plantilla-vista { flex-basis: clamp(360px, 40vw, 860px); }
+.plantilla-vista__progreso { font-size: 0.78rem; color: var(--primary); }
+.plantilla-vista__progreso::before { content: ""; display: inline-block; width: 0.7em; height: 0.7em; margin-right: 0.35em; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: deseno-xira 0.8s linear infinite; vertical-align: -0.1em; }
+@keyframes deseno-xira { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .plantilla-vista__progreso::before { animation: none; } }
+.plantilla-previa__folla { position: relative; }
+.plantilla-previa__folla .plantilla-previa__paxina { display: block; width: 100%; }
+.plantilla-previa__resalte { position: absolute; pointer-events: none; border: 2px solid var(--primary); background: color-mix(in oklch, var(--primary) 10%, transparent); border-radius: 4px; }
+.plantilla-previa__resalte-nome { position: absolute; left: -2px; bottom: 100%; padding: 0.1rem 0.4rem; font-size: 0.7rem; font-weight: 600; color: #fff; background: var(--primary); border-radius: 4px 4px 0 0; white-space: nowrap; }
+.deseno-nota--ok { color: #166534; background: #dcfce7; border-color: #bbf7d0; }
+.deseno-kit { align-items: center; padding-top: 0.5rem; border-top: 1px dashed var(--border-color); }
+.deseno-kit__tit { font-size: 0.78rem; font-weight: 700; color: var(--text-muted); margin-right: 0.3rem; }
+
+/* Portada: miniaturas dos modelos */
+.deseno-portadas { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.4rem; }
+.deseno-portada { display: flex; flex-direction: column; align-items: center; gap: 0.3rem; padding: 0.4rem; font-size: 0.74rem; cursor: pointer; background: var(--panel-bg); color: var(--text-dark); border: 1px solid var(--border-color); border-radius: var(--radius-sm); }
+.deseno-portada[aria-checked="true"] { border-color: var(--primary); background: var(--primary-soft); box-shadow: inset 0 0 0 1px var(--primary); }
+.deseno-portada__mini { width: 2.6rem; height: 3.6rem; background: #fff; border: 1px solid var(--border-strong); border-radius: 2px; position: relative; overflow: hidden; }
+.deseno-portada__mini--cor { background: linear-gradient(var(--cor) 0 40%, #fff 40%); }
+.deseno-portada__mini--cor::after { content: ""; position: absolute; left: 18%; top: 50%; width: 40%; height: 3px; background: var(--cor); }
+.deseno-portada__mini--sobria { border-top: 4px solid var(--cor); }
+.deseno-portada__mini--sobria::after { content: ""; position: absolute; left: 15%; top: 40%; width: 65%; height: 5px; background: #333; box-shadow: 0 8px 0 -1px var(--cor); }
+.deseno-portada__mini--oficial::before { content: ""; position: absolute; left: 40%; top: 10%; width: 20%; height: 14%; background: #bbb; border-radius: 2px; }
+.deseno-portada__mini--oficial::after { content: ""; position: absolute; left: 20%; top: 45%; width: 60%; height: 5px; background: var(--cor); }
+.deseno-portada__mini--sen { background: repeating-linear-gradient(#fff 0 5px, #e5e7eb 5px 6px); }
+
+/* Cabeceira e pé por zonas */
+.deseno-cabpe > summary { cursor: pointer; font-size: 0.82rem; font-weight: 700; padding: 0.2rem 0; }
+.deseno-zonas { display: grid; grid-template-columns: 5rem repeat(3, minmax(0, 1fr)); gap: 0.35rem; align-items: center; margin: 0.35rem 0; }
+.deseno-zonas__tit { font-size: 0.8rem; color: var(--text-muted); }
+.deseno-zonas input { min-width: 0; font: inherit; font-size: 0.8rem; padding: 0.3rem 0.4rem; border: 1px solid var(--border-color); border-radius: var(--radius-sm); }
+@media (max-width: 700px) { .deseno-zonas { grid-template-columns: 1fr; } .deseno-portadas { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* Mostras «Aa» do deseño na letra real (as mesmas fontes ca o PDF). */
+@font-face { font-family: "Lua Termes"; src: url("./assets/fontes/texgyretermes-regular.otf") format("opentype"); font-display: swap; }
+@font-face { font-family: "Lua Pagella"; src: url("./assets/fontes/texgyrepagella-regular.otf") format("opentype"); font-display: swap; }
+@font-face { font-family: "Lua Schola"; src: url("./assets/fontes/texgyreschola-regular.otf") format("opentype"); font-display: swap; }
+@font-face { font-family: "Lua Heros"; src: url("./assets/fontes/texgyreheros-regular.otf") format("opentype"); font-display: swap; }
+@font-face { font-family: "Lua Fira"; src: url("./assets/fontes/FiraSans-Regular.otf") format("opentype"); font-display: swap; }
+@font-face { font-family: "Lua Libertinus"; src: url("./assets/fontes/LibertinusSerif-Regular.otf") format("opentype"); font-display: swap; }

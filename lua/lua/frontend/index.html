@@ -446,16 +446,18 @@
         <label class="modal-label">
             <span data-i18n="axustesTexto.font">Familia tipográfica</span>
             <select id="optTextoFont">
-                <option value="" data-i18n="axustesTexto.font.default">Predeterminada (Latin Modern)</option>
-                <optgroup id="optTextoFontRecom" data-i18n-label="axustesTexto.font.recom" label="Recomendadas">
-                    <option value="serif" data-i18n="axustesTexto.font.serif">Serif clásica (Times)</option>
-                    <option value="sans" data-i18n="axustesTexto.font.sans">Sans (Helvética / Arial)</option>
-                    <option value="palatino" data-i18n="axustesTexto.font.palatino">Palatino</option>
+                <option value="" data-i18n="axustesTexto.font.default">Lúa (a de sempre)</option>
+                <optgroup id="optTextoFontRecom" data-i18n-label="axustesTexto.font.recom" label="Combinacións">
+                    <option value="clasica" data-i18n="deseno.letra.clasica">Clásica</option>
+                    <option value="elegante" data-i18n="deseno.letra.elegante">Elegante</option>
+                    <option value="lexible" data-i18n="deseno.letra.lexible">Lexible</option>
+                    <option value="moderna" data-i18n="deseno.letra.moderna">Moderna</option>
+                    <option value="academica" data-i18n="deseno.letra.academica">Académica</option>
                 </optgroup>
                 <optgroup id="optTextoFontSistema" data-i18n-label="axustesTexto.font.sistema" label="Do sistema (xelatex)"></optgroup>
             </select>
         </label>
-        <p class="modal-hint" data-i18n="axustesTexto.hint">Aplícase á previsualización e ao PDF. As fontes «do sistema» compílanse con xelatex. Se a plantilla ten deseño propio, mantén a súa fonte (só cambia o tamaño e o interliñado).</p>
+        <p class="modal-hint" data-i18n="axustesTexto.hint">Cambio rápido para este equipo: aplícase ao PDF cando a plantilla non ten deseño propio. Para que viaxe coa plantilla, cámbiao no editor da plantilla (bloque «Deseño»). As fontes «do sistema» compílanse con xelatex e non saen igual noutro equipo.</p>
         <div class="modal-actions">
             <button id="btnTextoReset" data-i18n="axustesTexto.reset">Restablecer</button>
             <button id="btnTextoXerar" class="primary" data-i18n="axustesTexto.generate">Xerar</button>

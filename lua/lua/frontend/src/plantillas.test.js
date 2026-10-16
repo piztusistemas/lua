@@ -196,7 +196,7 @@ describe('editor de plantillas', () => {
     inputs[0].value = 'Orzamento'
     inputs[1].value = 'Membrete da empresa'
     modal.querySelectorAll('.plantilla-codigo')[1].value = '# Orzamento\n\n{{CORPO}}'
-    modal.querySelector('select').value = 'xelatex'
+    modal.querySelector('section[data-bloque="identidade"] select').value = 'xelatex'
 
     // Unha variable engadida a man.
     ;[...modal.querySelectorAll('.plantillas-toolbar button')]

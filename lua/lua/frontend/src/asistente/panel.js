@@ -640,6 +640,13 @@ export function crearPanelAsistente({
     // Quita o panel e para o bucle se estaba a medias (a pantalla que o aloxaba pechouse).
     destruir() { sinal.abortado = true; raiz.remove() },
     alternar: () => (estaAberto() ? pechar() : abrir()),
+    // Deixa a caixa xa empezada (p. ex. «Na parte "Títulos" do documento: »)
+    // para que o usuario remate a petición.
+    escribir(texto) {
+      caixa.value = texto
+      caixa.focus()
+      caixa.selectionStart = caixa.selectionEnd = caixa.value.length
+    },
     refrescarIdioma() {
       pintarTextos()
       if (!historial.length) { conversa.replaceChildren(); mostrarBenvida() }
