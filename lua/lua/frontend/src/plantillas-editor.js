@@ -38,12 +38,11 @@ const MARCADOR_CORPO = '{{CORPO}}'
 const MARCADOR_PORTADA = '{{PORTADA}}'
 const MARCADOR_SINATURA = '{{SINATURA}}'
 const CLAVE_AUTO_VISTA = 'lua.plantilla.autoVista'
-const CLAVE_BLOCOS = 'lua.plantilla.blocos'
+// v2: quen tiña bloques gardados dunha versión anterior volve empezar só co Deseño.
+const CLAVE_BLOCOS = 'lua.plantilla.blocos2'
 // Os bloques á vista de primeiras: o resto chámase co lanzador. O deseño vai
 // primeiro: é o que cambia o aspecto do PDF sen saber LaTeX.
 const BLOCOS_POR_DEFECTO = ['deseno']
-// Quen xa tiña bloques gardados de antes do bloque Deseño veo unha vez aberto.
-const CLAVE_DESENO_VISTO = 'lua.plantilla.desenoVisto'
 
 const ICONA_X = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 5l10 10M15 5L5 15"/></svg>'
 
@@ -73,12 +72,7 @@ function lerBlocosAbertos() {
   try {
     const bruto = JSON.parse(localStorage.getItem(CLAVE_BLOCOS) || 'null')
     if (Array.isArray(bruto)) {
-      const set = new Set(bruto.map(String))
-      if (!localStorage.getItem(CLAVE_DESENO_VISTO)) {
-        set.add('deseno')
-        localStorage.setItem(CLAVE_DESENO_VISTO, '1')
-      }
-      return set
+      return new Set(bruto.map(String))
     }
   } catch { /* sen persistencia */ }
   return new Set(BLOCOS_POR_DEFECTO)
@@ -491,6 +485,8 @@ export async function montarEditorPlantilla(container, {
       if (!nome || !actual.id || !api.vistaImaxe) return null
       return api.vistaImaxe(actual.id, nome)
     },
+    imaxes: () => actual.imaxes || [],
+    ferramenta: () => documento?.ferramenta || '',
     previsualizarCon: api.previsualizar ? (d) => api.previsualizar({ ...datosActuais(), deseno: d }, mostraVista.value, documento) : null,
     pedirIA: api.asistente ? (texto) => { asistente?.abrir(); asistente?.escribir?.(texto) } : null,
   })

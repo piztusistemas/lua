@@ -67,6 +67,10 @@ type Deseno struct {
 	// @logo (o logotipo do curso) e @imaxe nome.png. Baleiras = as da maqueta.
 	Cabeceira Zonas `json:"cabeceira,omitzero"`
 	Pe        Zonas `json:"pe,omitzero"`
+	// CabeceiraFilete e PeFilete: unha liña horizontal fina baixo a cabeceira
+	// e enriba do pé.
+	CabeceiraFilete bool `json:"cabeceiraFilete,omitempty"`
+	PeFilete        bool `json:"peFilete,omitempty"`
 	// NumeroPaxina: onde vai o número de páxina se o deseño pon o pé: ""
 	// (dereita), "esquerda", "centro" ou "non".
 	NumeroPaxina string `json:"numeroPaxina,omitempty"`
@@ -370,30 +374,32 @@ func EsquemaDeseno() map[string]any {
 		"type":        "object",
 		"description": "Deseño do PDF como datos. Campo baleiro ou 0 = o de Lúa.",
 		"properties": map[string]any{
-			"letra":          map[string]any{"type": "string", "enum": combs, "description": "Combinación de letras (corpo, títulos, etiquetas e fórmulas)."},
-			"letraCorpo":     letra("Letra do texto."),
-			"letraTitulos":   letra("Letra dos títulos."),
-			"letraEtiquetas": letra("Letra das etiquetas e rótulos."),
-			"letraMates":     map[string]any{"type": "string", "enum": mates, "description": "Letra das fórmulas (lm = a de sempre)."},
-			"tamano":         num("Tamaño do texto en pt.", 8, 20),
-			"escala":         num("Tamaño dos títulos respecto do texto.", 0.6, 1.8),
-			"interlinado":    num("Espazo entre liñas (1 = sinxelo).", 0.9, 2.2),
-			"parrafo":        num("Espazo entre parágrafos en em.", 0, 3),
-			"marxe":          num("Marxe da páxina en mm.", 8, 40),
-			"corPrincipal":   cor("Cor principal (títulos, liñas, rótulos)."),
-			"corEscura":      cor("Cor escura para rótulos."),
-			"corTexto":       cor("Cor do texto."),
-			"etiquetas":      map[string]any{"type": "string", "enum": []string{"degradado", "planas", "contorno"}, "description": "Aspecto das etiquetas do cronograma."},
-			"brancoNegro":    map[string]any{"type": "boolean", "description": "Preparar para imprimir en branco e negro."},
-			"aforrarPapel":   map[string]any{"type": "boolean", "description": "Compactar para gastar menos follas."},
-			"lecturaFacil":   map[string]any{"type": "boolean", "description": "Letra grande, máis espazo, sen xustificar."},
-			"elementos":      map[string]any{"type": "object", "properties": elementosProps, "additionalProperties": false},
-			"portada":        map[string]any{"type": "string", "enum": []string{"", "sobria", "oficial", "sen"}, "description": "Modelo da portada: \"\" (a de cor de Lúa), sobria, oficial ou sen (sen portada)."},
-			"logoPortada":    map[string]any{"type": "string", "enum": []string{"", "esquerda", "centro", "dereita"}, "description": "Posición do logotipo na portada."},
-			"cabeceira":      zonas("Cabeceira de todas as páxinas menos a portada."),
-			"pe":             zonas("Pé de todas as páxinas menos a portada."),
-			"numeroPaxina":   map[string]any{"type": "string", "enum": []string{"", "esquerda", "centro", "non"}, "description": "Onde vai o número de páxina (\"\" = dereita) cando o deseño pon o pé."},
-			"fixados":        map[string]any{"type": "array", "items": map[string]any{"type": "string"}, "description": "Campos que non se deben cambiar."},
+			"letra":           map[string]any{"type": "string", "enum": combs, "description": "Combinación de letras (corpo, títulos, etiquetas e fórmulas)."},
+			"letraCorpo":      letra("Letra do texto."),
+			"letraTitulos":    letra("Letra dos títulos."),
+			"letraEtiquetas":  letra("Letra das etiquetas e rótulos."),
+			"letraMates":      map[string]any{"type": "string", "enum": mates, "description": "Letra das fórmulas (lm = a de sempre)."},
+			"tamano":          num("Tamaño do texto en pt.", 8, 20),
+			"escala":          num("Tamaño dos títulos respecto do texto.", 0.6, 1.8),
+			"interlinado":     num("Espazo entre liñas (1 = sinxelo).", 0.9, 2.2),
+			"parrafo":         num("Espazo entre parágrafos en em.", 0, 3),
+			"marxe":           num("Marxe da páxina en mm.", 8, 40),
+			"corPrincipal":    cor("Cor principal (títulos, liñas, rótulos)."),
+			"corEscura":       cor("Cor escura para rótulos."),
+			"corTexto":        cor("Cor do texto."),
+			"etiquetas":       map[string]any{"type": "string", "enum": []string{"degradado", "planas", "contorno"}, "description": "Aspecto das etiquetas do cronograma."},
+			"brancoNegro":     map[string]any{"type": "boolean", "description": "Preparar para imprimir en branco e negro."},
+			"aforrarPapel":    map[string]any{"type": "boolean", "description": "Compactar para gastar menos follas."},
+			"lecturaFacil":    map[string]any{"type": "boolean", "description": "Letra grande, máis espazo, sen xustificar."},
+			"elementos":       map[string]any{"type": "object", "properties": elementosProps, "additionalProperties": false},
+			"portada":         map[string]any{"type": "string", "enum": []string{"", "sobria", "oficial", "sen"}, "description": "Modelo da portada: \"\" (a de cor de Lúa), sobria, oficial ou sen (sen portada)."},
+			"logoPortada":     map[string]any{"type": "string", "enum": []string{"", "esquerda", "centro", "dereita"}, "description": "Posición do logotipo na portada."},
+			"cabeceira":       zonas("Cabeceira de todas as páxinas menos a portada."),
+			"pe":              zonas("Pé de todas as páxinas menos a portada."),
+			"cabeceiraFilete": map[string]any{"type": "boolean", "description": "Liña horizontal baixo a cabeceira."},
+			"peFilete":        map[string]any{"type": "boolean", "description": "Liña horizontal enriba do pé."},
+			"numeroPaxina":    map[string]any{"type": "string", "enum": []string{"", "esquerda", "centro", "non"}, "description": "Onde vai o número de páxina (\"\" = dereita) cando o deseño pon o pé."},
+			"fixados":         map[string]any{"type": "array", "items": map[string]any{"type": "string"}, "description": "Campos que non se deben cambiar."},
 		},
 		"additionalProperties": false,
 	}

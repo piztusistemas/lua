@@ -11,6 +11,22 @@
 export const COMBINACIONS = ['lua', 'clasica', 'elegante', 'lexible', 'moderna', 'academica']
 export const ETIQUETAS = ['degradado', 'planas', 'contorno']
 export const ELEMENTOS = ['texto', 'titulos', 'etiquetas', 'meses', 'trimestres', 'tarefas', 'actas_cabeceira', 'actas_apartados', 'actas_materias', 'sinaturas']
+
+// ELEMENTOS_DE_FERRAMENTA: as partes que ten cada tipo de documento. Sen
+// documento (ou cunha ferramenta descoñecida) valen todas.
+const ELEMENTOS_DE_FERRAMENTA = {
+  cronograma: ['texto', 'titulos', 'etiquetas', 'meses', 'trimestres', 'tarefas', 'sinaturas'],
+  actas: ['texto', 'titulos', 'actas_cabeceira', 'actas_apartados', 'actas_materias', 'sinaturas'],
+  formulario: ['texto', 'titulos', 'sinaturas'],
+}
+
+// elementosDe devolve as partes que se mostran para a ferramenta do documento
+// que se edita, máis as que xa teñen axustes (para non agochar o que se cambiou).
+export function elementosDe(ferramenta, deseno) {
+  const propios = ELEMENTOS_DE_FERRAMENTA[ferramenta]
+  if (!propios) return ELEMENTOS
+  return ELEMENTOS.filter((id) => propios.includes(id) || (deseno?.elementos && deseno.elementos[id]))
+}
 // Que controis ten cada elemento (o mesmo ca ElementosDeseno en Go).
 export const CONTROIS_ELEMENTO = {
   texto: [],
@@ -30,7 +46,7 @@ export const RANGOS = {
 }
 export const POR_DEFECTO = { tamano: 11, escala: 1, interlinado: 1, parrafo: 0.55, marxe: 20, corPrincipal: '4F46E5' }
 const CORES = ['corPrincipal', 'corEscura', 'corTexto']
-const BOOLS = ['brancoNegro', 'aforrarPapel', 'lecturaFacil']
+const BOOLS = ['brancoNegro', 'aforrarPapel', 'lecturaFacil', 'cabeceiraFilete', 'peFilete']
 const LETRAS = ['letraCorpo', 'letraTitulos', 'letraEtiquetas', 'letraMates']
 const HEX = /^[0-9A-Fa-f]{6}$/
 const ENUMS = { portada: ['', 'sobria', 'oficial', 'sen'], logoPortada: ['', 'esquerda', 'centro', 'dereita'], numeroPaxina: ['', 'esquerda', 'centro', 'non'] }

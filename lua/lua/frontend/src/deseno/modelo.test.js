@@ -148,3 +148,12 @@ describe('IA: portada, cabeceira e pé', () => {
     expect(parche).toEqual({ portada: 'sobria', cabeceira: { esquerda: '@logo', dereita: '{{CURSO}}' } })
   })
 })
+
+describe('elementosDe', () => {
+  it('só as partes do tipo de documento, máis as xa cambiadas', async () => {
+    const { elementosDe, ELEMENTOS } = await import('./modelo.js')
+    expect(elementosDe('actas', {})).toEqual(['texto', 'titulos', 'actas_cabeceira', 'actas_apartados', 'actas_materias', 'sinaturas'])
+    expect(elementosDe('formulario', { elementos: { meses: { cor: '111111' } } })).toEqual(['texto', 'titulos', 'meses', 'sinaturas'])
+    expect(elementosDe('', {})).toEqual(ELEMENTOS)
+  })
+})

@@ -1811,11 +1811,31 @@ body.xerando #status { display: none; }
 .deseno-portada__mini--sen { background: repeating-linear-gradient(#fff 0 5px, #e5e7eb 5px 6px); }
 
 /* Cabeceira e pé por zonas */
-.deseno-cabpe > summary { cursor: pointer; font-size: 0.82rem; font-weight: 700; padding: 0.2rem 0; }
-.deseno-zonas { display: grid; grid-template-columns: 5rem repeat(3, minmax(0, 1fr)); gap: 0.35rem; align-items: center; margin: 0.35rem 0; }
-.deseno-zonas__tit { font-size: 0.8rem; color: var(--text-muted); }
-.deseno-zonas input { min-width: 0; font: inherit; font-size: 0.8rem; padding: 0.3rem 0.4rem; border: 1px solid var(--border-color); border-radius: var(--radius-sm); }
-@media (max-width: 700px) { .deseno-zonas { grid-template-columns: 1fr; } .deseno-portadas { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.deseno-cabpe { display: grid; gap: 0.8rem; }
+.deseno-folla { border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 0.6rem; display: grid; gap: 0.5rem; background: var(--bg-secondary, transparent); }
+.deseno-folla__modelos, .deseno-folla__opcions, .deseno-folla__numero { display: flex; flex-wrap: wrap; gap: 0.35rem; align-items: center; }
+.deseno-folla__ou { font-size: 0.8rem; color: var(--text-muted); }
+.deseno-chip { font: inherit; font-size: 0.78rem; padding: 0.2rem 0.55rem; border: 1px solid var(--border-color); border-radius: 999px; background: transparent; color: inherit; cursor: pointer; }
+.deseno-chip:hover, .deseno-chip[aria-checked="true"] { border-color: var(--primary); color: var(--primary); }
+.deseno-chip[aria-checked="true"] { font-weight: 700; }
+.deseno-folla__papel { background: #fff; color: #333; border: 1px solid var(--border-color); border-radius: 4px; padding: 0.5rem; box-shadow: 0 1px 4px rgba(0,0,0,.12); }
+.deseno-folla__franxa { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.4rem; }
+.deseno-folla__filete { height: 0; border-top: 1px solid #555; margin-top: 0.4rem; }
+.deseno-folla--pe .deseno-folla__papel { display: flex; flex-direction: column-reverse; }
+.deseno-folla--pe .deseno-folla__filete { margin: 0 0 0.4rem; }
+.deseno-folla__zona { display: grid; gap: 0.25rem; align-content: start; border: 1px dashed #bbb; border-radius: 4px; padding: 0.3rem; min-width: 0; }
+.deseno-folla__zona--centro { text-align: center; }
+.deseno-folla__zona--dereita { text-align: right; }
+.deseno-folla__zonanome { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.04em; color: #888; }
+.deseno-folla__pezas { display: flex; flex-wrap: wrap; gap: 0.25rem; min-height: 1.4rem; }
+.deseno-folla__zona--centro .deseno-folla__pezas { justify-content: center; }
+.deseno-folla__zona--dereita .deseno-folla__pezas { justify-content: flex-end; }
+.deseno-peza { display: inline-flex; align-items: center; gap: 0.2rem; font-size: 0.76rem; padding: 0.1rem 0.2rem 0.1rem 0.45rem; border-radius: 999px; background: #eef0ff; color: #333; max-width: 100%; overflow-wrap: anywhere; }
+.deseno-peza__x { border: 0; background: transparent; cursor: pointer; font-size: 0.7rem; color: #666; padding: 0 0.25rem; }
+.deseno-peza__x:hover { color: #b91c1c; }
+.deseno-folla__engadir, .deseno-folla__texto { min-width: 0; width: 100%; font: inherit; font-size: 0.76rem; padding: 0.25rem 0.3rem; border: 1px solid var(--border-color); border-radius: var(--radius-sm); }
+.deseno-interruptor--curto { display: inline-flex; gap: 0.4rem; align-items: center; font-size: 0.82rem; }
+@media (max-width: 700px) { .deseno-folla__franxa { grid-template-columns: 1fr; } .deseno-portadas { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
 /* Mostras «Aa» do deseño na letra real (as mesmas fontes ca o PDF). */
 @font-face { font-family: "Lua Termes"; src: url("./assets/fontes/texgyretermes-regular.otf") format("opentype"); font-display: swap; }

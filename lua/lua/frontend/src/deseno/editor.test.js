@@ -152,13 +152,17 @@ describe('melloras do bloque', () => {
     sel.value = 'dereita'
     sel.dispatchEvent(new Event('change'))
     expect(deseno().logoPortada).toBe('dereita')
-    const zona = nodo.querySelector('.deseno-zonas input')
-    zona.value = '@logo {{CENTRO}}'
-    zona.dispatchEvent(new Event('change'))
-    expect(deseno().cabeceira).toEqual({ esquerda: '@logo {{CENTRO}}' })
-    const zona2 = nodo.querySelector('.deseno-zonas input')
-    zona2.value = ''
-    zona2.dispatchEvent(new Event('change'))
+    const engadir = () => nodo.querySelector('.deseno-folla--cabeceira .deseno-folla__zona--esquerda select')
+    engadir().value = '@logo'
+    engadir().dispatchEvent(new Event('change'))
+    engadir().value = '{{CENTRO}}'
+    engadir().dispatchEvent(new Event('change'))
+    expect(deseno().cabeceira).toEqual({ esquerda: '@logo\n{{CENTRO}}' })
+    const filete = nodo.querySelector('.deseno-folla--cabeceira input[type="checkbox"]')
+    filete.checked = true
+    filete.dispatchEvent(new Event('change'))
+    expect(deseno().cabeceiraFilete).toBe(true)
+    for (let i = 0; i < 2; i++) nodo.querySelector('.deseno-folla--cabeceira .deseno-peza__x').click()
     expect(deseno().cabeceira).toBeUndefined()
   })
 

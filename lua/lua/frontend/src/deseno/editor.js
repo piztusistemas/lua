@@ -16,7 +16,7 @@
 import { el, boton, ficheiroABase64 } from '../plantillas-util.js'
 import { confirmar } from '../comun/dialogs.js'
 import {
-  COMBINACIONS, ELEMENTOS, CONTROIS_ELEMENTO, aplicarBarra, aplicarParche, limpar, normalizarCor, valor, variantes, describir, fixado, contrasteBranco,
+  COMBINACIONS, elementosDe, CONTROIS_ELEMENTO, aplicarBarra, aplicarParche, limpar, normalizarCor, valor, variantes, describir, fixado, contrasteBranco,
   validarParche, paxinaRepresentativa, parteDeCampo,
 } from './modelo.js'
 
@@ -64,12 +64,13 @@ const HISTORIAL_MAX = 50
 //   quitarEstiloLibre() baleira o bloque Estilo
 //   imaxeLogo()         promesa co data URI do logotipo da plantilla (ou null)
 //   previsualizarCon(d) promesa co resultado de compilar a plantilla co deseño d
+//   ferramenta()        a ferramenta do documento que se edita (só se mostran as súas partes)
 //   pedirIA(texto)      abre o asistente coa caixa xa empezada (opcional)
 //   nomePlantilla()     o nome da plantilla (para o ficheiro do deseño)
 // `cambiar(d, parte)` recibe tamén a parte do documento que máis cambia (a
 // vista previa salta á súa páxina).
 // Devolve { pintar, abrirElemento, desfacer }.
-export function montarBloqueDeseno(nodo, { t, api, ler, cambiar, estiloLibre = () => '', quitarEstiloLibre = () => {}, imaxeLogo = async () => null, previsualizarCon = null, pedirIA = null, nomePlantilla = () => '' }) {
+export function montarBloqueDeseno(nodo, { t, api, ler, cambiar, estiloLibre = () => '', quitarEstiloLibre = () => {}, imaxeLogo = async () => null, previsualizarCon = null, imaxes = () => [], ferramenta = () => '', pedirIA = null, nomePlantilla = () => '' }) {
   const historial = []
   let coresLogo = []
   let combinacions = COMBINACIONS.map((id) => ({ id, nome: t(`deseno.letra.${id}`, id), descricion: t(`deseno.letra.${id}.desc`, '') }))
@@ -128,7 +129,152 @@ export function montarBloqueDeseno(nodo, { t, api, ler, cambiar, estiloLibre = (
 
   let elementoAberto = ''
   let detallesAbertos = false
-  let cabpeAberto = false
+
+  // ---- Cabeceira e pé ----
+  const PEZAS = [
+    ['@logo', '🖼️', t('deseno.peza.logo', 'Logotipo')],
+    ['{{CENTRO}}', '🏫', t('deseno.peza.centro', 'Nome do centro')],
+    ['{{DEPARTAMENTO}}', '🏷️', t('deseno.peza.departamento', 'Departamento')],
+    ['{{CURSO}}', '📅', t('deseno.peza.curso', 'Curso')],
+    ['{{TITULO}}', '📄', t('deseno.peza.titulo', 'Título do documento')],
+  ]
+  const ZONAS = [['esquerda', t('deseno.zona.esquerda', 'Esquerda')], ['centro', t('deseno.zona.centro', 'Centro')], ['dereita', t('deseno.zona.dereita', 'Dereita')]]
+  // Modelos para empezar: un clic e a cabeceira queda feita.
+  const MODELOS_CABECEIRA = [
+    [t('deseno.cab.m.logo', 'Logotipo e centro'), { esquerda: '@logo', dereita: '{{CENTRO}}' }, true],
+    [t('deseno.cab.m.centro', 'Centro e curso'), { esquerda: '{{CENTRO}}', dereita: '{{CURSO}}' }, true],
+    [t('deseno.cab.m.todo', 'Centro, departamento e curso'), { esquerda: '{{CENTRO}}', centro: '{{DEPARTAMENTO}}', dereita: '{{CURSO}}' }, true],
+    [t('deseno.cab.m.nada', 'Sen cabeceira'), {}, false],
+  ]
+
+  function pezaDe(linha) {
+    const f = PEZAS.find((p) => p[0] === linha)
+    if (f) return { ico: f[1], nome: f[2] }
+    if (linha.startsWith('@imaxe')) return { ico: '🖼️', nome: linha.replace('@imaxe', '').trim() || t('deseno.peza.imaxe', 'Imaxe') }
+    return { ico: '✏️', nome: linha }
+  }
+
+  function pintarCabeceiraPe(d) {
+    const caixa = el('div', 'deseno-cabpe')
+    caixa.appendChild(el('p', 'plantilla-axuda', t('deseno.cabpe.axuda2', 'Escolle que vai en cada esquina da cabeceira e do pé. O logotipo é o do curso; se queres outra imaxe, sóbea en «Imaxes da plantilla». Tamén vale para Word e OpenDocument.')))
+
+    const zonasDe = (campo) => ({ esquerda: '', centro: '', dereita: '', ...(ler()?.[campo] || {}) })
+    const gardarZonas = (campo, z) => {
+      const lz = limpar(z)
+      mudar({ ...(ler() || {}), [campo]: Object.keys(lz).length ? lz : '' }, parteDeCampo(campo))
+    }
+
+    for (const [campo, campoFilete, titulo, ico] of [
+      ['cabeceira', 'cabeceiraFilete', t('deseno.cabeceira', 'Cabeceira'), '⬆️'],
+      ['pe', 'peFilete', t('deseno.pe', 'Pé'), '⬇️'],
+    ]) {
+      const sec = el('section', `deseno-folla deseno-folla--${campo}`)
+      const cab = el('div', 'deseno-folla__cab')
+      cab.appendChild(el('strong', null, `${ico} ${titulo}`))
+      sec.appendChild(cab)
+
+      // Modelos (só na cabeceira) e «Baleirar».
+      if (campo === 'cabeceira') {
+        const m = el('div', 'deseno-folla__modelos')
+        m.appendChild(el('span', 'deseno-folla__ou', t('deseno.cab.empezar', 'Empezar cun modelo:')))
+        for (const [nome, zonas, filete] of MODELOS_CABECEIRA) {
+          m.appendChild(boton(nome, 'deseno-chip', () => mudar({ ...(ler() || {}), cabeceira: Object.keys(zonas).length ? zonas : '', cabeceiraFilete: filete }, 'tarefas')))
+        }
+        sec.appendChild(m)
+      }
+
+      // A folla: tres zonas e, se se pide, a liña horizontal.
+      const z = zonasDe(campo)
+      const folla = el('div', 'deseno-folla__papel')
+      const franxa = el('div', 'deseno-folla__franxa')
+      for (const [zona, nomeZona] of ZONAS) {
+        const col = el('div', `deseno-folla__zona deseno-folla__zona--${zona}`)
+        col.appendChild(el('span', 'deseno-folla__zonanome', nomeZona))
+        const linhas = (z[zona] || '').split('\n').map((x) => x.trim()).filter(Boolean)
+        const pezas = el('div', 'deseno-folla__pezas')
+        linhas.forEach((linha, idx) => {
+          const pz = pezaDe(linha)
+          const chip = el('span', 'deseno-peza')
+          chip.append(el('span', null, `${pz.ico} ${pz.nome}`))
+          const x = boton('✕', 'deseno-peza__x', () => {
+            const novas = linhas.filter((_, k) => k !== idx)
+            gardarZonas(campo, { ...z, [zona]: novas.join('\n') })
+          })
+          x.setAttribute('aria-label', t('deseno.peza.quitar', 'Quitar {nome}', { nome: pz.nome }))
+          chip.appendChild(x)
+          pezas.appendChild(chip)
+        })
+        col.appendChild(pezas)
+
+        // Engadir unha peza.
+        const sel = el('select', 'deseno-folla__engadir')
+        sel.setAttribute('aria-label', `${titulo}: ${nomeZona}`)
+        const o0 = el('option', null, t('deseno.peza.engadir', '＋ Engadir…'))
+        o0.value = ''
+        sel.appendChild(o0)
+        const engadir = (txt) => {
+          const novas = [...linhas, txt]
+          gardarZonas(campo, { ...z, [zona]: novas.join('\n') })
+        }
+        for (const [cod, i2, nome] of PEZAS) {
+          const o = el('option', null, `${i2} ${nome}`)
+          o.value = cod
+          sel.appendChild(o)
+        }
+        for (const im of imaxes()) {
+          if (!/\.(png|jpe?g|gif|pdf)$/i.test(im)) continue
+          const o = el('option', null, `🖼️ ${im}`)
+          o.value = `@imaxe ${im}`
+          sel.appendChild(o)
+        }
+        sel.addEventListener('change', () => { if (sel.value) engadir(sel.value) })
+        col.appendChild(sel)
+
+        const txt = el('input', 'deseno-folla__texto')
+        txt.type = 'text'
+        txt.placeholder = t('deseno.peza.propio', 'Ou escribe un texto…')
+        txt.setAttribute('aria-label', `${titulo}: ${nomeZona}: ${t('deseno.peza.propio', 'Ou escribe un texto…')}`)
+        txt.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' && txt.value.trim()) { e.preventDefault(); engadir(txt.value.trim()) }
+        })
+        txt.addEventListener('change', () => { if (txt.value.trim()) engadir(txt.value.trim()) })
+        col.appendChild(txt)
+        franxa.appendChild(col)
+      }
+      folla.appendChild(franxa)
+      if (d[campoFilete]) folla.appendChild(el('div', 'deseno-folla__filete'))
+      sec.appendChild(folla)
+
+      // Opcións: liña horizontal (e, no pé, onde vai o número de páxina).
+      const opc = el('div', 'deseno-folla__opcions')
+      const lf = el('label', 'deseno-interruptor deseno-interruptor--curto')
+      const cf = el('input')
+      cf.type = 'checkbox'
+      cf.checked = !!d[campoFilete]
+      cf.addEventListener('change', () => poñer(campoFilete, cf.checked))
+      lf.append(cf, el('span', null, campo === 'cabeceira' ? t('deseno.filete.cab', '➖ Liña horizontal debaixo da cabeceira') : t('deseno.filete.pe', '➖ Liña horizontal enriba do pé')))
+      opc.appendChild(lf)
+      if (campo === 'pe') {
+        const num = el('div', 'deseno-folla__numero')
+        num.setAttribute('role', 'radiogroup')
+        num.setAttribute('aria-label', t('deseno.num', 'Número de páxina'))
+        num.appendChild(el('span', null, t('deseno.num', 'Número de páxina')))
+        for (const [v, txtv] of [['esquerda', t('deseno.zona.esquerda', 'Esquerda')], ['centro', t('deseno.zona.centro', 'Centro')], ['', t('deseno.zona.dereita', 'Dereita')], ['non', t('deseno.num.non', 'Sen número')]]) {
+          const b = boton(txtv, 'deseno-chip', () => poñer('numeroPaxina', v))
+          b.setAttribute('role', 'radio')
+          b.setAttribute('aria-checked', String((d.numeroPaxina || '') === v))
+          num.appendChild(b)
+        }
+        opc.appendChild(num)
+      }
+      if (!zonasDe(campo).esquerda && !zonasDe(campo).centro && !zonasDe(campo).dereita && !d[campoFilete]) {
+        sec.appendChild(el('p', 'plantilla-axuda', t('deseno.cabpe.baleira', 'Baleira: usa a da maqueta.')))
+      }
+      sec.appendChild(opc)
+      caixa.appendChild(sec)
+    }
+    return caixa
+  }
 
   function pintar() {
     const d = ler() || {}
@@ -274,42 +420,9 @@ export function montarBloqueDeseno(nodo, { t, api, ler, cambiar, estiloLibre = (
     logo.append(el('span', null, t('deseno.logo', 'Logotipo')), logoSel)
     partes.push(fila(t('deseno.portada', 'Portada'), 'portada', portadas, logo))
 
-    // Cabeceira e pé por zonas.
-    const cabpe = el('details', 'deseno-cabpe')
-    cabpe.open = cabpeAberto || Object.keys(d.cabeceira || {}).length > 0 || Object.keys(d.pe || {}).length > 0
-    cabpe.addEventListener('toggle', () => { cabpeAberto = cabpe.open })
-    cabpe.appendChild(el('summary', null, t('deseno.cabpe', 'Cabeceira e pé')))
-    cabpe.appendChild(el('p', 'plantilla-axuda', t('deseno.cabpe.axuda', 'Texto en cada zona. Valen {{CENTRO}}, {{CURSO}}, {{DEPARTAMENTO}}, {{TITULO}}…, @logo (o logotipo do curso) e @imaxe nome.png. Baleiro = o da maqueta. Tamén vale para Word e OpenDocument.')))
-    for (const [campo, titulo] of [['cabeceira', t('deseno.cabeceira', 'Cabeceira')], ['pe', t('deseno.pe', 'Pé')]]) {
-      const grade = el('div', 'deseno-zonas')
-      grade.appendChild(el('span', 'deseno-zonas__tit', titulo))
-      for (const [zona, txt] of [['esquerda', t('deseno.zona.esquerda', 'Esquerda')], ['centro', t('deseno.zona.centro', 'Centro')], ['dereita', t('deseno.zona.dereita', 'Dereita')]]) {
-        const i = el('input')
-        i.type = 'text'
-        i.value = d[campo]?.[zona] || ''
-        i.placeholder = txt
-        i.setAttribute('aria-label', `${titulo}: ${txt}`)
-        i.addEventListener('change', () => {
-          const z = { ...(ler()?.[campo] || {}), [zona]: i.value }
-          const lz = limpar(z)
-          mudar({ ...(ler() || {}), [campo]: Object.keys(lz).length ? lz : '' }, parteDeCampo(campo))
-        })
-        grade.appendChild(i)
-      }
-      cabpe.appendChild(grade)
-    }
-    const num = el('label', 'deseno-control')
-    const numSel = el('select')
-    for (const [v, txt] of [['', t('deseno.num.dereita', 'Á dereita do pé')], ['centro', t('deseno.num.centro', 'No centro do pé')], ['esquerda', t('deseno.num.esquerda', 'Á esquerda do pé')], ['non', t('deseno.num.non', 'Sen número')]]) {
-      const o = el('option', null, txt)
-      o.value = v
-      numSel.appendChild(o)
-    }
-    numSel.value = d.numeroPaxina || ''
-    numSel.addEventListener('change', () => poñer('numeroPaxina', numSel.value))
-    num.append(el('span', null, t('deseno.num', 'Número de páxina')), numSel)
-    cabpe.appendChild(num)
-    partes.push(cabpe)
+    // Cabeceira e pé: unha folla de mostra con tres zonas onde se colocan
+    // pezas (logotipo, centro, departamento, curso...), sen escribir códigos.
+    partes.push(fila(t('deseno.cabpe', 'Cabeceira e pé'), 'cabeceira', pintarCabeceiraPe(d)))
 
     // Accións
     const accions = el('div', 'deseno-accions')
@@ -335,7 +448,7 @@ export function montarBloqueDeseno(nodo, { t, api, ler, cambiar, estiloLibre = (
     det.addEventListener('toggle', () => { detallesAbertos = det.open })
     det.appendChild(el('summary', null, t('deseno.elementos', 'Cada parte do documento')))
     const lista = el('div', 'deseno-elementos')
-    for (const id of ELEMENTOS) lista.appendChild(pintarElemento(id, d))
+    for (const id of elementosDe(ferramenta(), d)) lista.appendChild(pintarElemento(id, d))
     det.appendChild(lista)
     det.appendChild(pintarLetrasPorPapel(d))
     det.appendChild(pintarJSON(d))

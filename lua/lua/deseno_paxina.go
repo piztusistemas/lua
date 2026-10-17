@@ -112,7 +112,7 @@ func latexZona(texto string) string {
 // principio do corpo, despois da maqueta, así manda sobre ela.
 func (r desenoResolto) latexCabeceiraPe() string {
 	cab, pe := r.d.Cabeceira, r.d.Pe
-	if cab.Baleira() && pe.Baleira() {
+	if cab.Baleira() && pe.Baleira() && !r.d.CabeceiraFilete && !r.d.PeFilete {
 		return ""
 	}
 	var b strings.Builder
@@ -122,8 +122,8 @@ func (r desenoResolto) latexCabeceiraPe() string {
 			b.WriteString(cmd + "[" + lado + "]{\\fontchip\\small\\color{gris-texto}" + latexZona(texto) + "}\n")
 		}
 	}
-	if !cab.Baleira() {
-		b.WriteString("\\fancyhead{}\n\\renewcommand{\\headrulewidth}{0pt}\n")
+	if !cab.Baleira() || r.d.CabeceiraFilete {
+		b.WriteString("\\fancyhead{}\n\\renewcommand{\\headrulewidth}{" + larguraFilete(r.d.CabeceiraFilete) + "}\n")
 		if strings.Contains(cab.Esquerda+cab.Centro+cab.Dereita, "@") {
 			b.WriteString("\\setlength{\\headheight}{24pt}\n")
 		}
@@ -131,8 +131,8 @@ func (r desenoResolto) latexCabeceiraPe() string {
 		zona(`\fancyhead`, "C", cab.Centro)
 		zona(`\fancyhead`, "R", cab.Dereita)
 	}
-	if !pe.Baleira() {
-		b.WriteString("\\fancyfoot{}\n\\renewcommand{\\footrulewidth}{0pt}\n")
+	if !pe.Baleira() || r.d.PeFilete {
+		b.WriteString("\\fancyfoot{}\n\\renewcommand{\\footrulewidth}{" + larguraFilete(r.d.PeFilete) + "}\n")
 		esq, cen, der := pe.Esquerda, pe.Centro, pe.Dereita
 		num := `\thepage`
 		switch r.d.NumeroPaxina {
@@ -155,6 +155,14 @@ func (r desenoResolto) latexCabeceiraPe() string {
 		}
 	}
 	return b.String()
+}
+
+// larguraFilete é o groso da liña da cabeceira ou do pé (0pt = sen liña).
+func larguraFilete(si bool) string {
+	if si {
+		return "0.4pt"
+	}
+	return "0pt"
 }
 
 // zonasAOfimatica traduce unha cabeceira ou un pé do deseño á linguaxe da
