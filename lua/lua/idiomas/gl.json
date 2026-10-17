@@ -965,7 +965,7 @@
   "asistente.boveda.desconectar": "Desconectar",
   "asistente.boveda.info": "{n} fontes · {w} páxinas wiki",
   "formularios.sen.datos": "Non hai datos deste formulario. Pecha esta xanela e ábrea de novo.",
-  "options.maxima.decimais": "Decimais nos resultados (0 = os de Maxima)",
+  "options.maxima.decimais": "Decimais nos resultados dos problemas (0 = sen redondear)",
   "options.maxima.detectar": "Detectar",
   "options.maxima.fallou": "Non se puido instalar Maxima.",
   "options.maxima.hint": "Maxima calcula as fórmulas dos problemas (coma en Yang) e comproba as solucións da IA. Sen Maxima, Lúa só calcula números e fórmulas simples.",

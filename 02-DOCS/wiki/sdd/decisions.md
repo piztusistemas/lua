@@ -148,3 +148,11 @@ Why        — Non se debilita un test para avanzar, e cada commit queda verde.
 - **Nomes**: as barras chámanse «Carácter do documento»; «Letra de cada parte».
 - `task dev` arranxado (script `build:dev` en `package.json`).
 
+
+## 2026-10-17 — Números decimais nos documentos de problemas
+- Informe do usuario: no PDF desaparecía a coma (ou o punto) decimal e o número de decimais disparábase (`0.30000000000000004`, `54.00000000000001`).
+- Catro causas, catro arranxos:
+  - **PDF**: babel-galician con `shorthands=off` deixa o «.» activo en modo matemático e sen definición, e `$12.75$` saía «1275». `latex.BabelLine` devolve o «.» ao código que garda o propio babel (vale tamén coa letra de unicode-math) e o «<»/«>» a carácter normal, ao empezar o documento e ao volver escoller o idioma. Descartado: fixar `\mathcode` a `"013A`, que rompe o punto das letras OpenType MATH; e quitar `shorthands=off`, que volvería romper os «<» dos TikZ.
+  - **Rangos aleatorios**: calcúlanse en enteiros escalados ao número de decimais do rango (`rangoDecimal`), en Go e na liña de Maxima (`float((A + P*random(N))/10^d)`). Así `0,1 + 2·0,1` dá `0,3` e o extremo «ata» entra sempre (antes `floor((0.5-0.1)/0.1) = 3` deixaba fóra o 0,5). Os rangos enteiros sacan os mesmos números coa mesma semente ca antes.
+  - **Resultados de Maxima**: o TeX de Maxima pasa por `numerosTex`, que quita o ruído do coma flotante (12 cifras significativas), os ceros de máis («80.0» → «80») e pon a coma decimal (`{,}`), coma xa facía o camiño en Go.
+  - **Decimais**: a opción «Decimais nos resultados dos problemas» (xa existía para Maxima, con 0 = sen redondear) aplícase tamén ás contas en Go.

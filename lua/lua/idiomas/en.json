@@ -965,7 +965,7 @@
   "asistente.boveda.desconectar": "Disconnect",
   "asistente.boveda.info": "{n} sources · {w} wiki pages",
   "formularios.sen.datos": "There is no data for this form. Close this window and open it again.",
-  "options.maxima.decimais": "Decimal places in results (0 = Maxima's own)",
+  "options.maxima.decimais": "Decimal places in problem results (0 = no rounding)",
   "options.maxima.detectar": "Detect",
   "options.maxima.fallou": "Maxima could not be installed.",
   "options.maxima.hint": "Maxima computes the formulas in problems (as in Yang) and checks the AI's solutions. Without Maxima, Lúa only computes numbers and simple formulas.",

@@ -204,14 +204,14 @@ func (m *Motor) Calcular(p Problema, semente int) ProblemaCalculado {
 		}
 		vp := ValorProblema{Texto: v.Texto, Tex: v.Tex}
 		if v.EsNum {
-			vp.Texto, vp.Tex = formatarNumero(v.Num)
+			vp.Texto, vp.Tex = formatarNumeroDecimais(v.Num, x.o.Decimais)
 		}
 		if vp.Tex == "" {
 			vp.Tex = `\text{` + latex.EscapeLatex(v.Texto) + `}`
 		}
 		out.Valores[k] = vp
 	}
-	cx := &contextoMD{vals: vals, reg: x.reg, avisos: &x.avisos, valadosCrus: true}
+	cx := &contextoMD{vals: vals, reg: x.reg, avisos: &x.avisos, valadosCrus: true, decimais: x.o.Decimais}
 	if x.m != nil {
 		cx.maxima = x.tex
 	}
@@ -288,7 +288,7 @@ func (m *Motor) Probar(p Problema, sementes []int) []string {
 // con e sen Maxima instalado).
 func (x *xerador) valoresProblema(f *ficha.Ficha) (map[string]Valor, error) {
 	if x.m == nil || !PrecisaMaxima(f) {
-		return valoresGo(f, x.rng, nil, nil, true)
+		return x.conDecimais(valoresGo(f, x.rng, nil, nil, true))
 	}
 	return x.valoresMarkdown(f)
 }

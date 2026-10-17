@@ -47,6 +47,7 @@ type contextoMD struct {
 	// aplicación os debuxe ela (Lua: problemas). Sen isto van protexidos
 	// coma LaTeX final.
 	valadosCrus bool
+	decimais    int // redondeo das contas en Go (0 = sen redondear)
 }
 
 // Marca dun debuxo cru mentres se substitúe o resto (ver valadosCrus).
@@ -217,7 +218,7 @@ func (cx *contextoMD) prosa(s string) string {
 			return cx.avaliarMaxima(expr, true, m)
 		}
 		if n, err := numeroFormula(expr, cx.vals); err == nil {
-			_, tex := formatarNumero(n)
+			_, tex := formatarNumeroDecimais(n, cx.decimais)
 			return "$" + tex + "$"
 		}
 		cx.aviso(fmt.Sprintf("non se puido calcular {%s}", expr))

@@ -234,7 +234,7 @@ func (x *xerador) exercicio(f *ficha.Ficha, fondo int) (string, error) {
 // valoresMarkdown: en Go se se pode; se non, con Maxima.
 func (x *xerador) valoresMarkdown(f *ficha.Ficha) (map[string]Valor, error) {
 	if !PrecisaMaxima(f) || x.m == nil {
-		return valoresGo(f, x.rng, x.bancos, x.o.Datos, true)
+		return x.conDecimais(valoresGo(f, x.rng, x.bancos, x.o.Datos, true))
 	}
 	vals, err := valoresGo(f, x.rng, x.bancos, x.o.Datos, false)
 	if err != nil {
@@ -279,6 +279,21 @@ func (x *xerador) valoresMarkdown(f *ficha.Ficha) (map[string]Valor, error) {
 	return vals, nil
 }
 
+// conDecimais redondea á opción Decimais os números calculados en Go (os de
+// Maxima xa os redondea ToTeX, ver cas.Maxima.SetDecimais).
+func (x *xerador) conDecimais(vals map[string]Valor, err error) (map[string]Valor, error) {
+	if err != nil || x.o.Decimais <= 0 {
+		return vals, err
+	}
+	for k, v := range vals {
+		if v.EsNum && !v.Mat {
+			v.Texto, v.Tex = formatarNumeroDecimais(v.Num, x.o.Decimais)
+			vals[k] = v
+		}
+	}
+	return vals, nil
+}
+
 // tex: o TeX dunha expresión (sen os $), ou erro se Maxima non o puido facer.
 func (x *xerador) tex(expr string, avaliar bool) (string, error) {
 	gardar := x.m.ProtectRaw
@@ -292,7 +307,7 @@ func (x *xerador) tex(expr string, avaliar bool) (string, error) {
 	if !strings.HasPrefix(s, "$") || !strings.HasSuffix(s, "$") {
 		return "", fmt.Errorf("Maxima non o puido calcular: %s", strings.TrimSpace(latexATexto(s)))
 	}
-	return strings.Trim(s, "$"), nil
+	return numerosTex(strings.Trim(s, "$")), nil
 }
 
 var numeroMaximaRe = regexp.MustCompile(`^-?[0-9]+(\.[0-9]+)?([eEbB][-+]?[0-9]+)?$`)
@@ -398,7 +413,7 @@ func resultadoAutomatico(f *ficha.Ficha) string {
 }
 
 func (x *xerador) markdownALatex(md string, vals map[string]Valor) (string, error) {
-	cx := &contextoMD{vals: vals, reg: x.reg, avisos: &x.avisos, imaxe: x.imaxe}
+	cx := &contextoMD{vals: vals, reg: x.reg, avisos: &x.avisos, imaxe: x.imaxe, decimais: x.o.Decimais}
 	if x.m != nil {
 		cx.maxima = x.tex
 		cx.plot = func(codigo string) (string, error) {

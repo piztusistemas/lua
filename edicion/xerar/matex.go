@@ -7,6 +7,7 @@ package xerar
 
 import (
 	"fmt"
+	"math"
 	"regexp"
 	"strconv"
 	"strings"
@@ -106,6 +107,14 @@ func liñaMaxima(c ficha.Campo, fixos map[string]Valor) string {
 		switch c.Xerador {
 		case ficha.XeradorRango:
 			min, max, paso := porDefecto(c.De, "1"), porDefecto(c.Ata, "10"), porDefecto(c.Paso, "1")
+			// Con números literais, en enteiros (ver rangoDecimal): o
+			// valor sae exacto e o extremo «ata» entra sempre.
+			if r, ok, err := lerRango(min, max, paso); ok && err == nil {
+				if r.decimais == 0 {
+					return fmt.Sprintf("%s: %d + %d*random(%d)$", nome, r.de, r.paso, r.pasos)
+				}
+				return fmt.Sprintf("%s: float((%d + %d*random(%d))/%s)$", nome, r.de, r.paso, r.pasos, strconv.FormatFloat(math.Pow10(r.decimais), 'f', 0, 64))
+			}
 			if paso == "1" {
 				n := fmt.Sprintf("((%s)-(%s)+1)", max, min)
 				if a, e1 := strconv.ParseFloat(min, 64); e1 == nil {

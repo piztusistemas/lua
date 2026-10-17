@@ -86,12 +86,14 @@ func TestCaracterizacionLatex(t *testing.T) {
 }
 
 // TestBabelLine: co galego de babel instalado, os documentos cárgano sen
-// atallos (shorthands=off). Sen el, babelLine non pon nada (ver latex.BabelLine).
+// atallos (shorthands=off) e co «.» das matemáticas arranxado. Sen el,
+// babelLine non pon nada (ver latex.BabelLine).
 func TestBabelLine(t *testing.T) {
 	if !kpsewhichFound("galician.ldf") {
 		t.Skip("sen galician.ldf (babel galego) neste equipo")
 	}
-	if got, want := babelLine(), "\\usepackage[galician,shorthands=off]{babel}\n"; got != want {
-		t.Errorf("babelLine() = %q, quero %q", got, want)
+	got := babelLine()
+	if want := "\\usepackage[galician,shorthands=off]{babel}\n"; !strings.HasPrefix(got, want) || !strings.Contains(got, "\\csname extrasgalician\\endcsname") {
+		t.Errorf("babelLine() = %q, quero %q co arranxo do punto", got, want)
 	}
 }

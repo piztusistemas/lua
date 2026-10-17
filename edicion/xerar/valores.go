@@ -67,15 +67,93 @@ func motorDe(c ficha.Campo, f *ficha.Ficha) string {
 
 // formatarNumero: coma decimal galega, sen ceros de máis.
 func formatarNumero(n float64) (texto, tex string) {
+	return formatarNumeroDecimais(n, 0)
+}
+
+// formatarNumeroDecimais: coma formatarNumero, redondeando a `decimais`
+// cifras se é > 0 (a opción «Decimais nos resultados»).
+func formatarNumeroDecimais(n float64, decimais int) (texto, tex string) {
+	if decimais > 0 {
+		p := math.Pow10(decimais)
+		n = math.Round(n*p) / p
+	}
 	if n == math.Trunc(n) && math.Abs(n) < 1e15 {
 		s := strconv.FormatFloat(n, 'f', 0, 64)
 		return s, s
 	}
-	s := strconv.FormatFloat(n, 'f', -1, 64)
+	s := strconv.FormatFloat(senRuidoFlotante(n), 'f', -1, 64)
 	if len(s) > 12 {
 		s = strings.TrimRight(strings.TrimRight(strconv.FormatFloat(n, 'f', 6, 64), "0"), ".")
 	}
 	return strings.Replace(s, ".", ",", 1), strings.Replace(s, ".", "{,}", 1)
+}
+
+// senRuidoFlotante quita o erro de representación binaria (0,1 + 0,2 =
+// 0,30000000000000004; 0,3 · 180 = 54,00000000000001) quedando con 12 cifras
+// significativas: abondan para calquera dato de aula e o ruído vai na 16.ª.
+func senRuidoFlotante(n float64) float64 {
+	r, err := strconv.ParseFloat(strconv.FormatFloat(n, 'g', 12, 64), 64)
+	if err != nil {
+		return n
+	}
+	return r
+}
+
+var numeroDecimalTexRe = regexp.MustCompile(`[0-9]+\.[0-9]+`)
+
+// numerosTex: os números decimais do TeX de Maxima, sen o ruído do coma
+// flotante (senRuidoFlotante), sen ceros de máis («80.0» -> «80») e con coma
+// decimal galega en TeX («3.56» -> «3{,}56»). Maxima escribe sempre punto.
+func numerosTex(s string) string {
+	return numeroDecimalTexRe.ReplaceAllStringFunc(s, func(m string) string {
+		n, err := strconv.ParseFloat(m, 64)
+		if err != nil {
+			return m
+		}
+		return strings.Replace(strconv.FormatFloat(senRuidoFlotante(n), 'f', -1, 64), ".", "{,}", 1)
+	})
+}
+
+// rangoDecimal é un rango [de, ata] con paso en enteiros escalados a 10^decimais,
+// para que os valores saian exactos: 0,1 + 2·0,1 en coma flotante dá
+// 0,30000000000000004, e (0,5 − 0,1)/0,1 = 3,9999999999999996 deixaba fóra
+// o extremo.
+type rangoDecimal struct {
+	de, paso, pasos int64
+	decimais        int
+}
+
+// lerRango le un rango con números literais («0,1» ou «0.1»); ok = false se
+// algún extremo non é un número (unha expresión de Maxima).
+func lerRango(de, ata, paso string) (r rangoDecimal, ok bool, err error) {
+	textos := []string{numeroMaxima(de), numeroMaxima(ata), numeroMaxima(paso)}
+	var nums [3]float64
+	for i, t := range textos {
+		n, e := strconv.ParseFloat(t, 64)
+		if e != nil || math.IsInf(n, 0) || math.IsNaN(n) {
+			return r, false, nil
+		}
+		nums[i] = n
+		if p := strings.IndexByte(t, '.'); p >= 0 && !strings.ContainsAny(t, "eE") {
+			r.decimais = max(r.decimais, len(t)-p-1)
+		}
+	}
+	if r.decimais > 9 {
+		return r, false, nil
+	}
+	escala := math.Pow10(r.decimais)
+	a, b := int64(math.Round(nums[0]*escala)), int64(math.Round(nums[1]*escala))
+	r.de, r.paso = a, int64(math.Round(nums[2]*escala))
+	if r.paso <= 0 || b < a {
+		return r, true, fmt.Errorf("rango baleiro (de %s ata %s, paso %s)", textos[0], textos[1], textos[2])
+	}
+	r.pasos = (b-a)/r.paso + 1
+	return r, true, nil
+}
+
+// valor é o k-ésimo valor do rango (desde 0).
+func (r rangoDecimal) valor(k int64) float64 {
+	return float64(r.de+r.paso*k) / math.Pow10(r.decimais)
 }
 
 func valorNumero(n float64) Valor {
@@ -233,6 +311,13 @@ func valoresGo(f *ficha.Ficha, rng *rand.Rand, bancos Bancos, datos map[string]a
 				}
 				vals[n] = valorTexto(c.Valores[rng.IntN(len(c.Valores))])
 			case ficha.XeradorRango:
+				if r, ok, err := lerRango(porDefecto(c.De, "1"), porDefecto(c.Ata, "10"), porDefecto(c.Paso, "1")); ok {
+					if err != nil {
+						return nil, fmt.Errorf("campo «%s»: %w", c.Nome, err)
+					}
+					vals[n] = valorNumero(r.valor(rng.Int64N(r.pasos)))
+					continue
+				}
 				a, err1 := numero(porDefecto(c.De, "1"))
 				b, err2 := numero(porDefecto(c.Ata, "10"))
 				p, err3 := numero(porDefecto(c.Paso, "1"))

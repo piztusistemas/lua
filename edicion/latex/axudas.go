@@ -41,14 +41,26 @@ func EngineUnicodeNativo(engine string) bool {
 // extra }", "Incomplete \iffalse"). Apagalos de raíz é máis seguro e non
 // perde nada visible. (A libraría tikz "babel", ver tikzBabelLine, xa
 // cubría o caso dos tikzpicture; isto cobre todo o demais.)
+//
+// Pero shorthands=off non chega ao modo matemático: galician.ldf segue
+// poñendo o «.» activo en matemáticas (\mathcode`\.="8000) e, sen atallos,
+// expándese a nada: $12.75$ saía «1275» no PDF. babelMatesFix devolve o
+// «.» ao código que o propio babel gardou (o da letra matemática que
+// houbese, tamén a de unicode-math) e o «<»/«>» a carácter normal, ao
+// empezar o documento e cada vez que se volve escoller o idioma.
 func BabelLine() string {
 	for _, lang := range []string{"galician", "spanish"} {
 		if KpsewhichFound(lang + ".ldf") {
-			return `\usepackage[` + lang + `,shorthands=off]{babel}` + "\n"
+			return `\usepackage[` + lang + `,shorthands=off]{babel}` + "\n" + fmt.Sprintf(babelMatesFix, lang)
 		}
 	}
 	return ""
 }
+
+const babelMatesFix = `\makeatletter
+\AtBeginDocument{\def\edicion@matesbabel{\@ifundefined{gl@period@code}{}{\mathcode` + "`" + `\.=\gl@period@code}\@ifundefined{es@period@math}{}{\mathcode` + "`" + `\.=\es@period@math\relax}\catcode` + "`" + `\<=12 \catcode` + "`" + `\>=12 }\edicion@matesbabel\expandafter\addto\csname extras%s\endcsname{\edicion@matesbabel}}
+\makeatother
+`
 
 func KpsewhichFound(file string) bool {
 	if !plataforma.CommandExists("kpsewhich") {

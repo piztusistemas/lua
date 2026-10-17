@@ -98,3 +98,4 @@ beta non compila en Debian 12.
 | Un adaptador común non compila noutra plataforma | Símbolo só definido nunha etiqueta de build | Dar tamén o caso baleiro nas outras (`edicion/doc.go`) |
 | O instalador de Windows deixa de pedir administrador | `wails3 task common:update:build-assets` reescribe `build/windows/wails.exe.manifest` con `asInvoker` | Volver poñer `requireAdministrator` (o ficheiro avisa) |
 | O instalador instala un Lúa vello | Compilouse con `task` directamente e `files/` quedou dunha compilación anterior | Usar sempre `make build`; `version_test.go` falla se a versión embebida non é a de `lua/lua/VERSION` |
+| No PDF desaparece o punto decimal das fórmulas (`$12.75$` → «1275») | babel-galician con `shorthands=off` deixa o «.» activo en modo matemático | `latex.BabelLine` restaura o «.» co código que gardou babel (2026-10-17) |
