@@ -25,9 +25,9 @@
         <key>CFBundleIdentifier</key>
         <string>gal.omeu.piztu.lua.dev</string>
         <key>CFBundleVersion</key>
-        <string>26.10.7</string>
+        <string>26.10.8</string>
         <key>CFBundleShortVersionString</key>
-        <string>26.10.7</string>
+        <string>26.10.8</string>
         <key>CFBundleGetInfoString</key>
         <string>Xerador de informes Lua (desenvolvemento)</string>
         <key>CFBundleIconFile</key>
