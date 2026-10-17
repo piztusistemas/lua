@@ -192,3 +192,16 @@ describe('referencias entre [corchetes]', () => {
     expect(r.valores.fila[0].c).toMatch(/PAU 2023/) // o que non se tocou si volve
   })
 })
+
+describe('semente dun documento novo', () => {
+  it('nace ao chou, gárdase co ficheiro e pódese fixar', () => {
+    const sementes = new Set(Array.from({ length: 20 }, () => novoPlanFormulario('x').xeracion.semente))
+    expect(sementes.size).toBeGreaterThan(1)
+    for (const s of sementes) expect(Number.isInteger(s) && s >= 1 && s <= 99999).toBe(true)
+    const plan = novoPlanFormulario('x')
+    const [lido] = lerFicheiroFormulario(escribirFicheiroFormulario(plan), 'x')
+    expect(lido.xeracion.semente).toBe(plan.xeracion.semente)
+    const fixado = { ...plan, xeracion: { semente: 7 } }
+    expect(lerFicheiroFormulario(escribirFicheiroFormulario(fixado), 'x')[0].xeracion.semente).toBe(7)
+  })
+})

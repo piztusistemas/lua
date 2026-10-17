@@ -662,5 +662,3 @@ body.inicio :is(#btnNew, #btnUndo, #btnRedo, #btnRun, #barraProblemas) { opacity
 .cat-pe .bib-pe__axuda { flex: 1 1 auto; }
 
 /* Marca «sempre» do botón Bóveda (spec traballos-boveda). */
-.boveda-sempre { display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.78rem; color: var(--text-muted); white-space: nowrap; }
-.boveda-sempre[hidden] { display: none; }

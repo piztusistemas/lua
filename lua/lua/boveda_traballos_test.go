@@ -101,33 +101,6 @@ func TestTraballoProduccionBloqueado(t *testing.T) {
 	if bovedaDoProxecto(p.ID) != "" {
 		t.Fatal("non se pode crear nada na bóveda")
 	}
-	if err := a.FixarBovedaAutomatica("form:"+f.ID, true); err == nil {
-		t.Fatal("a marca non se pode activar en produción")
-	}
-}
-
-func TestBovedaAutomaticaPorFormulario(t *testing.T) {
-	trasladarTemporal(t)
-	a := &App{}
-	p, _ := crearProxecto("P", "", nil)
-	_, _ = activarProxecto(p.ID)
-	f := formularioDeProba(t, "Ficha")
-	if a.BovedaAutomaticaDe("form:" + f.ID) {
-		t.Fatal("por defecto está desactivada")
-	}
-	if err := a.FixarBovedaAutomatica("form:"+f.ID, true); err != nil {
-		t.Fatal(err)
-	}
-	if !a.BovedaAutomaticaDe("form:" + f.ID) {
-		t.Fatal("tiña que quedar activada")
-	}
-	if err := a.FixarBovedaAutomatica("cronograma", true); err == nil {
-		t.Fatal("só os formularios teñen a marca")
-	}
-	_ = a.FixarBovedaAutomatica("form:"+f.ID, false)
-	if a.BovedaAutomaticaDe("form:" + f.ID) {
-		t.Fatal("tiña que quedar desactivada")
-	}
 }
 
 func TestTraballoCronograma(t *testing.T) {

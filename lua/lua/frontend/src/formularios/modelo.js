@@ -5,6 +5,8 @@
 //
 // Todo é inmutable: cada función devolve un obxecto novo.
 
+import { sementeAleatoria } from './problemas-modelo.js'
+
 // Orde da paleta do deseñador: primeiro a estrutura (sección, táboa), despois
 // os datos simples e ao final o cálculo (o campo «problemas»), destacado.
 export const TIPOS = ['seccion', 'taboa', 'texto', 'textolongo', 'numero', 'data', 'escolla', 'verificacion', 'imaxe', 'problemas']
@@ -113,8 +115,9 @@ export function problemasEsquema(e) {
 
 export const contextoBaleiro = () => ({ centro: '', localidade: '', curso: '', departamento: '', responsable: '', cargo: '', logo: '' })
 
+// Un documento novo nace cunha semente ao chou (a dos problemas).
 export function novoPlanFormulario(id, contexto = {}) {
-  return { formulario: id, contexto: { ...contextoBaleiro(), ...contexto }, valores: {} }
+  return { formulario: id, contexto: { ...contextoBaleiro(), ...contexto }, valores: {}, xeracion: { semente: sementeAleatoria() } }
 }
 
 const FERRAMENTA = 'formulario'

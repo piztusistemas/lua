@@ -246,8 +246,6 @@ export function createInformes({
         ? t('status.doneWarnings', 'Feito, con {n} avisos (ver o rexistro).', { n: r.warnings.length })
         : t('status.done', 'Feito.'))
       ultimoXerar = { ok: true, avisos: r.warnings || [], paxinas: (r.pageImages || []).length, erro: '' }
-      // Despois dun Xerar que saíu ben (p. ex. «engadir sempre á bóveda»).
-      ui.despoisDeXerar?.()
       return true
     } catch (err) {
       ui.setStatus(t('status.error', 'Erro'))

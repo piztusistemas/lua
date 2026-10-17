@@ -55,9 +55,6 @@ type Proxecto struct {
 	// BovedaDesconectada: o usuario desconectou a bóveda do proxecto do
 	// asistente. Por defecto, se o proxecto ten bóveda, o asistente úsaa.
 	BovedaDesconectada bool `json:"bovedaDesconectada,omitempty"`
-	// BovedaAutomatica: formularios que se engaden á bóveda en cada Xerar
-	// (boveda_traballos.go). Por defecto, ningún.
-	BovedaAutomatica []string `json:"bovedaAutomatica,omitempty"`
 	// Cor: a que escolleu o usuario para o proxecto (#rrggbb). Baleira = a de
 	// por defecto, que o frontend reparte entre os proxectos.
 	Cor string `json:"cor,omitempty"`

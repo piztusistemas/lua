@@ -320,3 +320,28 @@ func TestSolucionsSoResultado(t *testing.T) {
 		}
 	}
 }
+
+// Cada copia (iteración) leva por defecto a súa semente: semente, semente+1...
+// e, con ela, os seus valores.
+func TestVariantesSementesDistintas(t *testing.T) {
+	f, d := formularioExame()
+	ps := d.Valores["preguntas"].([]ProblemaFormulario)
+	ps[0].Variables[1].De, ps[0].Variables[1].Ata = "1", "1000000"
+	tx := novosTextosDoc(nil, map[string]string{})
+	m, _ := xerar.NovoMotor(xerar.Opcions{}, false, 0)
+	d.Xeracion = &XeracionProblemas{Semente: 4821, Variantes: 3}
+	bloques, _ := bloquesFormulario(f, d, tx)
+	out, _ := expandirProblemas(bloques, d.Xeracion, m, tx)
+	titulos, enunciados := map[string]bool{}, map[string]bool{}
+	for _, b := range out {
+		if b.Tipo == bloqueTitulo && b.Nivel == 2 {
+			titulos[b.Texto] = true
+		}
+		if b.Tipo == bloqueMarkdown && strings.Contains(b.Texto, "móbil") {
+			enunciados[b.Texto] = true
+		}
+	}
+	if len(titulos) != 3 || len(enunciados) != 3 {
+		t.Fatalf("as 3 copias deberían ser distintas: títulos %v, enunciados %v", titulos, enunciados)
+	}
+}

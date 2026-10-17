@@ -389,12 +389,4 @@ describe('bóveda', () => {
     expect(await inf.engadirABoveda('X', 'b')).toBe(null)
     expect(ui.showWarnings).toHaveBeenLastCalledWith(['está en PRODUCIÓN'])
   })
-
-  it('despois dun Xerar bo avisa (para «engadir sempre»)', async () => {
-    const despoisDeXerar = vi.fn()
-    const { inf } = novoContexto({}, { despoisDeXerar })
-    await inf.iniciar()
-    await inf.xerar()
-    expect(despoisDeXerar).toHaveBeenCalledTimes(1)
-  })
 })

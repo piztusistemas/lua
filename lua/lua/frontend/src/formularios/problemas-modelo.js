@@ -180,7 +180,13 @@ export const temSolucion = (p) => Boolean(p.solucion && (String(p.solucion.texto
 // haiProblemas: o esquema ten algún campo de problemas.
 export const haiProblemas = (esquema) => (esquema?.campos || []).some((c) => c.tipo === 'problemas')
 
+// sementeAleatoria: a semente dun documento novo, ao chou (1-99999). Gárdase
+// no documento, así que os valores non cambian ao reabrilo; quen queira outra
+// fíxaa na barra.
+export const sementeAleatoria = () => 1 + Math.floor(Math.random() * 99999)
+
 // xeracionDe: as opcións de xeración do documento (semente, copias, solucións).
+// Un documento sen semente gardada (dos de antes) segue coa 1.
 export function xeracionDe(plan) {
   const x = plan?.xeracion || {}
   return {
