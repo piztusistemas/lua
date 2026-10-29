@@ -10,7 +10,7 @@ info:
   description: "Xerador de informes para centros educativos (cronograma anual e actas, LaTeX)"
   copyright: "Copyright © Piztu"
   comments: "Xerador de informes Lua"
-  version: "26.10.8"
+  version: "26.10.9"
 
 dev_mode:
   root_path: .

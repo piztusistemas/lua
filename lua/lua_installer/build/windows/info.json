@@ -1,10 +1,10 @@
 {
 	"fixed": {
-		"file_version": "26.10.8"
+		"file_version": "26.10.9"
 	},
 	"info": {
 		"0000": {
-			"ProductVersion": "26.10.8",
+			"ProductVersion": "26.10.9",
 			"CompanyName": "Piztu",
 			"FileDescription": "Instalador de Lúa",
 			"LegalCopyright": "Copyright © Piztu",
