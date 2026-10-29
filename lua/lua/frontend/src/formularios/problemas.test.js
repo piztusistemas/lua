@@ -25,13 +25,19 @@ function montar(valores) {
     calculado: { enunciado: 'x', solucion: 'Forza $F = 99$', resultado: '', valores: {} },
     rexistro: ['Ronda 1: Maxima comprobou a solución en 5 semente(s) sen fallos.'],
   }))
+  const asistente = vi.fn(async ({ accion }) => ({
+    enunciado: accion === 'parecida' ? 'Un coche de {M} kg frea.' : 'Un corpo de masa {m} kg.',
+    variables: [{ nome: accion === 'parecida' ? 'M' : 'm', modo: 'variable', de: '1', ata: '9', paso: '1' }],
+    calculos: [], explicacion: 'Redacción máis clara.',
+    calculado: { enunciado: 'Un corpo de masa 5 kg.', valores: {} }, fallos: [],
+  }))
   const editor = createFormularioEditor(container, {
     onChange: (p) => { plan = p },
     obterEsquema: () => esquema,
-    problemas: { api: { CalcularProblemas: calcular, ResolverProblema: resolver, IAAsistenteEstado: async () => ({ configurada: true }) }, idioma: () => 'gl' },
+    problemas: { api: { CalcularProblemas: calcular, ResolverProblema: resolver, AsistentePregunta: asistente, IAAsistenteEstado: async () => ({ configurada: true }) }, idioma: () => 'gl' },
   })
   editor.setValue(plan)
-  return { container, editor, calcular, resolver, plan: () => plan }
+  return { container, editor, calcular, resolver, asistente, plan: () => plan }
 }
 
 describe('campo problemas', () => {
@@ -53,6 +59,105 @@ describe('campo problemas', () => {
     await agardar()
     expect(m.calcular).toHaveBeenLastCalledWith(expect.objectContaining({ semente: 3 }))
     expect(m.container.querySelector('[data-vista="enunciado:a"]').textContent).toContain('Masa 30 kg')
+  })
+
+  it('o botón do editor de fórmulas edita a fórmula onde está o cursor', async () => {
+    const m = montar({ preg: [{ id: 'a', enunciado: 'Forza $F = m\\,a$ final', variables: [] }] })
+    await agardar()
+    const area = m.container.querySelector('[data-foco="enunciado:a"]')
+    const boton = m.container.querySelector('[data-accion="formula"]')
+    expect(boton.textContent).toBe('Fórmula')
+    area.setSelectionRange(8, 8)
+    area.dispatchEvent(new Event('keyup'))
+    expect(boton.textContent).toBe('Editar fórmula')
+    area.setSelectionRange(2, 2)
+    area.dispatchEvent(new Event('click'))
+    expect(boton.textContent).toBe('Fórmula')
+  })
+
+  it('desancla unha pregunta a pantalla completa e volve á reixa', async () => {
+    const m = montar({ preg: [{ id: 'a', enunciado: 'Masa {m}', variables: [] }, { id: 'b', enunciado: 'Outra', variables: [] }] })
+    await agardar()
+    expect(m.container.querySelector('.prob-solta')).toBeNull()
+    m.container.querySelector('[data-prob="b"] [data-accion="desanclar"]').click()
+    const panel = m.container.querySelector('.prob-solta')
+    expect(panel).not.toBeNull()
+    expect(panel.querySelector('[data-prob="b"]')).not.toBeNull()
+    expect(panel.querySelector('[data-sol="b"]')).not.toBeNull()
+    expect(panel.querySelector('[data-prob="a"]')).toBeNull()
+    expect(document.activeElement).toBe(panel.querySelector('[data-foco="enunciado:b"]'))
+    // Segue desanclada aínda que se repinte o formulario.
+    m.editor.setValue(m.plan())
+    await agardar(50)
+    expect(m.container.querySelector('.prob-solta [data-prob="b"]')).not.toBeNull()
+    // Esc volve á reixa.
+    m.container.querySelector('[data-foco="enunciado:b"]').dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
+    expect(m.container.querySelector('.prob-solta')).toBeNull()
+    // E tamén o botón «Anclar».
+    m.container.querySelector('[data-prob="a"] [data-accion="desanclar"]').click()
+    m.container.querySelector('.prob-solta [data-accion="desanclar"]').click()
+    expect(m.container.querySelector('.prob-solta')).toBeNull()
+  })
+
+  it('a pregunta desanclada cobre só o panel de edición (a barra e o documento quedan á vista)', async () => {
+    const m = montar({ preg: [{ id: 'a', enunciado: 'Masa {m}', variables: [] }] })
+    const pane = document.createElement('div')
+    pane.className = 'pane pane-editor'
+    pane.getBoundingClientRect = () => ({ top: 60, left: 70, width: 500, height: 640, right: 570, bottom: 700 })
+    document.body.append(pane)
+    pane.append(m.container)
+    await agardar()
+    m.container.querySelector('[data-prob="a"] [data-accion="desanclar"]').click()
+    await agardar(50)
+    const panel = m.container.querySelector('.prob-solta')
+    expect(panel.style.top).toBe('60px')
+    expect(panel.style.left).toBe('70px')
+    expect(panel.style.width).toBe('500px')
+    expect(panel.style.height).toBe('640px')
+  })
+
+  it('o asistente da pregunta desanclada propón e só cambia ao aceptar', async () => {
+    const m = montar({ preg: [{ id: 'a', enunciado: 'Un corpo de 5 kg.', puntos: '2', variables: [] }] })
+    await agardar()
+    // Só na pregunta desanclada.
+    expect(m.container.querySelector('[data-accion="asistente-pregunta"]')).toBeNull()
+    m.container.querySelector('[data-accion="desanclar"]').click()
+    m.container.querySelector('[data-accion="asistente-pregunta"]').click()
+    m.container.querySelector('[data-asis="mellorar"]').click()
+    expect(m.container.querySelector('.prob-asis__ocupado')).not.toBeNull()
+    await agardar(50)
+    expect(m.asistente).toHaveBeenCalledWith(expect.objectContaining({ accion: 'mellorar', problema: expect.objectContaining({ enunciado: 'Un corpo de 5 kg.' }) }))
+    const proposta = m.container.querySelector('.prob-asis__proposta')
+    expect(proposta.textContent).toContain('Un corpo de masa 5 kg.')
+    expect(proposta.textContent).toContain('Redacción máis clara.')
+    // Mentres non se acepta, a pregunta non cambia.
+    expect(m.plan().valores.preg[0].enunciado).toBe('Un corpo de 5 kg.')
+    proposta.querySelector('[data-accion="asis-aceptar"]').click()
+    expect(m.plan().valores.preg[0]).toMatchObject({ enunciado: 'Un corpo de masa {m} kg.', puntos: '2', variables: [{ nome: 'm', modo: 'variable' }] })
+    expect(m.container.querySelector('.prob-asis__proposta')).toBeNull()
+  })
+
+  it('«Crear unha parecida» engade unha pregunta nova despois; descartar e cancelar non cambian nada', async () => {
+    const m = montar({ preg: [{ id: 'a', enunciado: 'Un corpo de 5 kg.', variables: [] }, { id: 'b', enunciado: 'Outra', variables: [] }] })
+    await agardar()
+    m.container.querySelector('[data-prob="a"] [data-accion="desanclar"]').click()
+    m.container.querySelector('[data-accion="asistente-pregunta"]').click()
+    m.container.querySelector('[data-asis="parecida"]').click()
+    await agardar(50)
+    m.container.querySelector('[data-accion="asis-aceptar"]').click()
+    const lista = m.plan().valores.preg
+    expect(lista.map((p) => p.enunciado)).toEqual(['Un corpo de 5 kg.', 'Un coche de {M} kg frea.', 'Outra'])
+    // Descartar.
+    m.container.querySelector('[data-asis="mellorar"]').click()
+    await agardar(50)
+    m.container.querySelector('[data-accion="asis-descartar"]').click()
+    expect(m.container.querySelector('.prob-asis__proposta')).toBeNull()
+    // Cancelar: a resposta que chega despois ignórase.
+    m.container.querySelector('[data-asis="mellorar"]').click()
+    m.container.querySelector('[data-accion="asis-cancelar"]').click()
+    await agardar(50)
+    expect(m.container.querySelector('.prob-asis__proposta')).toBeNull()
+    expect(m.plan().valores.preg).toHaveLength(3)
   })
 
   it('declara as variables novas que se escriben no enunciado', async () => {

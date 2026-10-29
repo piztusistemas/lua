@@ -678,6 +678,7 @@ func latexInformeCrono(p PlanCrono, engine string, tip *TipografiaOpts, dir stri
 		}
 	}
 	b.WriteString(babelListquotFix)
+	b.WriteString(formulasDefLatexPorDefecto)
 	b.WriteString(dd.Corpo)
 	b.WriteString("\\renewcommand{\\contentsname}{" + tx.L("INDICE") + "}\n")
 

@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest'
-import { htmlMates } from './mates-vista.js'
+import { describe, it, expect, afterEach } from 'vitest'
+import { htmlMates, configurarFormulas, normalizarEscalaFormulas } from './mates-vista.js'
 
 describe('htmlMates', () => {
   it('compón as fórmulas e o Markdown', () => {
@@ -23,5 +23,39 @@ describe('htmlMates', () => {
     expect(h).toContain('<img src="data:image/svg+xml;base64,AAA" style="width:120px"')
     expect(h).toContain('Fin')
     expect(htmlMates(md, { 'circuitikz\n\\draw (0,0) to[R] (2,0);': { erro: 'Undefined control sequence' } })).toContain('erro de TikZ')
+  })
+})
+
+describe('opcións das fórmulas (Opcións → Fórmulas nos documentos)', () => {
+  afterEach(() => configurarFormulas({}))
+
+  it('por defecto, as fórmulas coma sempre', () => {
+    const h = htmlMates('Divide $\\frac{a}{b}$')
+    expect(h).not.toContain('font-size')
+    expect(h).toContain('mfrac')
+  })
+
+  it('a tamaño completo, as fórmulas en liña van en displaystyle', () => {
+    const compacta = htmlMates('$\\frac{a}{b}$')
+    configurarFormulas({ formulasEstilo: 'grandes' })
+    const grande = htmlMates('$\\frac{a}{b}$')
+    expect(grande).not.toBe(compacta)
+    expect(grande).not.toContain('font-size')
+  })
+
+  it('a escala agranda só as fórmulas', () => {
+    configurarFormulas({ formulasEscala: 130 })
+    const h = htmlMates('Texto $x$')
+    expect(h).toContain('font-size:130%')
+    expect(h.startsWith('<p>Texto ')).toBe(true)
+  })
+
+  it('as opcións pódense pasar para unha mostra sen cambiar as globais', () => {
+    expect(htmlMates('$x$', null, { formulasEscala: 150 })).toContain('font-size:150%')
+    expect(htmlMates('$x$')).not.toContain('font-size')
+  })
+
+  it('normaliza a escala', () => {
+    expect([0, 95, 120, 124, 126, 300, 'x'].map(normalizarEscalaFormulas)).toEqual([100, 100, 120, 120, 130, 150, 100])
   })
 })

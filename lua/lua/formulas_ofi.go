@@ -62,23 +62,16 @@ func formulasDeBloques(bloques []bloqueDoc) []cronoTramo {
 // compoñerFormulas compila as fórmulas e devolve as imaxes. Se non hai
 // LaTeX ou pdftoppm, devolve o erro (o chamador avisa e escribe o TeX coma
 // texto); unha fórmula con erro tamén vai coma texto.
-func compoñerFormulas(tramos []cronoTramo, tamanoPt float64) (*formulasOfi, error) {
+func compoñerFormulas(tramos []cronoTramo, tamanoPt float64, op opcionsFormulas) (*formulasOfi, error) {
 	out := &formulasOfi{porClave: map[string]formulaOfi{}, escala: 1}
 	if tamanoPt > 0 {
 		out.escala = tamanoPt / 10
 	}
+	out.escala *= float64(op.normalizar().Escala) / 100
 	if len(tramos) == 0 {
 		return out, nil
 	}
-	pezas := make([]string, len(tramos))
-	for i, t := range tramos {
-		if t.Display {
-			pezas[i] = "$\\displaystyle " + t.Math + "$"
-		} else {
-			pezas[i] = "$" + t.Math + "$"
-		}
-	}
-	recortes, err := compilarRecortes(pezas, ppFormula)
+	recortes, err := compilarRecortes(pezasFormulas(tramos, op), ppFormula)
 	if err != nil {
 		return out, fmt.Errorf("para pór as fórmulas en Word e OpenDocument %v", err)
 	}
@@ -94,6 +87,20 @@ func compoñerFormulas(tramos []cronoTramo, tamanoPt float64) (*formulasOfi, err
 		return out, fmt.Errorf("%d fórmula(s) teñen un erro de LaTeX", mal)
 	}
 	return out, nil
+}
+
+// pezasFormulas: o LaTeX de cada fórmula para compilala soa. As centradas, e
+// todas se nas Opcións son «a tamaño completo», van con \displaystyle.
+func pezasFormulas(tramos []cronoTramo, op opcionsFormulas) []string {
+	pezas := make([]string, len(tramos))
+	for i, t := range tramos {
+		if t.Display || op.Grandes {
+			pezas[i] = "$\\displaystyle " + t.Math + "$"
+		} else {
+			pezas[i] = "$" + t.Math + "$"
+		}
+	}
+	return pezas
 }
 
 // engadirDebuxos compila os debuxos dos bloques (a 300 ppp). Devolve o

@@ -173,6 +173,7 @@ func latexFormulario(p PedidoFormulario, engine string, tip *TipografiaOpts, dir
 	}
 	var b strings.Builder
 	b.WriteString(babelListquotFix)
+	b.WriteString(p.formulas.latex())
 	b.WriteString(dd.Corpo)
 	// Sen título automático: o corpo é só o que ten o formulario. O título vai
 	// na plantilla (portada, cabeceira: {{TITULO}}) ou nun campo do formulario.

@@ -14,12 +14,31 @@ const escapar = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').re
 const MATES = /\$\$([\s\S]+?)\$\$|\\\[([\s\S]+?)\\\]|\\\(([\s\S]+?)\\\)|\$([^\s$](?:[^$\n]*?[^\s$])?|\s[^$\n]*?[\\{}^_=][^$\n]*?|[^$\n]*?[\\{}^_=][^$\n]*?\s)\$(?!\d)/g
 // (Con espazos nas beiras, $ {m} $, só se leva algo de LaTeX: «5$ ou 6$» é texto, coma en Go.)
 
-function formula(tex, display) {
+// Opcións → «Fórmulas nos documentos» (formulas_estilo.go): estilo
+// (compactas ou grandes = \displaystyle tamén en liña) e tamaño respecto ao
+// texto (100–150 %). A vista faino igual ca o documento.
+export function normalizarEscalaFormulas(v) {
+  const n = Math.round((parseInt(v, 10) || 0) / 10) * 10
+  return Math.max(100, Math.min(150, n))
+}
+const lerOpcions = (o) => ({ grandes: o?.formulasEstilo === 'grandes', escala: normalizarEscalaFormulas(o?.formulasEscala) })
+let opcionsFormulas = lerOpcions({})
+
+// configurarFormulas recibe as Opcións ({formulasEstilo, formulasEscala}).
+export function configurarFormulas(o) {
+  opcionsFormulas = lerOpcions(o)
+}
+
+function formula(tex, display, op = opcionsFormulas) {
+  let html
   try {
-    return katex.renderToString(tex, { displayMode: display, throwOnError: false, strict: 'ignore', output: 'html' })
+    const t = op.grandes && !display ? '\\displaystyle ' + tex : tex
+    html = katex.renderToString(t, { displayMode: display, throwOnError: false, strict: 'ignore', output: 'html' })
   } catch (err) {
     return `<code class="mates-erro" title="${escapar(err?.message || err)}">${escapar(tex)}</code>`
   }
+  if (op.escala === 100) return html
+  return display ? `<div style="font-size:${op.escala}%">${html}</div>` : `<span style="font-size:${op.escala}%">${html}</span>`
 }
 
 function enLiña(s) {
@@ -41,12 +60,15 @@ function debuxo(tipo, codigo, debuxos) {
   return '<div class="mates-debuxo mates-debuxo--pendente">Debuxando…</div>'
 }
 
-export function htmlMates(md, debuxos = null) {
+// opcions (opcional): {formulasEstilo, formulasEscala} só para esta chamada
+// (a mostra de Opcións); se non, as de configurarFormulas.
+export function htmlMates(md, debuxos = null, opcions = null) {
+  const op = opcions ? lerOpcions(opcions) : opcionsFormulas
   const formulas = []
   const marca = (html) => { formulas.push(html); return `\u0000${formulas.length - 1}\u0000` }
   let s = String(md ?? '').replace(DEBUXO, (_m, tipo, codigo) => `\n\n${marca(debuxo(tipo, codigo, debuxos))}\n\n`)
   s = s.replace(/\\\$/g, '\u0001')
-  s = s.replace(MATES, (_m, d1, d2, i1, i2) => (d1 ?? d2) !== undefined ? marca(formula((d1 ?? d2).trim(), true)) : marca(formula((i1 ?? i2).trim(), false)))
+  s = s.replace(MATES, (_m, d1, d2, i1, i2) => (d1 ?? d2) !== undefined ? marca(formula((d1 ?? d2).trim(), true, op)) : marca(formula((i1 ?? i2).trim(), false, op)))
   const html = []
   let lista = null
   const pecharLista = () => { if (lista) { html.push(`</${lista}>`); lista = null } }

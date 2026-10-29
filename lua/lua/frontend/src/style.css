@@ -1844,3 +1844,11 @@ body.xerando #status { display: none; }
 @font-face { font-family: "Lua Heros"; src: url("./assets/fontes/texgyreheros-regular.otf") format("opentype"); font-display: swap; }
 @font-face { font-family: "Lua Fira"; src: url("./assets/fontes/FiraSans-Regular.otf") format("opentype"); font-display: swap; }
 @font-face { font-family: "Lua Libertinus"; src: url("./assets/fontes/LibertinusSerif-Regular.otf") format("opentype"); font-display: swap; }
+
+/* Mostra das fórmulas en Opcións (Fórmulas nos documentos). */
+.formulas-mostra {
+    padding: 0.6rem 0.8rem; border: 1px solid var(--border-color); border-radius: var(--radius-sm);
+    background: var(--panel-bg); color: var(--text-dark); font-size: 0.9rem; line-height: 1.5;
+}
+.formulas-mostra p { margin: 0 0 0.3rem; }
+.formulas-mostra .katex-display { margin: 0.3rem 0; }

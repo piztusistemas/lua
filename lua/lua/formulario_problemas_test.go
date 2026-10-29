@@ -45,7 +45,8 @@ func TestParseMathCrono(t *testing.T) {
 		t.Fatalf("%+v", bs)
 	}
 	l := latexBloquesCrono(bs, nil, nil)
-	if !strings.Contains(l, `\[a + b`) || strings.Contains(l, `\$`) {
+	// As fórmulas van coma macros (formulas_estilo.go): \luaformulacentrada é \[…\] por defecto.
+	if !strings.Contains(l, `\luaformulacentrada{a + b`) || strings.Contains(l, `\$`) {
 		t.Fatalf("LaTeX: %s", l)
 	}
 	if md := mdBloquesCrono(parseMarkdownCrono("Sexa $x_1^2$."), nil, nil, 2); !strings.Contains(md, "$x_1^2$") {
@@ -83,9 +84,13 @@ func TestExpandirProblemas(t *testing.T) {
 		case bloqueSolucion:
 			solucions++
 		case bloqueMarkdown:
+			if strings.Contains(b.Texto, "Pregunta sen solución") && !strings.HasPrefix(b.Texto, "Pregunta sen solución") {
+				t.Errorf("sen puntos, o enunciado vai só: %q", b.Texto)
+			}
 			if strings.Contains(b.Texto, "móbil") {
 				enunciados++
-				if !strings.HasPrefix(b.Texto, "**1.** *(2 pt)*") || strings.Contains(b.Texto, "{d}") {
+				// Sen número de pregunta: quen o queira escríbeo no enunciado.
+				if !strings.HasPrefix(b.Texto, "*(2 pt)* Un móbil") || strings.Contains(b.Texto, "{d}") {
 					t.Errorf("enunciado: %q", b.Texto)
 				}
 			}

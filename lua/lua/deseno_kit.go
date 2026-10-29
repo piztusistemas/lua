@@ -132,7 +132,7 @@ func (a *App) ComprobarElementoDeseno(d Deseno, id, latexPropio string) (string,
 	if engineUnicodeNativo(motor) {
 		_ = escribirFontesInformeCrono(dir, dd.Fontes)
 	}
-	tex := preambuloDeseno(motor, dd, "") + "\\begin{document}\n" + babelListquotFix + uso + "\n\\end{document}\n"
+	tex := preambuloDeseno(motor, dd, "") + "\\begin{document}\n" + babelListquotFix + formulasDefLatexPorDefecto + uso + "\n\\end{document}\n"
 	if _, log, err := compilarLatexCrono(dir, tex, motor); err != nil {
 		if pista := pistaLatexAccionable(log); pista != "" {
 			return pista, nil

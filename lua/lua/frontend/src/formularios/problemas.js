@@ -16,6 +16,8 @@
 import { el } from '../informes/dom.js'
 import { normalizarImaxe } from '../informes/tarefa-editor.js'
 import { htmlMates } from './mates-vista.js'
+import { abrirEditorFormulas } from './editor-formulas.js'
+import { formulasDe, formulaEn, envolver, substituir } from './formulas-modelo.js'
 import {
   MODO_FIXA, MODO_VARIABLE, novoProblema, problemasDe, numerosAVariables, cambiarModo,
   variablesUsadas, nomesDeclarados, solucionDesactualizada, temSolucion,
@@ -31,6 +33,9 @@ const ICONAS = {
   dado: SVG('<rect x="3.5" y="3.5" width="13" height="13" rx="2.5"/><circle cx="7.3" cy="7.3" r=".9" fill="currentColor"/><circle cx="12.7" cy="12.7" r=".9" fill="currentColor"/><circle cx="10" cy="10" r=".9" fill="currentColor"/>'),
   maxima: SVG('<path d="M4 15.5 7.5 4.5l3 7 2-4 3.5 8"/>'),
   ia: SVG('<path d="M10 2.8 11.6 7.4 16.2 9 11.6 10.6 10 15.2 8.4 10.6 3.8 9 8.4 7.4z"/><path d="M15.5 13.5l.6 1.6 1.6.6-1.6.6-.6 1.6-.6-1.6-1.6-.6 1.6-.6z"/>'),
+  formula: SVG('<path d="M3.5 11h2l2 4.5 3.5-11h6"/><path d="m12 9.5 4 4M16 9.5l-4 4"/>'),
+  desanclar: SVG('<path d="M11.5 3.5h5v5"/><path d="m16.5 3.5-6 6"/><path d="M8.5 3.5h-4a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4"/>'),
+  anclar: SVG('<path d="M9.5 10.5h-5v-5"/><path d="m4.5 10.5 6-6"/><path d="M11.5 3.5h4a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1v-4"/>'),
   man: SVG('<path d="M4 16 14.5 5.5a1.4 1.4 0 0 1 2 2L6 18l-3 1z"/>'),
 }
 
@@ -69,8 +74,22 @@ export function crearControlProblemas({ t, campo, valor, estado, aoCambiar, acci
   const reixa = el('div', { class: 'prob-reixa' },
     el('div', { class: 'prob-col-cab', text: t('problemas.preguntas', 'Preguntas') }),
     el('div', { class: 'prob-col-cab prob-col-cab--sol', text: t('problemas.solucions', 'Solucións') }))
-  lista.forEach((p, i) => reixa.append(pregunta(p, i), solucion(p, i)))
+  // Unha pregunta desanclada (estado.solta) vai cos seus dous cadros nun
+  // panel que cobre o panel de edición, para escribir con espazo; a barra
+  // (Asistente, Xerar) e o documento xerado seguen á vista. Esc ou «Anclar»
+  // devólvena á reixa.
+  if (estado.solta && !lista.some((p) => p.id === estado.solta)) estado.solta = null
+  let panelSolto = null
+  lista.forEach((p, i) => {
+    if (p.id !== estado.solta) { reixa.append(pregunta(p, i), solucion(p, i)); return }
+    panelSolto = el('div', { class: 'prob-solta', role: 'dialog', 'aria-modal': 'true', 'aria-label': t('problemas.pregunta', 'Pregunta {n}', { n: i + 1 }) },
+      pregunta(p, i), solucion(p, i))
+    panelSolto.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !e.defaultPrevented) { e.preventDefault(); alternarSolta(p.id) }
+    })
+  })
   marco.append(reixa)
+  if (panelSolto) { marco.append(panelSolto); requestAnimationFrame(() => encaixarNoEditor(panelSolto)) }
   if (!lista.length) marco.append(el('p', { class: 'form-taboa__baleira', text: t('problemas.baleiro', 'Aínda non hai preguntas.') }))
   marco.append(el('div', { class: 'prob-pe' },
     el('button', {
@@ -83,6 +102,7 @@ export function crearControlProblemas({ t, campo, valor, estado, aoCambiar, acci
   // ---------- Pregunta ----------
   function pregunta(p, i) {
     const calc = estado.calc.get(p.id)
+    const solta = estado.solta === p.id
     const caixa = el('div', { class: 'prob-preg', 'data-prob': p.id })
     const puntos = el('input', { type: 'text', inputmode: 'decimal', class: 'form-entrada prob-puntos', value: p.puntos || '', 'aria-label': t('problemas.puntos', 'Puntos'), placeholder: t('problemas.puntos', 'Puntos') })
     puntos.addEventListener('input', () => mudarUn(p.id, (x) => ({ ...x, puntos: puntos.value }), 'texto'))
@@ -91,9 +111,24 @@ export function crearControlProblemas({ t, campo, valor, estado, aoCambiar, acci
       el('strong', { text: t('problemas.pregunta', 'Pregunta {n}', { n: i + 1 }) }),
       el('label', { class: 'prob-puntos__lbl' }, el('span', { text: t('problemas.puntos', 'Puntos') }), puntos),
       el('span', { class: 'prob-espazo' }),
+      solta && el('button', {
+        type: 'button', class: 'crono-btn crono-btn--pequeno prob-btn-asis', 'data-accion': 'asistente-pregunta', 'aria-pressed': String(!!estado.asistente?.get(p.id)?.aberto),
+        disabled: !estado.iaDispoñible,
+        title: estado.iaDispoñible ? t('problemas.asis.title', 'Asistente da pregunta: mellora a redacción e as fórmulas, pasa os datos a variables ou crea unha pregunta parecida') : t('problemas.semIA', 'Configura un provedor de IA en Opcións para resolver con IA'),
+        html: ICONAS.ia + `<span>${t('problemas.asis', 'Asistente')}</span>`,
+        onclick: () => { const st = estadoAsis(p.id); st.aberto = !st.aberto; repintar() },
+      }),
+      el('button', {
+        type: 'button', class: 'crono-btn crono-btn--pequeno prob-btn-solta', 'data-accion': 'desanclar',
+        title: solta ? t('problemas.anclar.title', 'Volver a pregunta á súa fila (Esc)') : t('problemas.desanclar.title', 'Editar esta pregunta e a súa solución a pantalla completa'),
+        html: (solta ? ICONAS.anclar : ICONAS.desanclar) + `<span>${solta ? t('problemas.anclar', 'Anclar') : t('problemas.desanclar', 'Desanclar')}</span>`,
+        onclick: () => alternarSolta(p.id),
+      }),
       botonIcona(ICONAS.arriba, t('problemas.subir', 'Subir'), () => mover(i, -1), i === 0),
       botonIcona(ICONAS.abaixo, t('problemas.baixar', 'Baixar'), () => mover(i, 1), i === lista.length - 1),
       botonIcona(ICONAS.lixo, t('problemas.quitar', 'Quitar a pregunta'), () => mudar(lista.filter((x) => x.id !== p.id)))))
+
+    if (solta && estado.asistente?.get(p.id)?.aberto) caixa.append(asistentePregunta(p))
 
     const texto = el('textarea', {
       class: 'form-entrada form-entrada--longa prob-enunciado', rows: '4', spellcheck: 'true', 'data-foco': 'enunciado:' + p.id,
@@ -102,8 +137,35 @@ export function crearControlProblemas({ t, campo, valor, estado, aoCambiar, acci
     })
     texto.value = p.enunciado || ''
     texto.addEventListener('input', () => mudarUn(p.id, (x) => ({ ...x, enunciado: texto.value }), 'texto'))
+
+    // Editor visual de fórmulas: o botón (ou Ctrl+M) edita a fórmula onde
+    // está o cursor ou mete unha nova; tamén se abre cun clic na vista.
+    const btnFormula = el('button', {
+      type: 'button', class: 'crono-btn crono-btn--pequeno prob-btn-formula', 'data-accion': 'formula', html: ICONAS.formula + '<span></span>',
+      title: t('formulas.boton.title', 'Escribe a fórmula de forma visual, coma no papel (Ctrl+M)'),
+      onmousedown: (e) => e.preventDefault(), // o cursor do texto non se perde
+      onclick: () => editarFormula(texto, p.id),
+    })
+    const rotularBoton = () => {
+      btnFormula.lastChild.textContent = formulaEn(texto.value, texto.selectionStart) ? t('formulas.editar', 'Editar fórmula') : t('formulas.inserir', 'Fórmula')
+    }
+    rotularBoton()
+    for (const ev of ['keyup', 'click', 'input', 'focus']) texto.addEventListener(ev, rotularBoton)
+    texto.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && !e.shiftKey && !e.altKey && e.key.toLowerCase() === 'm') { e.preventDefault(); editarFormula(texto, p.id) }
+    })
+    caixa.append(el('div', { class: 'prob-ferr' }, btnFormula,
+      el('small', { class: 'prob-ferr__axuda', text: t('formulas.boton.axuda', 'ou fai clic nunha fórmula da vista para cambiala') })))
     caixa.append(texto)
-    caixa.append(el('div', { class: 'prob-vista', 'data-vista': 'enunciado:' + p.id, 'aria-live': 'polite', html: vistaEnunciado(p, calc) }))
+    const vista = el('div', { class: 'prob-vista prob-vista--editable', 'data-vista': 'enunciado:' + p.id, 'aria-live': 'polite', html: vistaEnunciado(p, calc) })
+    vista.addEventListener('click', (e) => {
+      const k = e.target.closest?.('.katex')
+      if (!k || !vista.contains(k)) return
+      const todas = [...vista.querySelectorAll('.katex')].filter((x) => !x.parentElement.closest('.katex'))
+      const f = formulasDe(texto.value)[todas.indexOf(k)]
+      if (f) editarFormula(texto, p.id, f)
+    })
+    caixa.append(vista)
     if (p.imaxe) {
       caixa.append(el('div', { class: 'prob-imaxe' },
         el('img', { src: p.imaxe, alt: t('problemas.imaxe', 'Imaxe da pregunta {n}', { n: i + 1 }) }),
@@ -133,6 +195,127 @@ export function crearControlProblemas({ t, campo, valor, estado, aoCambiar, acci
       }),
       ficheiro))
     return caixa
+  }
+
+  // alternarSolta desancla a pregunta id (ou ánclaa se xa o está) e leva o
+  // foco ao seu enunciado.
+  function alternarSolta(id) {
+    estado.solta = estado.solta === id ? null : id
+    estado.enfocar = id
+    repintar()
+  }
+
+  // repintar: só cambia a vista (o plan non); sen accions.repintar, coma antes.
+  function repintar() {
+    if (accions.repintar) accions.repintar()
+    else mudar(lista)
+  }
+
+  // ---------- Asistente da pregunta (problemas_asistente.go) ----------
+  // A IA propón e o docente decide: nada cambia ata «Aceptar». O estado
+  // (aberto, ocupado, proposta...) vive en estado.asistente para sobrevivir
+  // aos repintados.
+  function estadoAsis(id) {
+    if (!estado.asistente) estado.asistente = new Map()
+    if (!estado.asistente.has(id)) estado.asistente.set(id, { aberto: false, ocupado: false, erro: '', proposta: null, accion: '', instrucions: '', peticion: 0 })
+    return estado.asistente.get(id)
+  }
+
+  async function pedirAsistente(id, accion) {
+    const st = estadoAsis(id)
+    const n = ++st.peticion
+    Object.assign(st, { ocupado: true, erro: '', proposta: null, accion })
+    repintar()
+    try {
+      const r = await accions.asistentePregunta(id, { accion, instrucions: st.instrucions })
+      if (st.peticion !== n) return // cancelouse ou pediuse outra
+      st.proposta = r
+    } catch (err) {
+      if (st.peticion !== n) return
+      st.erro = String(err?.message || err)
+    }
+    st.ocupado = false
+    repintar()
+  }
+
+  function aceptarProposta(p) {
+    const st = estadoAsis(p.id)
+    const r = st.proposta
+    if (!r) return
+    const datos = { enunciado: r.enunciado, variables: r.variables || [], calculos: r.calculos || [] }
+    st.proposta = null
+    if (st.accion === 'parecida') {
+      const nova = { ...novoProblema(), ...datos, puntos: p.puntos || '' }
+      const i = lista.findIndex((x) => x.id === p.id)
+      mudar([...lista.slice(0, i + 1), nova, ...lista.slice(i + 1)])
+    } else {
+      mudarUn(p.id, (x) => ({ ...x, ...datos }))
+    }
+  }
+
+  function asistentePregunta(p) {
+    const st = estadoAsis(p.id)
+    const caixa = el('div', { class: 'prob-asis', role: 'region', 'aria-label': t('problemas.asis.titulo', 'Asistente da pregunta') })
+    const accionsRapidas = [
+      ['mellorar', t('problemas.asis.mellorar', 'Mellorar a redacción')],
+      ['variables', t('problemas.asis.variables', 'Números → variables')],
+      ['formulas', t('problemas.asis.formulas', 'Revisar as fórmulas')],
+      ['parecida', t('problemas.asis.parecida', 'Crear unha parecida')],
+    ]
+    caixa.append(el('div', { class: 'prob-asis__accions' }, ...accionsRapidas.map(([id, nome]) => el('button', {
+      type: 'button', class: 'prob-asis__chip', 'data-asis': id, text: nome, disabled: st.ocupado,
+      onclick: () => pedirAsistente(p.id, id),
+    }))))
+    const instr = el('input', {
+      type: 'text', class: 'form-entrada prob-asis__instr', value: st.instrucions, disabled: st.ocupado,
+      placeholder: t('problemas.asis.ph', 'Ou pídelle outra cousa: «faina máis difícil, con rozamento»…'),
+      'aria-label': t('problemas.asis.instr', 'Indicacións para o asistente'),
+    })
+    instr.addEventListener('input', () => { st.instrucions = instr.value })
+    instr.addEventListener('keydown', (e) => { if (e.key === 'Enter' && instr.value.trim()) { e.preventDefault(); pedirAsistente(p.id, 'libre') } })
+    caixa.append(el('div', { class: 'prob-asis__fila' }, instr,
+      el('button', { type: 'button', class: 'crono-btn crono-btn--pequeno', 'data-asis': 'libre', disabled: st.ocupado, text: t('problemas.asis.pedir', 'Pedir'), onclick: () => { if (instr.value.trim()) pedirAsistente(p.id, 'libre') } })))
+    if (st.ocupado) {
+      caixa.append(el('div', { class: 'prob-asis__ocupado', role: 'status' },
+        el('span', { text: t('problemas.asis.ocupado', 'A IA está a preparar a proposta e Lúa a comprobala…') }),
+        el('button', { type: 'button', class: 'crono-btn crono-btn--pequeno', 'data-accion': 'asis-cancelar', text: t('problemas.asis.cancelar', 'Cancelar'), onclick: () => { st.peticion++; st.ocupado = false; repintar() } })))
+    }
+    if (st.erro) caixa.append(el('p', { class: 'prob-erro', role: 'alert', text: st.erro }))
+    const r = st.proposta
+    if (r) {
+      const vars = (r.variables || []).map((v) => (v.modo === MODO_VARIABLE ? `${v.nome}: ${v.de}–${v.ata}` : `${v.nome} = ${v.valor}`))
+      caixa.append(el('div', { class: 'prob-asis__proposta' },
+        el('div', { class: 'prob-asis__tit', text: st.accion === 'parecida' ? t('problemas.asis.proposta.nova', 'Pregunta nova proposta') : t('problemas.asis.proposta', 'Proposta') }),
+        r.explicacion && el('p', { class: 'prob-asis__expl', text: r.explicacion }),
+        el('div', { class: 'prob-vista', html: htmlMates(r.calculado?.enunciado || r.enunciado, estado.debuxos) }),
+        vars.length ? el('div', { class: 'prob-asis__vars' }, ...vars.map((v) => el('code', { text: v }))) : null,
+        r.fallos?.length ? el('p', { class: 'prob-erro', text: t('problemas.asis.fallos', 'Ollo, Lúa atopou isto: {f}', { f: r.fallos.join(' · ') }) }) : null,
+        el('div', { class: 'prob-asis__botons' },
+          el('button', { type: 'button', class: 'crono-btn crono-btn--pequeno', 'data-accion': 'asis-descartar', text: t('problemas.asis.descartar', 'Descartar'), onclick: () => { st.proposta = null; repintar() } }),
+          el('button', {
+            type: 'button', class: 'crono-btn crono-btn--pequeno prob-asis__aceptar', 'data-accion': 'asis-aceptar',
+            text: st.accion === 'parecida' ? t('problemas.asis.engadir', 'Engadir coma pregunta nova') : t('problemas.asis.aceptar', 'Aceptar e substituír'),
+            onclick: () => aceptarProposta(p),
+          }))))
+    }
+    return caixa
+  }
+
+  // editarFormula abre o editor visual coa fórmula f (ou a do cursor, ou o
+  // texto seleccionado) e pon o resultado no enunciado coma se se tecleara.
+  async function editarFormula(texto, id, f = null) {
+    const ini = texto.selectionStart
+    const fin = texto.selectionEnd
+    f = f || formulaEn(texto.value, ini)
+    const rango = f || { ini, fin, tex: texto.value.slice(ini, fin).trim(), centrada: false }
+    const p = lista.find((x) => x.id === id)
+    const res = await abrirEditorFormulas({ t, tex: rango.tex, centrada: rango.centrada, variables: p ? [...nomesDeclarados(p)] : [] })
+    if (!res || (!f && !res.tex)) { texto.focus(); return }
+    const { texto: novo, cursor } = substituir(texto.value, envolver(res.tex, res.centrada), { ini: rango.ini, fin: rango.fin, centrada: res.centrada })
+    texto.value = novo
+    texto.focus()
+    texto.setSelectionRange(cursor, cursor)
+    texto.dispatchEvent(new Event('input', { bubbles: true }))
   }
 
   function vistaEnunciado(p, calc) {
@@ -371,6 +554,23 @@ export function crearBarraProblemas({ t, estado, accions, pendentes }) {
       html: ICONAS.ia + `<span>${ocupado ? t('problemas.resolvendoExame', 'Resolvendo… ({n} pendentes)', { n: faltan }) : t('problemas.resolverExame', 'Resolver o exame')}${!ocupado && pendentes.length ? ` (${pendentes.length})` : ''}</span>`,
       onclick: () => accions.resolver(pendentes),
     }))
+}
+
+// encaixarNoEditor pon o panel dunha pregunta desanclada enriba do panel de
+// edición da xanela (.pane-editor) e segue o seu tamaño (divisor, asistente,
+// xanela). Sen .pane-editor (probas) cobre a xanela enteira, polo CSS.
+function encaixarNoEditor(panel) {
+  const pane = panel.isConnected && panel.closest('.pane-editor')
+  if (!pane) return
+  const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(() => poñer()) : null
+  function poñer() {
+    if (!panel.isConnected) { ro?.disconnect(); window.removeEventListener('resize', poñer); return }
+    const r = pane.getBoundingClientRect()
+    Object.assign(panel.style, { top: r.top + 'px', left: r.left + 'px', width: r.width + 'px', height: r.height + 'px', right: 'auto', bottom: 'auto' })
+  }
+  poñer()
+  ro?.observe(pane)
+  window.addEventListener('resize', poñer)
 }
 
 function escapar(s) {

@@ -55,6 +55,8 @@ type PedidoFormulario struct {
 	// motor: o que calcula os problemas (o pon a App ao xerar; nil = sen
 	// problemas que calcular, ou un motor só en Go).
 	motor motorProblemasDoc
+	// formulas: estilo e tamaño das fórmulas (Opcións; o pon a App ao xerar).
+	formulas opcionsFormulas
 }
 
 // textoValor devolve o valor coma texto recortado, sen formatar.

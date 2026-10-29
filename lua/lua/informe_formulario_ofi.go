@@ -46,7 +46,7 @@ func prepararOfimaticaFormulario(req XerarInformeCronogramaRequest, plantilla *P
 	d.Formulario = &docFormulario{
 		Titulo: vars["TITULO"], Portada: f.Portada, Sinatura: f.Sinatura, Bloques: bloques,
 	}
-	fs, err := compoñerFormulas(formulasDeBloques(bloques), d.Estilo.TamanoPt)
+	fs, err := compoñerFormulas(formulasDeBloques(bloques), d.Estilo.TamanoPt, req.Formulario.formulas)
 	if err != nil {
 		d.Avisos = engadirSenRepetir(d.Avisos, []string{err.Error() + ": as fórmulas van coma texto"})
 	}

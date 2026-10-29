@@ -316,11 +316,14 @@ func expandirProblemas(bloques []bloqueDoc, xer *XeracionProblemas, m motorProbl
 				for _, a := range append(c.Avisos, c.Fallos...) {
 					avisar(fmt.Sprintf("pregunta %s: %s", num, a))
 				}
-				cab := "**" + num + ".**"
+				// Sen número de pregunta: quen o queira escríbeo no enunciado.
+				texto := strings.TrimSpace(c.Enunciado)
 				if pt := strings.TrimSpace(p.Puntos); pt != "" {
-					cab += " *(" + tx.T("FORM_PUNTOS", map[string]string{"N": pt}) + ")*"
+					texto = strings.TrimSpace("*(" + tx.T("FORM_PUNTOS", map[string]string{"N": pt}) + ")* " + texto)
 				}
-				out = append(out, bloqueDoc{Tipo: bloqueMarkdown, Texto: cab + " " + strings.TrimSpace(c.Enunciado)})
+				if texto != "" {
+					out = append(out, bloqueDoc{Tipo: bloqueMarkdown, Texto: texto})
+				}
 				if p.Imaxe != "" {
 					out = append(out, bloqueDoc{Tipo: bloqueImaxe, Imaxe: p.Imaxe})
 				}
@@ -394,14 +397,19 @@ func bloquesDocumentoFormulario(p PedidoFormulario, f Formulario, d DatosFormula
 	return exp, engadirSenRepetir(avisos, av)
 }
 
-// conMotorProblemas pon o motor de Maxima na petición se o formulario ten
-// problemas (copia o pedido: o do chamador non se toca).
+// conMotorProblemas pon na petición dun formulario as Opcións das fórmulas
+// e, se ten problemas, o motor de Maxima (copia o pedido: o do chamador non
+// se toca).
 func (a *App) conMotorProblemas(req XerarInformeCronogramaRequest) XerarInformeCronogramaRequest {
-	if req.eFormulario() && req.Formulario.motor == nil && req.Formulario.Formulario.temProblemas() {
-		p := *req.Formulario
-		p.motor, _ = a.motorProblemas()
-		req.Formulario = &p
+	if !req.eFormulario() {
+		return req
 	}
+	p := *req.Formulario
+	p.formulas = a.opcionsFormulas()
+	if p.motor == nil && p.Formulario.temProblemas() {
+		p.motor, _ = a.motorProblemas()
+	}
+	req.Formulario = &p
 	return req
 }
 

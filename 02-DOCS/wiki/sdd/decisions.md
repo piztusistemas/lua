@@ -156,3 +156,11 @@ Why        — Non se debilita un test para avanzar, e cada commit queda verde.
   - **Rangos aleatorios**: calcúlanse en enteiros escalados ao número de decimais do rango (`rangoDecimal`), en Go e na liña de Maxima (`float((A + P*random(N))/10^d)`). Así `0,1 + 2·0,1` dá `0,3` e o extremo «ata» entra sempre (antes `floor((0.5-0.1)/0.1) = 3` deixaba fóra o 0,5). Os rangos enteiros sacan os mesmos números coa mesma semente ca antes.
   - **Resultados de Maxima**: o TeX de Maxima pasa por `numerosTex`, que quita o ruído do coma flotante (12 cifras significativas), os ceros de máis («80.0» → «80») e pon a coma decimal (`{,}`), coma xa facía o camiño en Go.
   - **Decimais**: a opción «Decimais nos resultados dos problemas» (xa existía para Maxima, con 0 = sen redondear) aplícase tamén ás contas en Go.
+
+## 2026-10-29 — Editor visual de fórmulas nos problemas
+- Petición do usuario: escribir as fórmulas dos enunciados de forma visual, coma en MathType ou CalcMe (referencias: Math-Editor, wiris.com/mathtype, calcme.com), con atallos coma Maiús+7 para as fraccións.
+- Opcións: Math-Editor (aplicación WPF de C#, non se pode incrustar nunha web) · MathType/CalcMe (de pago e en liña) · paleta propia sobre o textarea con KaTeX (non é WYSIWYG) · **MathLive** (`mathlive` 0.111.1, MIT, `<math-field>` WYSIWYG, funciona sen rede).
+- Decisión: MathLive como **dependencia npm nova de execución** (constitución 1.2). Cárgase con `import()` só a primeira vez que se abre o editor (anaco de 823 kB, 228 kB comprimido) e usa as letras de KaTeX que xa carga a vista (`fontsDirectory = null`, sen sons).
+- O enunciado segue sendo Markdown con `$…$` (constitución 3.3): o editor le unha fórmula e devolve LaTeX. As variables van no editor coma a macro `\variable{m}` (unha pastilla) e volven coma ` {m} ` con espazo (regra 3.4); a tradución está en `formulas-modelo.js`, con tests.
+- Atallos: `/` (Maiús+7 nos teclados galego e castelán) fai fracción co que hai antes; Ctrl+F fracción, Ctrl+R raíz, Ctrl+H potencia, Ctrl+L subíndice (os de MathType), Ctrl+K variable nova, Ctrl+Intro inserir, Ctrl+M no enunciado abre o editor.
+

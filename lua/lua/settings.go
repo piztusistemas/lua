@@ -94,6 +94,12 @@ type Settings struct {
 	MaximaPath string `json:"maximaPath,omitempty"`
 	// MaximaDecimais: cifras decimais dos resultados de Maxima (0 = as de Maxima).
 	MaximaDecimais int `json:"maximaDecimais,omitempty"`
+
+	// FormulasEstilo e FormulasEscala: como saen as fórmulas nos documentos
+	// (formulas_estilo.go). Estilo "compactas" (ou baleiro) ou "grandes";
+	// escala en % respecto ao texto, 100–150 (0 = 100).
+	FormulasEstilo string `json:"formulasEstilo,omitempty"`
+	FormulasEscala int    `json:"formulasEscala,omitempty"`
 }
 
 // XerarAoGardarResolto devolve XerarAoGardar coa regra de "sen configurar

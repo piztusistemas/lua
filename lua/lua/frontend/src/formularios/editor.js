@@ -255,7 +255,7 @@ export function createFormularioEditor(container, {
   const CLAVE_MOTOR = 'lua.problemas.motor'
   const estProb = {
     calc: new Map(), debuxos: {}, cola: new Set(), maxima: false, avisoMaxima: '', resolvendo: new Set(), informes: new Map(), editando: new Set(),
-    iaDispoñible: true, enfocar: null,
+    iaDispoñible: true, enfocar: null, solta: null, asistente: new Map(),
     motor: (() => { try { return localStorage.getItem(CLAVE_MOTOR) === 'autonomo' ? 'autonomo' : 'maxima' } catch { return 'maxima' } })(),
   }
   let firmaCalc = ''
@@ -362,6 +362,21 @@ export function createFormularioEditor(container, {
       estProb.maximaComprobado = false
       programarRecalculo(true)
     },
+    // asistentePregunta: a proposta da IA para unha pregunta (problemas_asistente.go).
+    // Non cambia nada: o control amósaa e o docente acéptaa ou descártaa.
+    async asistentePregunta(id, { accion, instrucions = '' }) {
+      if (!problemasOpc?.api?.AsistentePregunta) throw new Error(t('problemas.asis.semApi', 'O asistente da pregunta non está dispoñible nesta xanela.'))
+      const esq = obterEsquema()
+      const e = listaCalculo(esq, plan.valores).find((x) => x.problema.id === id)
+      if (!e) throw new Error(t('problemas.asis.senPregunta', 'Esta pregunta xa non existe.'))
+      const campo = esq.campos.find((c) => c.id === e.campo)
+      return problemasOpc.api.AsistentePregunta({
+        problema: paraMotor(e.problema), accion, instrucions,
+        contexto: [esq.nome, esq.descricion, campo?.etiqueta].filter(Boolean).join(' — '), idioma: problemasOpc.idioma?.() || '',
+      })
+    },
+    // repintar: cambios só da vista (panel aberto, proposta…), sen tocar o plan.
+    repintar: () => render(),
     async resolver(ids, { instrucions = '' } = {}) {
       if (!problemasOpc?.api?.ResolverProblema) return
       // Todas quedan «en cola» e resólvense unha tras outra.

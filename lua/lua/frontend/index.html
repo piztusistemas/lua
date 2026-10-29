@@ -296,6 +296,30 @@
                 </label>
             </div>
 
+            <div class="options-block options-block--formulas">
+                <h3 data-i18n="options.section.formulas">Fórmulas nos documentos</h3>
+                <p class="modal-hint" data-i18n="options.formulas.hint">Como saen as fórmulas en todos os documentos que xeres (PDF, Word e OpenDocument) e na vista do editor. O texto non cambia de tamaño.</p>
+                <label class="modal-label">
+                    <span data-i18n="options.formulas.estilo">Estilo</span>
+                    <select id="optFormulasEstilo">
+                        <option value="compactas" data-i18n="options.formulas.estilo.compactas">Compactas: dentro dunha liña, as fraccións encollen</option>
+                        <option value="grandes" data-i18n="options.formulas.estilo.grandes">A tamaño completo: fraccións e raíces grandes tamén dentro da liña</option>
+                    </select>
+                </label>
+                <label class="modal-label">
+                    <span data-i18n="options.formulas.escala">Tamaño das fórmulas respecto ao texto</span>
+                    <select id="optFormulasEscala">
+                        <option value="100">100 %</option>
+                        <option value="110">110 %</option>
+                        <option value="120">120 %</option>
+                        <option value="130">130 %</option>
+                        <option value="140">140 %</option>
+                        <option value="150">150 %</option>
+                    </select>
+                </label>
+                <div class="formulas-mostra" id="optFormulasMostra" aria-hidden="true"></div>
+            </div>
+
             <div class="options-block options-block--export">
                 <h3 data-i18n="options.exportadores.title">Formatos de exportación</h3>
                 <p class="modal-hint" data-i18n="options.exportadores.hint">Os formatos desactivados desaparecen da barra de ferramentas da previsualización.</p>

@@ -360,6 +360,7 @@ func latexInformeActas(p PlanActas, ambito, engine string, tip *TipografiaOpts, 
 	}
 	var b strings.Builder
 	b.WriteString(babelListquotFix)
+	b.WriteString(formulasDefLatexPorDefecto)
 	b.WriteString(dd.Corpo)
 	if curso {
 		b.WriteString("\\renewcommand{\\contentsname}{" + tx.L("ACTAS_LISTA") + "}\n\\tableofcontents\n\\clearpage\n")

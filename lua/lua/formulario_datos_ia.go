@@ -105,7 +105,8 @@ PREGUNTAS (campos de tipo «problemas»): cada pregunta é {enunciado, puntos, v
   que dean contas razoables). Dentro dunha fórmula o valor vai con espazos: $ {R1} $;
   $\dfrac{V}{R}$ (sen espazos) son as letras.
 - Non escribas a solución: faina o docente co botón Resolver (IA + Maxima comproba as contas).
-- Non numeres as preguntas: Lua pon «1.», «2.»... segundo a orde da lista.
+- Non numeres as preguntas salvo que cho pidan: Lua non lles pon número no documento.
+  Se o docente quere número, escríbeo ao principio do enunciado («**1.** …»).
 
 ` + regrasDebuxosIA + `
 Dentro do JSON da ferramenta, os saltos de liña van coma \n e as barras invertidas

@@ -16,7 +16,8 @@
   },
   "dependencies": {
     "@wailsio/runtime": "^3.0.0-beta.14",
-    "katex": "^0.16.22"
+    "katex": "^0.16.22",
+    "mathlive": "0.111.1"
   },
   "overrides": {
     "jsdom": "^26.1.0"

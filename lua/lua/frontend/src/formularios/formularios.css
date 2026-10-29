@@ -662,3 +662,116 @@ body.inicio :is(#btnNew, #btnUndo, #btnRedo, #btnRun, #barraProblemas) { opacity
 .cat-pe .bib-pe__axuda { flex: 1 1 auto; }
 
 /* Marca «sempre» do botón Bóveda (spec traballos-boveda). */
+
+/* ---------- Editor visual de fórmulas (editor-formulas.js) ---------- */
+.prob-ferr { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.prob-ferr__axuda { color: var(--text-faint); font-size: 0.75rem; }
+.prob-btn-formula { color: var(--primary); border-color: var(--primary-soft-border); background: var(--primary-soft); }
+.prob-btn-formula:hover { background: color-mix(in oklab, var(--primary-soft) 70%, var(--primary-soft-border)); }
+.prob-vista--editable .katex { cursor: pointer; border-radius: 4px; transition: background-color 0.12s; }
+.prob-vista--editable .katex:hover { background: var(--primary-soft); box-shadow: 0 0 0 3px var(--primary-soft); }
+
+.formula-overlay { z-index: 1000; }
+.formula-modal { width: min(760px, 94vw); display: flex; flex-direction: column; gap: 0.7rem; }
+.formula-modal h2 { margin: 0; }
+.formula-pestanas { display: flex; gap: 0.2rem; flex-wrap: wrap; border-bottom: 1px solid var(--border-color); }
+.formula-pestana {
+    appearance: none; border: 0; background: transparent; cursor: pointer;
+    padding: 0.4rem 0.7rem; margin-bottom: -1px; border-bottom: 2px solid transparent;
+    font: 600 0.8rem/1.2 var(--font-ui); color: var(--text-muted);
+}
+.formula-pestana:hover { color: var(--text-dark); }
+.formula-pestana[aria-selected="true"] { color: var(--primary); border-bottom-color: var(--primary); }
+.formula-pestana:focus-visible, .formula-btn:focus-visible, .formula-var:focus-visible { outline: 2px solid var(--primary); outline-offset: 1px; }
+.formula-panel { display: flex; flex-wrap: wrap; gap: 0.3rem; min-height: 2.6rem; }
+.formula-panel[hidden] { display: none; }
+.formula-btn {
+    appearance: none; cursor: pointer; min-width: 2.6rem; min-height: 2.6rem; padding: 0.15rem 0.45rem;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--btn-neutral-bg); border: 1px solid var(--border-color); border-radius: var(--radius-sm);
+    color: var(--text-dark); font-size: 0.85rem; overflow: hidden;
+}
+.formula-btn:hover { background: var(--primary-soft); border-color: var(--primary-soft-border); }
+.formula-btn .katex { font-size: 1.05em; }
+.formula-btn .katex .mtable { font-size: 0.8em; }
+.formula-marco {
+    padding: 0.9rem 1rem; border: 1px solid var(--border-strong); border-radius: var(--radius);
+    background: var(--panel-bg); box-shadow: inset 0 1px 2px oklch(20% 0.02 264 / .05);
+}
+.formula-marco:focus-within { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-soft); }
+.formula-campo {
+    display: block; width: 100%; min-height: 3.2rem; font-size: 1.55rem; border: 0; outline: 0; background: transparent;
+    color: var(--text-dark);
+    --caret-color: var(--primary);
+    --selection-background-color: var(--primary-soft);
+    --contains-highlight-background-color: color-mix(in oklab, var(--primary-soft) 50%, transparent);
+    --primary-color: var(--primary);
+    --placeholder-color: var(--primary);
+}
+.formula-campo::part(virtual-keyboard-toggle), .formula-campo::part(menu-toggle) { display: none; }
+.formula-vars { display: flex; align-items: center; flex-wrap: wrap; gap: 0.35rem; font-size: 0.8rem; }
+.formula-vars__tit { font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.7rem; }
+.formula-vars__lista { display: contents; }
+.formula-var {
+    appearance: none; cursor: pointer; padding: 0.15rem 0.55rem; border-radius: 999px;
+    background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe; font: 600 0.8rem/1.4 var(--font-ui);
+}
+.formula-var:hover { background: #c7d2fe; }
+.formula-vars__nova { display: inline-flex; gap: 0.3rem; align-items: center; margin-left: auto; }
+.formula-var__nova { width: 6.5rem; padding: 0.2rem 0.45rem; font-family: var(--font-mono); font-size: 0.8rem; }
+.formula-var__nova[aria-invalid="true"] { border-color: var(--off); }
+.formula-atallos { color: var(--text-muted); }
+.formula-latex summary { cursor: pointer; font-size: 0.8rem; color: var(--text-muted); }
+.formula-fonte { width: 100%; margin-top: 0.35rem; font-family: var(--font-mono); font-size: 0.8rem; }
+.formula-modal .modal-actions { align-items: center; margin-top: 0; }
+.formula-centrada { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.82rem; color: var(--text-dark); cursor: pointer; }
+
+/* ---------- Pregunta desanclada (problemas.js) ----------
+   Cobre o panel de edición (encaixarNoEditor pon top/left/width/height);
+   sen el, a xanela enteira. Cando hai sitio, pregunta e solución lado a
+   lado; senón, unha debaixo da outra. */
+.prob-solta {
+    position: fixed; inset: 0; z-index: 900;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr)); align-content: start; gap: 1rem;
+    padding: 1rem 1.1rem; background: var(--bg-main); overflow-y: auto;
+}
+.prob-solta > .prob-preg, .prob-solta > .prob-sol { padding: 1rem 1.2rem; box-shadow: var(--shadow-md); }
+.prob-solta .prob-preg__cab { font-size: 0.95rem; }
+.prob-solta .prob-enunciado {
+    flex: 1 0 auto; min-height: 38vh; resize: vertical;
+    font-size: 0.95rem; line-height: 1.6; padding: 0.8rem 0.9rem;
+}
+.prob-solta .prob-vista { font-size: 1.02rem; padding: 0.8rem 1rem; }
+.prob-solta .prob-sol .form-entrada--longa { font-size: 0.95rem; line-height: 1.6; }
+.prob-solta .prob-sol .form-camp:first-of-type .form-entrada--longa { min-height: 34vh; }
+.prob-btn-solta { white-space: nowrap; }
+.prob-solta .prob-btn-solta { color: var(--primary); border-color: var(--primary-soft-border); background: var(--primary-soft); }
+
+/* Asistente da pregunta desanclada (problemas.js, problemas_asistente.go) */
+.prob-btn-asis[aria-pressed="true"] { background: var(--ai-soft); border-color: var(--ai-border); }
+.prob-asis {
+    display: flex; flex-direction: column; gap: 0.5rem; padding: 0.7rem 0.8rem;
+    background: var(--ai-soft); border: 1px solid var(--ai-border); border-radius: var(--radius);
+}
+.prob-asis__accions { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.prob-asis__chip {
+    appearance: none; cursor: pointer; padding: 0.3rem 0.7rem; border-radius: 999px;
+    background: var(--panel-bg); border: 1px solid var(--ai-border); color: var(--text-dark);
+    font: 600 0.78rem/1.3 var(--font-ui);
+}
+.prob-asis__chip:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); }
+.prob-asis__chip:disabled { opacity: 0.55; cursor: default; }
+.prob-asis__chip:focus-visible { outline: 2px solid var(--primary); outline-offset: 1px; }
+.prob-asis__fila { display: flex; gap: 0.4rem; }
+.prob-asis__instr { flex: 1; min-width: 0; }
+.prob-asis__ocupado { display: flex; align-items: center; gap: 0.6rem; font-size: 0.82rem; color: var(--text-muted); }
+.prob-asis__ocupado span::before { content: ''; display: inline-block; width: 0.7rem; height: 0.7rem; margin-right: 0.45rem; vertical-align: -0.05rem; border: 2px solid var(--ai-border); border-top-color: var(--primary); border-radius: 50%; animation: prob-xira 0.8s linear infinite; }
+@keyframes prob-xira { to { transform: rotate(360deg); } }
+.prob-asis__proposta { display: flex; flex-direction: column; gap: 0.45rem; padding: 0.65rem 0.75rem; background: var(--panel-bg); border-radius: var(--radius-sm); border: 1px solid var(--border-color); }
+.prob-asis__tit { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-muted); }
+.prob-asis__expl { margin: 0; font-size: 0.82rem; color: var(--text-dark); }
+.prob-asis__vars { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+.prob-asis__vars code { font-size: 0.75rem; padding: 0.1rem 0.4rem; border-radius: 4px; background: var(--primary-soft); color: var(--primary); }
+.prob-asis__botons { display: flex; justify-content: flex-end; gap: 0.4rem; }
+.prob-asis__aceptar { background: var(--primary); border-color: var(--primary); color: #fff; }
+.prob-asis__aceptar:hover { background: var(--primary-hover); }

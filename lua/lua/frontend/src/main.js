@@ -33,7 +33,7 @@ import {
   CatalogoFormularios, CrearCarpetaCatalogo, RenomearCarpetaCatalogo, EliminarCarpetaCatalogo, MoverFormularioCatalogo, ReutilizarNoProxecto,
   CatalogoFluxo, FluxoAutomaticoDe, SincronizarFluxoFormulario, AvaliarFluxoFormulario,
   AbrirXanelaFormulario, GetDatosXanelaFormulario, FormularioXanelaGardado, FormularioXanelaEliminado, MarcarXanelaFormularioSucia, PecharXanelaFormulario,
-  CalcularProblemas, ResolverProblema, CheckMaxima, DetectMaxima, InstallMaxima,
+  CalcularProblemas, ResolverProblema, AsistentePregunta, CheckMaxima, DetectMaxima, InstallMaxima,
 } from '../bindings/lua-wails/app.js'
 import { Application, Events, Window } from '@wailsio/runtime'
 import { haiProblemas, xeracionDe } from './formularios/problemas-modelo.js'
@@ -62,6 +62,7 @@ import { totalActas, totalSeguimentos } from './informes/actas-modelo.js'
 import { crearFerramentas } from './asistente/ferramentas.js'
 import { crearPanelAsistente } from './asistente/panel.js'
 import { logoProvedor } from './asistente/logos.js'
+import { htmlMates, configurarFormulas, normalizarEscalaFormulas } from './formularios/mates-vista.js'
 import glDict from '../../idiomas/gl.json'
 import esDict from '../../idiomas/es.json'
 import enDict from '../../idiomas/en.json'
@@ -162,6 +163,19 @@ const optIABaseURLRow = document.getElementById('optIABaseURLRow')
 const optLatexEngine = document.getElementById('optLatexEngine')
 const optMaximaPath = document.getElementById('optMaximaPath')
 const optMaximaDecimais = document.getElementById('optMaximaDecimais')
+const optFormulasEstilo = document.getElementById('optFormulasEstilo')
+const optFormulasEscala = document.getElementById('optFormulasEscala')
+const optFormulasMostra = document.getElementById('optFormulasMostra')
+
+// pintarMostraFormulas: unha liña de exemplo coas opcións escollidas (aínda
+// sen gardar), para ver o efecto antes de aceptar.
+function pintarMostraFormulas() {
+  if (!optFormulasMostra) return
+  optFormulasMostra.innerHTML = htmlMates(t('options.formulas.mostra', 'Resolve $\\frac{a}{b} + \\sqrt{x}$ no texto, e tamén: $$\\sum_{i=1}^{n} i = \\frac{n(n+1)}{2}$$'), null,
+    { formulasEstilo: optFormulasEstilo.value, formulasEscala: optFormulasEscala.value })
+}
+optFormulasEstilo?.addEventListener('change', pintarMostraFormulas)
+optFormulasEscala?.addEventListener('change', pintarMostraFormulas)
 const optMaximaEstado = document.getElementById('optMaximaEstado')
 const btnDetectarMaxima = document.getElementById('btnDetectarMaxima')
 const btnInstalarMaxima = document.getElementById('btnInstalarMaxima')
@@ -923,7 +937,7 @@ function engadirFormulario(esquema) {
     // O asistente de datos (só existe en modo deseño, ver formularios/editor.js).
     asistente: asistenteDoFormularioDatos(),
     // Os campos «problemas»: Maxima e o resolvedor coa IA (formularios/problemas.js).
-    problemas: { api: { CalcularProblemas, ResolverProblema, InstallMaxima, IAAsistenteEstado }, idioma: () => idiomaActual },
+    problemas: { api: { CalcularProblemas, ResolverProblema, AsistentePregunta, InstallMaxima, IAAsistenteEstado }, idioma: () => idiomaActual },
     avisar: (mensaxe, tipo) => { setStatus(mensaxe); if (tipo === 'aviso') showWarnings([mensaxe]) },
   })
   const controlador = criarControlador(ferr)
@@ -1833,6 +1847,9 @@ async function openOptions() {
     optLatexEngine.value = s.latexEngine || ''
     optMaximaPath.value = s.maximaPath || ''
     optMaximaDecimais.value = s.maximaDecimais || ''
+    optFormulasEstilo.value = s.formulasEstilo === 'grandes' ? 'grandes' : 'compactas'
+    optFormulasEscala.value = String(normalizarEscalaFormulas(s.formulasEscala))
+    pintarMostraFormulas()
     pintarEstadoMaxima()
     optXerarAoGardar.checked = s.xerarAoGardar !== false
     optIdioma.value = s.idioma || idiomaPiztu || 'gl'
@@ -1888,6 +1905,8 @@ async function saveOptions() {
       latexEngine: optLatexEngine.value,
       maximaPath: optMaximaPath.value.trim(),
       maximaDecimais: Math.max(0, parseInt(optMaximaDecimais.value, 10) || 0),
+      formulasEstilo: optFormulasEstilo.value,
+      formulasEscala: normalizarEscalaFormulas(optFormulasEscala.value),
       xerarAoGardar: optXerarAoGardar.checked,
       idioma: idiomaAGardar,
       exportarPdf: optExportPDF.checked,
@@ -1897,6 +1916,7 @@ async function saveOptions() {
       exportarOdt: optExportOdt.checked,
     })
     xerarAoGardarActivo = optXerarAoGardar.checked
+    configurarFormulas({ formulasEstilo: optFormulasEstilo.value, formulasEscala: optFormulasEscala.value })
     aplicarVisibilidadeExportadores({
       exportarPdf: optExportPDF.checked,
       exportarTex: optExportTex.checked,
@@ -2502,6 +2522,7 @@ GetActualizacionLua().then(aplicarActualizacionLua).catch(() => {})
 Promise.all([GetSettings(), IdiomaPiztu().catch(() => '')]).then(([s, ip]) => {
   idiomaPiztu = ip || ''
   xerarAoGardarActivo = s.xerarAoGardar !== false
+  configurarFormulas(s)
   const idiomaEfectivo = s.idioma || idiomaPiztu
   if (idiomaEfectivo && idiomaEfectivo !== 'gl') refrescarIdioma(idiomaEfectivo)
   aplicarVisibilidadeExportadores(s)

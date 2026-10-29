@@ -533,10 +533,11 @@ func latexTramosCrono(tramos []cronoTramo) string {
 	var b strings.Builder
 	for _, t := range tramos {
 		if t.Math != "" {
+			// As macros defínense no corpo (formulas_estilo.go).
 			if t.Display {
-				b.WriteString(`\[` + t.Math + `\]`)
+				b.WriteString(`\luaformulacentrada{` + t.Math + `}`)
 			} else {
-				b.WriteString(`$` + t.Math + `$`)
+				b.WriteString(`\luaformula{` + t.Math + `}`)
 			}
 			continue
 		}
