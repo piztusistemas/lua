@@ -2,189 +2,189 @@
   "skills": {
     "analyze": {
       "files": [
-        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/analyze"
+        "/home/usuario/Documentos/lua/.claude/skills/analyze"
       ],
-      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/analyze"
+      "base": "/home/usuario/Documentos/lua/.rsc/skills/analyze"
     },
     "automation-strategy": {
       "files": [
-        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/automation-strategy"
+        "/home/usuario/Documentos/lua/.claude/skills/automation-strategy"
       ],
-      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/automation-strategy"
+      "base": "/home/usuario/Documentos/lua/.rsc/skills/automation-strategy"
     },
     "clarify": {
       "files": [
-        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/clarify"
+        "/home/usuario/Documentos/lua/.claude/skills/clarify"
       ],
-      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/clarify"
+      "base": "/home/usuario/Documentos/lua/.rsc/skills/clarify"
     },
     "constitution": {
       "files": [
-        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/constitution"
+        "/home/usuario/Documentos/lua/.claude/skills/constitution"
       ],
-      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/constitution"
+      "base": "/home/usuario/Documentos/lua/.rsc/skills/constitution"
     },
     "debug": {
       "files": [
-        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/debug"
+        "/home/usuario/Documentos/lua/.claude/skills/debug"
       ],
-      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/debug"
+      "base": "/home/usuario/Documentos/lua/.rsc/skills/debug"
     },
     "decision-challenge": {
       "files": [
-        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/decision-challenge"
+        "/home/usuario/Documentos/lua/.claude/skills/decision-challenge"
       ],
-      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/decision-challenge"
+      "base": "/home/usuario/Documentos/lua/.rsc/skills/decision-challenge"
     },
     "deprecation": {
       "files": [
-        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/deprecation"
+        "/home/usuario/Documentos/lua/.claude/skills/deprecation"
       ],
-      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/deprecation"
+      "base": "/home/usuario/Documentos/lua/.rsc/skills/deprecation"
     },
     "fable-operator": {
       "files": [
-        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/fable-operator"
+        "/home/usuario/Documentos/lua/.claude/skills/fable-operator"
       ],
-      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/fable-operator"
+      "base": "/home/usuario/Documentos/lua/.rsc/skills/fable-operator"
     },
     "ftd": {
       "files": [
-        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/ftd"
+        "/home/usuario/Documentos/lua/.claude/skills/ftd"
       ],
-      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/ftd"
+      "base": "/home/usuario/Documentos/lua/.rsc/skills/ftd"
     },
     "go": {
       "files": [
-        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/go"
+        "/home/usuario/Documentos/lua/.claude/skills/go"
       ],
-      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/go"
+      "base": "/home/usuario/Documentos/lua/.rsc/skills/go"
     },
     "harness": {
       "files": [
-        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/harness"
+        "/home/usuario/Documentos/lua/.claude/skills/harness"
       ],
-      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/harness"
+      "base": "/home/usuario/Documentos/lua/.rsc/skills/harness"
     },
     "idea-refinement": {
       "files": [
-        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/idea-refinement"
+        "/home/usuario/Documentos/lua/.claude/skills/idea-refinement"
       ],
-      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/idea-refinement"
+      "base": "/home/usuario/Documentos/lua/.rsc/skills/idea-refinement"
     },
     "implement": {
       "files": [
-        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/implement"
+        "/home/usuario/Documentos/lua/.claude/skills/implement"
       ],
-      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/implement"
+      "base": "/home/usuario/Documentos/lua/.rsc/skills/implement"
     },
     "init": {
       "files": [
-        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/init"
+        "/home/usuario/Documentos/lua/.claude/skills/init"
       ],
-      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/init"
+      "base": "/home/usuario/Documentos/lua/.rsc/skills/init"
     },
     "orient": {
       "files": [
-        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/orient"
+        "/home/usuario/Documentos/lua/.claude/skills/orient"
       ],
-      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/orient"
+      "base": "/home/usuario/Documentos/lua/.rsc/skills/orient"
     },
     "parallel": {
       "files": [
-        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/parallel"
+        "/home/usuario/Documentos/lua/.claude/skills/parallel"
       ],
-      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/parallel"
+      "base": "/home/usuario/Documentos/lua/.rsc/skills/parallel"
     },
     "plan": {
       "files": [
-        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/plan"
+        "/home/usuario/Documentos/lua/.claude/skills/plan"
       ],
-      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/plan"
+      "base": "/home/usuario/Documentos/lua/.rsc/skills/plan"
     },
     "python": {
       "files": [
-        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/python"
+        "/home/usuario/Documentos/lua/.claude/skills/python"
       ],
-      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/python"
+      "base": "/home/usuario/Documentos/lua/.rsc/skills/python"
     },
     "review": {
       "files": [
-        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/review"
+        "/home/usuario/Documentos/lua/.claude/skills/review"
       ],
-      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/review"
+      "base": "/home/usuario/Documentos/lua/.rsc/skills/review"
     },
     "sdd": {
       "files": [
-        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/sdd"
+        "/home/usuario/Documentos/lua/.claude/skills/sdd"
       ],
-      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/sdd"
+      "base": "/home/usuario/Documentos/lua/.rsc/skills/sdd"
     },
     "sdd-init": {
       "files": [
-        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/sdd-init"
+        "/home/usuario/Documentos/lua/.claude/skills/sdd-init"
       ],
-      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/sdd-init"
+      "base": "/home/usuario/Documentos/lua/.rsc/skills/sdd-init"
     },
     "ship": {
       "files": [
-        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/ship"
+        "/home/usuario/Documentos/lua/.claude/skills/ship"
       ],
-      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/ship"
+      "base": "/home/usuario/Documentos/lua/.rsc/skills/ship"
     },
     "simplify-code": {
       "files": [
-        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/simplify-code"
+        "/home/usuario/Documentos/lua/.claude/skills/simplify-code"
       ],
-      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/simplify-code"
+      "base": "/home/usuario/Documentos/lua/.rsc/skills/simplify-code"
     },
     "source-grounded-development": {
       "files": [
-        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/source-grounded-development"
+        "/home/usuario/Documentos/lua/.claude/skills/source-grounded-development"
       ],
-      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/source-grounded-development"
+      "base": "/home/usuario/Documentos/lua/.rsc/skills/source-grounded-development"
     },
     "specify": {
       "files": [
-        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/specify"
+        "/home/usuario/Documentos/lua/.claude/skills/specify"
       ],
-      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/specify"
+      "base": "/home/usuario/Documentos/lua/.rsc/skills/specify"
     },
     "suggest": {
       "files": [
-        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/suggest"
+        "/home/usuario/Documentos/lua/.claude/skills/suggest"
       ],
-      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/suggest"
+      "base": "/home/usuario/Documentos/lua/.rsc/skills/suggest"
     },
     "tasks": {
       "files": [
-        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/tasks"
+        "/home/usuario/Documentos/lua/.claude/skills/tasks"
       ],
-      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/tasks"
+      "base": "/home/usuario/Documentos/lua/.rsc/skills/tasks"
     },
     "ui-engineering": {
       "files": [
-        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/ui-engineering"
+        "/home/usuario/Documentos/lua/.claude/skills/ui-engineering"
       ],
-      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/ui-engineering"
+      "base": "/home/usuario/Documentos/lua/.rsc/skills/ui-engineering"
     },
     "unslop": {
       "files": [
-        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/unslop"
+        "/home/usuario/Documentos/lua/.claude/skills/unslop"
       ],
-      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/unslop"
+      "base": "/home/usuario/Documentos/lua/.rsc/skills/unslop"
     },
     "verify": {
       "files": [
-        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/verify"
+        "/home/usuario/Documentos/lua/.claude/skills/verify"
       ],
-      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/verify"
+      "base": "/home/usuario/Documentos/lua/.rsc/skills/verify"
     },
     "worktrees": {
       "files": [
-        "/Users/martin/Documents/desenvolvemento/lua/.claude/skills/worktrees"
+        "/home/usuario/Documentos/lua/.claude/skills/worktrees"
       ],
-      "base": "/Users/martin/Documents/desenvolvemento/lua/.rsc/skills/worktrees"
+      "base": "/home/usuario/Documentos/lua/.rsc/skills/worktrees"
     }
   },
   "agents": [
@@ -213,10 +213,10 @@
     "mode": "full",
     "reason": "wired",
     "paths": [
-      "/Users/martin/Documents/desenvolvemento/lua/.rsc/session-memory-core.mjs",
-      "/Users/martin/Documents/desenvolvemento/lua/.rsc/session-memory-adapter.mjs",
-      "/Users/martin/Documents/desenvolvemento/lua/.rsc/session-memory.mjs",
-      "/Users/martin/Documents/desenvolvemento/lua/.claude/settings.local.json"
+      "/home/usuario/Documentos/lua/.rsc/session-memory-core.mjs",
+      "/home/usuario/Documentos/lua/.rsc/session-memory-adapter.mjs",
+      "/home/usuario/Documentos/lua/.rsc/session-memory.mjs",
+      "/home/usuario/Documentos/lua/.claude/settings.local.json"
     ]
   },
   "update": {
@@ -226,14 +226,14 @@
     "mode": "wired",
     "reason": null,
     "paths": [
-      "/Users/martin/Documents/desenvolvemento/lua/.rsc/knowledge-sync.mjs",
-      "/Users/martin/Documents/desenvolvemento/lua/.rsc/trunk-policy.mjs",
-      "/Users/martin/Documents/desenvolvemento/lua/.claude/settings.local.json"
+      "/home/usuario/Documentos/lua/.rsc/knowledge-sync.mjs",
+      "/home/usuario/Documentos/lua/.rsc/trunk-policy.mjs",
+      "/home/usuario/Documentos/lua/.claude/settings.local.json"
     ]
   },
   "gitPermissions": {
     "mode": "wired",
-    "path": "/Users/martin/Documents/desenvolvemento/lua/.claude/settings.json"
+    "path": "/home/usuario/Documentos/lua/.claude/settings.json"
   },
   "policy": {
     "baseAgents": true,
