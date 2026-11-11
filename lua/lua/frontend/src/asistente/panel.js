@@ -21,7 +21,7 @@ export const ETIQUETAS_FERRAMENTAS = {
   plantilla_ler: 'Ler plantilla', plantilla_gardar: 'Gardar plantilla', plantilla_comprobar: 'Comprobar plantilla',
   plantilla_duplicar: 'Duplicar plantilla', plantilla_eliminar: 'Eliminar plantilla', opcions_ler: 'Ler as Opcións',
   opcions_cambiar: 'Cambiar Opcións', sistema_estado: 'Estado do sistema', web_buscar: 'Buscar na web',
-  web_consultar: 'Ler unha páxina web',
+  web_consultar: 'Ler unha páxina web', web_enviar_formulario: 'Enviar un formulario web',
   plantilla_editor_ler: 'Ler a plantilla do editor', plantilla_editor_cambiar: 'Cambiar a plantilla do editor',
   plantilla_previsualizar: 'Previsualizar a plantilla', adxuntos_listar: 'Listar adxuntos', adxunto_ler: 'Ler un adxunto',
   adxunto_ver: 'Ver un adxunto', adxunto_extraer_imaxes: 'Sacar as imaxes dun adxunto', adxunto_eliminar: 'Eliminar un adxunto',

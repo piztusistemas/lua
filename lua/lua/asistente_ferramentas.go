@@ -567,15 +567,40 @@ var ferramentasBackend = []ferramentaBackend{
 	{
 		def: IAFerramenta{
 			Nome: "web_consultar", Tipo: tipoLectura, Onde: "backend",
-			Descricion: "Le o texto dunha páxina web pública ou dun PDF (BOE, DOG, edu.xunta.gal...). Para documentos longos devolve unha parte; usa 'inicio' para seguir lendo.",
+			Descricion: "Le o texto dunha páxina web pública ou dun PDF (BOE, DOG, edu.xunta.gal...). Para documentos longos devolve unha parte; usa 'inicio' para seguir lendo. Con formularios=true, en vez do texto devolve os formularios da páxina (acción, método, campos e opcións dos select): úsao cando os datos só saen enviando un formulario, e despois envíao con web_enviar_formulario.",
 			Parametros: esqObx(map[string]any{
 				"url":           esqTxt("Enderezo http(s) completo."),
 				"inicio":        esqNum("Carácter desde o que ler (por defecto 0)."),
 				"maxCaracteres": esqNum("Cantos caracteres devolver (por defecto 12000, máximo 40000)."),
+				"formularios":   esqBool("true: describir os formularios da páxina en vez de devolver o texto."),
 			}, "url"),
 		},
 		exec: func(a *App, args map[string]any) (any, error) {
+			if si, _ := argBool(args["formularios"]); si {
+				return webFormularios(argTxt(args, "url"))
+			}
 			return webConsultar(argTxt(args, "url"), argInt(args, "inicio"), argInt(args, "maxCaracteres"))
+		},
+	},
+	{
+		def: IAFerramenta{
+			Nome: "web_enviar_formulario", Tipo: tipoEscritura, Onde: "backend",
+			Descricion: "Envía un formulario dunha páxina web pública e le a resposta (por exemplo, escoller estación e datas para ver os datos dunha estación meteorolóxica). Primeiro mira os campos con web_consultar(formularios=true); manda a acción do formulario (ou a que poñan os scripts) e TODOS os seus campos, tamén os ocultos. Só para CONSULTAR datos públicos: nunca para iniciar sesión, rexistrarse, comprar, comentar nin mandar datos persoais. A resposta lese coma en web_consultar ('inicio' para seguir).",
+			Parametros: esqObx(map[string]any{
+				"url":           esqTxt("Enderezo http(s) completo da acción do formulario."),
+				"metodo":        esqTxt("POST (por defecto) ou GET, o do formulario."),
+				"campos":        map[string]any{"type": "object", "description": "{nome_do_campo: valor} (o 'value' das opcións dos select, non a etiqueta)."},
+				"inicio":        esqNum("Carácter da resposta desde o que ler (por defecto 0)."),
+				"maxCaracteres": esqNum("Cantos caracteres devolver (por defecto 12000, máximo 40000)."),
+				"formularios":   esqBool("true: en vez do texto da resposta, describir os seus formularios (para o paso seguinte, p.ex. as estacións dunha provincia)."),
+			}, "url"),
+		},
+		exec: func(a *App, args map[string]any) (any, error) {
+			campos, _ := args["campos"].(map[string]any)
+			if si, _ := argBool(args["formularios"]); si {
+				return webEnviarFormularioEVerFormularios(argTxt(args, "url"), argTxt(args, "metodo"), campos)
+			}
+			return webEnviarFormulario(argTxt(args, "url"), argTxt(args, "metodo"), campos, argInt(args, "inicio"), argInt(args, "maxCaracteres"))
 		},
 	},
 }

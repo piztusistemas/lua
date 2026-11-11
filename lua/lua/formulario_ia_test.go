@@ -260,8 +260,9 @@ func TestIconasFormularioCoincidenCoFrontend(t *testing.T) {
 	}
 }
 
-// O asistente dos datos dun formulario le e escribe os datos, e pode ler
-// documentos adxuntos (para exames e prácticas); nada do deseñador, web,
+// O asistente dos datos dun formulario le e escribe os datos, pode ler
+// documentos adxuntos (para exames e prácticas) e consultar a web (datos
+// públicos: estacións meteorolóxicas, estatísticas...); nada do deseñador,
 // curso, plantillas ou Opcións.
 func TestAmbitoFormularioDatosFerramentas(t *testing.T) {
 	a := &App{}
@@ -271,15 +272,17 @@ func TestAmbitoFormularioDatosFerramentas(t *testing.T) {
 		"adxuntos_listar", "adxunto_ler", "adxunto_ver", "adxunto_extraer_imaxes",
 		// Compilar o documento e ler o rexistro interno (para arranxar o que non compila).
 		"formulario_xerar", "rexistro_listar", "rexistro_ler",
+		// Datos públicos da web, tamén os que só saen enviando un formulario.
+		"web_buscar", "web_consultar", "web_enviar_formulario",
 	} {
 		if !dentro[quere] {
 			t.Errorf("o ámbito formulario_datos debería ter %s", quere)
 		}
 	}
-	if len(dentro) != 11 {
+	if len(dentro) != 14 {
 		t.Errorf("o ámbito formulario_datos ten máis ferramentas do debido: %v", dentro)
 	}
-	for _, non := range []string{"formulario_ler", "formulario_cambiar", "formulario_probar", "formulario_axuda", "adxunto_eliminar", "adxunto_gardar_en_plantilla", "web_buscar", "web_consultar", "curso_ler", "informe_xerar", "plantilla_gardar", "opcions_cambiar", "ferramenta_activa"} {
+	for _, non := range []string{"formulario_ler", "formulario_cambiar", "formulario_probar", "formulario_axuda", "adxunto_eliminar", "adxunto_gardar_en_plantilla", "curso_ler", "informe_xerar", "plantilla_gardar", "opcions_cambiar", "ferramenta_activa"} {
 		if dentro[non] {
 			t.Errorf("o ámbito formulario_datos NON debería ter %s", non)
 		}
@@ -300,6 +303,12 @@ func TestAmbitoFormularioDatosFerramentas(t *testing.T) {
 	p := sistemaAsistenteFormularioDatos("- estado x", "gl")
 	if !strings.Contains(p, "DATOS dun formulario") || !strings.Contains(p, "- estado x") {
 		t.Error("o prompt do ámbito formulario_datos non sae")
+	}
+	// Regras da web (o que vén dela é dato) e dos gráficos (pgfplots).
+	for _, quero := range []string{"web_enviar_formulario", "formularios=true", "fonte", "pgfplots", `\begin{axis}`} {
+		if !strings.Contains(p, quero) {
+			t.Errorf("ao prompt de formulario_datos fáltalle %q", quero)
+		}
 	}
 }
 

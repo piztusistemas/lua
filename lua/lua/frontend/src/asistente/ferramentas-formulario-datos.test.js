@@ -229,9 +229,25 @@ describe('adxuntos (documentos de referencia)', () => {
       expect(api.IAChamarFerramenta).toHaveBeenCalledWith(nome, JSON.stringify({ ruta: 'wiki/x.md' }))
     }
   })
-  it('non deixa gardar nin eliminar adxuntos, nin buscar na web', async () => {
+  it('a web (buscar, ler e enviar formularios de consulta) pasa a Go', async () => {
+    const api = { IAChamarFerramenta: vi.fn(async (nome) => ({ contido: `resposta de ${nome}`, erro: false })) }
+    const { executar } = montar({}, null, api)
+    for (const nome of ['web_buscar', 'web_consultar', 'web_enviar_formulario']) {
+      const r = await executar(nome, { url: 'https://datosclima.es/' })
+      expect(r.erro).toBe(false)
+      expect(api.IAChamarFerramenta).toHaveBeenCalledWith(nome, JSON.stringify({ url: 'https://datosclima.es/' }))
+    }
+  })
+  it('en produción tamén nega a web, sen chamar a Go', async () => {
+    const { executar, api } = montar({ modo: 'produccion' })
+    const r = await executar('web_enviar_formulario', { url: 'https://datosclima.es/' })
+    expect(r.erro).toBe(true)
+    expect(r.contido).toMatch(/PRODUCIÓN/)
+    expect(api.IAChamarFerramenta).not.toHaveBeenCalled()
+  })
+  it('non deixa gardar nin eliminar adxuntos', async () => {
     const { executar, api } = montar()
-    for (const nome of ['adxunto_eliminar', 'adxunto_gardar_en_plantilla', 'web_buscar', 'web_consultar']) {
+    for (const nome of ['adxunto_eliminar', 'adxunto_gardar_en_plantilla']) {
       const r = await executar(nome, {})
       expect(r.erro).toBe(true)
       expect(r.contido).toMatch(/non está dispoñible/)
@@ -248,10 +264,10 @@ describe('adxuntos (documentos de referencia)', () => {
 })
 
 describe('outras ferramentas', () => {
-  it('non ten ferramentas do deseñador, do curso nin da web', async () => {
+  it('non ten ferramentas do deseñador nin do curso', async () => {
     const { executar, nomesFrontend } = montar()
     expect([...nomesFrontend].sort()).toEqual(['formulario_datos_cambiar', 'formulario_datos_ler', 'formulario_xerar', 'usuario_avisar', 'usuario_preguntar'])
-    for (const nome of ['formulario_cambiar', 'formulario_ler', 'curso_ler', 'web_consultar', 'informe_xerar']) {
+    for (const nome of ['formulario_cambiar', 'formulario_ler', 'curso_ler', 'informe_xerar']) {
       const r = await executar(nome, {})
       expect(r.erro).toBe(true)
       expect(r.contido).toMatch(/non está dispoñible/)

@@ -49,13 +49,18 @@ func motorRecortes() string {
 	return ""
 }
 
+// preambuloPgfplots carga pgfplots para os gráficos de datos (```tikz con
+// \begin{axis}): coma decimal, coma no resto do documento, e sen separador
+// de miles, que faría dos anos «2,000».
+const preambuloPgfplots = "\\usepackage{pgfplots}\n\\pgfplotsset{compat=1.18, /pgf/number format/.cd, use comma, 1000 sep={}}\n"
+
 func documentoRecortes(motor string, pezas []string) string {
 	var b strings.Builder
 	b.WriteString("\\documentclass[10pt]{article}\n")
 	if motor == "pdflatex" {
 		b.WriteString("\\usepackage[utf8]{inputenc}\n\\usepackage[T1]{fontenc}\n" + latexUnicodeDeclarations)
 	}
-	b.WriteString("\\usepackage{amsmath,amssymb}\n\\usepackage{tikz}\n\\usepackage{circuitikz}\n\\usepackage[active,tightpage]{preview}\n\\setlength\\PreviewBorder{0.5pt}\n\\pagestyle{empty}\n\\begin{document}\n")
+	b.WriteString("\\usepackage{amsmath,amssymb}\n\\usepackage{tikz}\n\\usepackage{circuitikz}\n" + preambuloPgfplots + "\\usepackage[active,tightpage]{preview}\n\\setlength\\PreviewBorder{0.5pt}\n\\pagestyle{empty}\n\\begin{document}\n")
 	for i, p := range pezas {
 		// Medida da peza (para a liña base das fórmulas e o tamaño real).
 		fmt.Fprintf(&b, "\\setbox0=\\hbox{%s}\\typeout{LUAMEDIDA %d \\the\\ht0/\\the\\dp0/\\the\\wd0}\n", p, i+1)

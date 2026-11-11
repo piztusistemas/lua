@@ -620,7 +620,7 @@ func preambuloDeseno(engine string, dd desenoDoc, extra string) string {
 \usepackage{enumitem}
 \usepackage{tikz}
 \usepackage{circuitikz}
-\usetikzlibrary{babel}
+` + preambuloPgfplots + `\usetikzlibrary{babel}
 \usepackage{titlesec}
 \usepackage{amsmath}
 \usepackage{amssymb}
@@ -643,7 +643,8 @@ var paquetesInformeCrono = []paqueteRequirido{
 	{Nome: "longtable", Linha: `\usepackage{longtable}`},
 	{Nome: "enumitem", Linha: `\usepackage{enumitem}`},
 	{Nome: "tikz", Linha: `\usepackage{tikz}`},
-	{Nome: "circuitikz", Linha: `\usepackage{circuitikz}`}, // os circuítos dos problemas
+	{Nome: "circuitikz", Linha: `\usepackage{circuitikz}`},                 // os circuítos dos problemas
+	{Nome: "pgfplots", Linha: strings.TrimSuffix(preambuloPgfplots, "\n")}, // os gráficos de datos (```tikz con axis)
 	{Nome: "titlesec", Linha: `\usepackage{titlesec}`},
 	{Nome: "amsmath", Linha: `\usepackage{amsmath}`}, // as fórmulas dos problemas (\dfrac, align...)
 	{Nome: "amssymb", Linha: `\usepackage{amssymb}`},

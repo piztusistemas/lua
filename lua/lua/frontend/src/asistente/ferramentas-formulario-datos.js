@@ -155,8 +155,10 @@ export function vistaDatos(esquema, plan, { campo = null, desde = 1, cantidade =
 //   ui                 { avisar(mensaxe, tipo), preguntar(pregunta, opcions) }
 export function crearFerramentasFormularioDatos({ esquema, plan, aplicar, api, ui, xerar = null }) {
   const enProduccion = () => esquema().modo === 'produccion'
-  // Só ler os adxuntos (documentos de referencia): nin gardalos nin buscar na web.
+  // Os adxuntos só se len (documentos de referencia: nunca se gardan) e a web
+  // serve para sacar datos públicos (tamén os que piden enviar un formulario).
   const LIBRES = new Set(['adxuntos_listar', 'adxunto_ler', 'adxunto_ver', 'adxunto_extraer_imaxes',
+    'web_buscar', 'web_consultar', 'web_enviar_formulario',
     // Bóveda de Obsidian (só chegan á IA se o documento ten bóveda conectada; ver boveda.go)
     'boveda_info', 'boveda_listar', 'boveda_ler', 'boveda_buscar', 'boveda_enlaces', 'boveda_pendentes', 'boveda_lint', 'boveda_escribir'])
   const chamarGo = async (nome, args) => {

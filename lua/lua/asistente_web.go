@@ -110,33 +110,59 @@ func clienteWeb() *http.Client {
 
 // descargarWeb devolve o corpo (limitado) e o tipo de contido dunha URL.
 func descargarWeb(rawURL string) ([]byte, string, error) {
+	corpo, tipo, _, err := pedirWeb(http.MethodGet, rawURL, nil)
+	return corpo, tipo, err
+}
+
+// pedirWeb fai a petición (GET, ou POST cos campos coma formulario) e
+// devolve o corpo (limitado), o tipo de contido e a URL final (tras as
+// redireccións, para resolver as ligazóns relativas).
+func pedirWeb(metodo, rawURL string, campos url.Values) ([]byte, string, *url.URL, error) {
 	u, err := url.Parse(strings.TrimSpace(rawURL))
 	if err != nil {
-		return nil, "", fmt.Errorf("enderezo non válido")
+		return nil, "", nil, fmt.Errorf("enderezo non válido")
 	}
 	if err := comprobarURLPublica(u); err != nil {
-		return nil, "", err
+		return nil, "", nil, err
 	}
-	req, err := http.NewRequest(http.MethodGet, u.String(), nil)
+	var corpoPedido io.Reader
+	switch metodo {
+	case http.MethodGet:
+		if len(campos) > 0 {
+			q := u.Query()
+			for k, vs := range campos {
+				q[k] = vs
+			}
+			u.RawQuery = q.Encode()
+		}
+	case http.MethodPost:
+		corpoPedido = strings.NewReader(campos.Encode())
+	default:
+		return nil, "", nil, fmt.Errorf("método %q non admitido (só GET ou POST)", metodo)
+	}
+	req, err := http.NewRequest(metodo, u.String(), corpoPedido)
 	if err != nil {
-		return nil, "", err
+		return nil, "", nil, err
+	}
+	if metodo == http.MethodPost {
+		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	}
 	req.Header.Set("User-Agent", webUserAgent)
 	req.Header.Set("Accept", "text/html,application/xhtml+xml,application/pdf,text/plain;q=0.9,*/*;q=0.5")
 	req.Header.Set("Accept-Language", "gl,es;q=0.9,en;q=0.5")
 	resp, err := clienteWeb().Do(req)
 	if err != nil {
-		return nil, "", fmt.Errorf("non se puido abrir a páxina: %w", err)
+		return nil, "", nil, fmt.Errorf("non se puido abrir a páxina: %w", err)
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode < 200 || resp.StatusCode > 299 {
-		return nil, "", fmt.Errorf("a páxina respondeu HTTP %d", resp.StatusCode)
+		return nil, "", nil, fmt.Errorf("a páxina respondeu HTTP %d", resp.StatusCode)
 	}
 	corpo, err := io.ReadAll(io.LimitReader(resp.Body, webMaxBytes))
 	if err != nil {
-		return nil, "", err
+		return nil, "", nil, err
 	}
-	return corpo, resp.Header.Get("Content-Type"), nil
+	return corpo, resp.Header.Get("Content-Type"), resp.Request.URL, nil
 }
 
 // textoDeHTML extrae o texto lexible dun HTML: sen scripts, estilos nin
@@ -145,6 +171,7 @@ func textoDeHTML(corpo []byte) string {
 	tok := xhtml.NewTokenizer(bytes.NewReader(corpo))
 	var b strings.Builder
 	saltar := 0 // profundidade dentro de etiquetas que non levan texto útil
+	celas := 0  // celas xa escritas na fila da táboa (para separalas con « | »)
 	omitidas := map[string]bool{"script": true, "style": true, "noscript": true, "head": true, "svg": true, "nav": true, "footer": true, "iframe": true}
 	bloque := map[string]bool{"p": true, "div": true, "br": true, "li": true, "tr": true, "h1": true, "h2": true, "h3": true, "h4": true, "h5": true, "h6": true, "section": true, "article": true, "table": true, "ul": true, "ol": true, "blockquote": true}
 	for {
@@ -163,6 +190,15 @@ func textoDeHTML(corpo []byte) string {
 			}
 			if saltar == 0 && n == "li" {
 				b.WriteString("- ")
+			}
+			if n == "tr" {
+				celas = 0
+			}
+			if saltar == 0 && (n == "td" || n == "th") {
+				if celas > 0 {
+					b.WriteString(" | ")
+				}
+				celas++
 			}
 		case xhtml.EndTagToken:
 			nome, _ := tok.TagName()
@@ -207,7 +243,14 @@ func webConsultar(rawURL string, inicio, maxCaracteres int) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	return textoWebEnPartes(corpo, tipo, inicio, maxCaracteres)
+}
+
+// textoWebEnPartes saca o texto dunha resposta (HTML, texto ou PDF) e
+// devolve o anaco pedido, con aviso de como seguir lendo.
+func textoWebEnPartes(corpo []byte, tipo string, inicio, maxCaracteres int) (string, error) {
 	var texto string
+	var err error
 	tipoMin := strings.ToLower(tipo)
 	switch {
 	case strings.Contains(tipoMin, "pdf") || bytes.HasPrefix(corpo, []byte("%PDF")):
@@ -215,6 +258,9 @@ func webConsultar(rawURL string, inicio, maxCaracteres int) (string, error) {
 		if err != nil {
 			return "", err
 		}
+	case bytes.IndexByte(corpo[:min(len(corpo), 4096)], 0) >= 0:
+		// Excel, ZIP, imaxes...: lixo para a IA. Pódese achegar coma adxunto.
+		return "", fmt.Errorf("a resposta é un ficheiro binario (%s), que non se le coma texto: pídelle ao usuario que o descargue e o achegue ao asistente coma adxunto", strings.TrimSpace(tipo))
 	case strings.Contains(tipoMin, "html") || strings.Contains(tipoMin, "xml") || bytes.Contains(corpo[:min(len(corpo), 1024)], []byte("<html")):
 		texto = textoDeHTML(corpo)
 	default:
