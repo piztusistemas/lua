@@ -43,5 +43,7 @@ O docente pediulle ao asistente de datos os gráficos das temperaturas de Vimian
 - PDF do formulario con gráfico (pdflatex): eixe cos anos 1998-2022, eixe Y 13 / 13,5 / 14, lenda e tendencia.
 - Límite da fonte: o histórico de datosclima.es chega ata 2012; desde 2013 está noutra sección (`Aemet2013/`). A IA ten que consultar as dúas.
 
+- Instalada en `/Applications/Lua.app` o 2026-11-12: `task darwin:package:universal`. Cambiouse só `MacOS/lua` e `Info.plist`; o executable vello quedou en `lua.anterior`. Buxo segue dentro e asinado, `codesign --verify --deep` dá ok e a app arranca. A versión segue sendo 26.10.9.
+
 ## Next
 Probalo na aplicación co pedido de Vimianzo e mirar a vista previa do gráfico no editor.
