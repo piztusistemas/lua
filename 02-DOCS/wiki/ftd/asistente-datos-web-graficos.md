@@ -44,6 +44,7 @@ O docente pediulle ao asistente de datos os gráficos das temperaturas de Vimian
 - Límite da fonte: o histórico de datosclima.es chega ata 2012; desde 2013 está noutra sección (`Aemet2013/`). A IA ten que consultar as dúas.
 
 - Instalada en `/Applications/Lua.app` o 2026-11-12: `task darwin:package:universal`. Cambiouse só `MacOS/lua` e `Info.plist`; o executable vello quedou en `lua.anterior`. Buxo segue dentro e asinado, `codesign --verify --deep` dá ok e a app arranca. A versión segue sendo 26.10.9.
+- Release **26.11.1** publicada o 2026-11-12 (https://github.com/piztusistemas/lua/releases/tag/26.11.1, etiqueta en `f52708d`, marcada como Latest). Leva Lúa para macOS (arm64 e amd64, mesmo binario universal), o instalador de macOS e Buxo 26.10.4. Comprobouse o SHA-256 de todos os zip. Sen binarios de Linux, por decisión do usuario.
 
 ## Next
-Probalo na aplicación co pedido de Vimianzo e mirar a vista previa do gráfico no editor.
+Probalo na aplicación co pedido de Vimianzo e mirar a vista previa do gráfico no editor. Engadir á release 26.11.1 os zip de Linux (`lua_26.11.1_linux_amd64.zip` e `luar-instalar_debian_26.11.1.zip`) desde unha máquina Linux.
